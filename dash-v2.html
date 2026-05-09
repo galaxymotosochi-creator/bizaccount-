@@ -267,11 +267,11 @@
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('stock')">Остатки</a>
         <a class="nav-child" onclick="navigateTo('supplies')">Поставки</a>
-        <a class="nav-child">Списания</a>
-        <a class="nav-child">Инвентаризация</a>
+        <a class="nav-child" onclick="navigateTo('writeoffs')">Списания</a>
+        <a class="nav-child" onclick="navigateTo('inventory')">Инвентаризация</a>
         <a class="nav-child" onclick="navigateTo('suppliers')">Поставщики</a>
-        <a class="nav-child">Склады</a>
-        <a class="nav-child">Корзина</a>
+        <a class="nav-child" onclick="navigateTo('warehouses')">Склады</a>
+        <a class="nav-child" onclick="navigateTo('trash')">Корзина</a>
       </div>
     </div>
 
@@ -561,8 +561,69 @@
       </div>
     </div>
 
+
+<!-- СПИСАНИЯ -->
+    <div class="page-section" id="page-writeoffs">
+      <div class="page-header">
+        <div>
+          <h1>Списания</h1>
+          <div class="sub">Списание товаров со склада (брак, потеря)</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openWriteoffModal()">+ Списать товар</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:32%">Товар</th><th style="width:14%">Кол-во</th><th style="width:18%">Сумма</th><th style="width:22%">Причина</th><th style="width:14%">Дата</th></tr></thead><tbody id="writeoffTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ИНВЕНТАРИЗАЦИЯ -->
+    <div class="page-section" id="page-inventory">
+      <div class="page-header">
+        <div>
+          <h1>Инвентаризация</h1>
+          <div class="sub">Сверка фактических остатков с учётными</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="startInventory()">+ Новая инвентаризация</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:28%">Товар</th><th style="width:16%">Учтено</th><th style="width:16%">Факт</th><th style="width:16%">Разница</th><th style="width:24%"></th></tr></thead><tbody id="inventoryTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- СКЛАДЫ -->
+    <div class="page-section" id="page-warehouses">
+      <div class="page-header">
+        <div>
+          <h1>Склады</h1>
+          <div class="sub">Управляйте точками хранения</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openWarehouseModal()">+ Добавить склад</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:35%">Название</th><th style="width:40%">Адрес</th><th style="width:25%"></th></tr></thead><tbody id="warehouseTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- КОРЗИНА -->
+    <div class="page-section" id="page-trash">
+      <div class="page-header">
+        <div>
+          <h1>Корзина</h1>
+          <div class="sub">Скрытые товары — восстановите или удалите навсегда</div>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:45%">Товар</th><th style="width:20%">Категория</th><th style="width:35%"></th></tr></thead><tbody id="trashTableBody"></tbody></table>
+      </div>
+    </div>
+
     <!-- КАТЕГОРИИ ТОВАРОВ -->
-    <div class="page-section" id="page-product-categories">
       <div class="page-header">
         <div>
           <h1>Категории товаров</h1>
@@ -784,6 +845,85 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeSupplyModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Модальное окно списания -->
+<div class="modal-overlay" id="writeoffModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeWriteoffModal()">&times;</button>
+    <h2>Списание товара</h2>
+    <div class="sub">Укажите товар и причину списания</div>
+    <form id="writeoffForm" onsubmit="saveWriteoff(event)">
+      <div class="form-group">
+        <label>Товар *</label>
+        <select id="woProduct" required><option value="">— выберите товар —</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Количество *</label>
+          <input type="number" id="woQty" placeholder="1" value="1" min="1" required>
+        </div>
+        <div class="form-group">
+          <label>Причина</label>
+          <select id="woReason">
+            <option value="breakage">Брак / порча</option>
+            <option value="loss">Потеря</option>
+            <option value="expiry">Истёк срок</option>
+            <option value="other">Прочее</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeWriteoffModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Списать</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно склада -->
+<div class="modal-overlay" id="warehouseModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeWarehouseModal()">&times;</button>
+    <h2 id="whModalTitle">Добавить склад</h2>
+    <div class="sub">Введите название и адрес</div>
+    <form id="warehouseForm" onsubmit="saveWarehouse(event)">
+      <input type="hidden" id="editWarehouseId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="whName" placeholder="Основной склад" required>
+      </div>
+      <div class="form-group">
+        <label>Адрес</label>
+        <input type="text" id="whAddress" placeholder="г. Сочи, ул. Строителей, 1">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeWarehouseModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно настройки кол-ва при инвентаризации -->
+<div class="modal-overlay" id="invModal">
+  <div class="modal-box" style="max-width:380px">
+    <button class="modal-close" onclick="closeInvModal()">&times;</button>
+    <h2>Фактическое кол-во</h2>
+    <div class="sub" id="invModalSub">Введите реальное количество на складе</div>
+    <form id="invForm" onsubmit="saveInvFact(event)">
+      <input type="hidden" id="invEditId" value="">
+      <div class="form-group">
+        <label>Фактически</label>
+        <input type="number" id="invFact" value="0" min="0" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeInvModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>
@@ -1043,6 +1183,10 @@ function navigateTo(page){
   if(page === 'stock') renderStockPage();
   if(page === 'suppliers') renderSuppliersPage();
   if(page === 'supplies') renderSuppliesPage();
+  if(page === 'writeoffs') renderWriteoffsPage();
+  if(page === 'inventory') renderInventoryPage();
+  if(page === 'warehouses') renderWarehousesPage();
+  if(page === 'trash') renderTrashPage();
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
   });
@@ -1423,6 +1567,180 @@ function renderSuppliesPage(){
     '</tr>';
   }).join('');
 }
+
+
+// === СПИСАНИЯ ===
+function openWriteoffModal(){
+  const sel = document.getElementById('woProduct');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  sel.innerHTML = '<option value="">— выберите товар —</option>' + products.map(p => '<option value="'+p.id+'">'+p.name+'</option>').join('');
+  document.getElementById('writeoffModal').classList.add('active');
+}
+function closeWriteoffModal(){
+  document.getElementById('writeoffModal').classList.remove('active');
+  document.getElementById('writeoffForm').reset();
+}
+function saveWriteoff(e){
+  e.preventDefault();
+  const prodId = parseInt(document.getElementById('woProduct').value);
+  const qty = parseInt(document.getElementById('woQty').value) || 0;
+  const reason = document.getElementById('woReason').value;
+  if(!prodId || !qty) return alert('Заполните все поля');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  const totalStock = supplies.filter(s => s.prodId === prodId).reduce((s,p) => s + (p.qty||0), 0);
+  if(qty > totalStock) return alert('Недостаточно товара на складе (всего: '+totalStock+')');
+  let list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  list.unshift({id:Date.now(), prodId, qty, reason, date:new Date().toISOString().split('T')[0]});
+  localStorage.setItem('writeoffs88', JSON.stringify(list));
+  // Списываем из поставок (FIFO — с последней)
+  let used = 0;
+  const updated = supplies.map(s => {
+    if(s.prodId !== prodId || used >= qty) return s;
+    const take = Math.min(s.qty, qty - used);
+    used += take;
+    return {...s, qty: s.qty - take};
+  }).filter(s => s.qty > 0);
+  localStorage.setItem('supplies88', JSON.stringify(updated));
+  closeWriteoffModal();
+  renderWriteoffsPage();
+  updateStats();
+}
+function renderWriteoffsPage(){
+  const list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const tbody = document.getElementById('writeoffTableBody');
+  const reasons = {breakage:'Брак', loss:'Потеря', expiry:'Срок', other:'Прочее'};
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">🗑️</div><p>Списаний пока нет</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(w => {
+    const p = products.find(x => x.id === w.prodId);
+    return '<tr><td><span class="prod-name">'+(p?p.name:'Удалён')+'</span></td><td style="text-align:center;font-weight:600;color:#dc3545">'+w.qty+'</td><td>'+(w.qty*(p?p.price||0:0)).toLocaleString()+' ₽</td><td style="color:var(--muted)">'+(reasons[w.reason]||w.reason)+'</td><td style="color:var(--muted);font-size:.8rem">'+w.date+'</td></tr>';
+  }).join('');
+}
+
+// === ИНВЕНТАРИЗАЦИЯ ===
+let invMode = false;
+function startInventory(){
+  invMode = true;
+  renderInventoryPage();
+}
+function renderInventoryPage(){
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  const invs = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  const tbody = document.getElementById('inventoryTableBody');
+  // Собираем остатки
+  const stockMap = {};
+  supplies.forEach(sp => { if(!stockMap[sp.prodId]) stockMap[sp.prodId] = 0; stockMap[sp.prodId] += sp.qty||0; });
+  const items = products.filter(p => stockMap[p.id]);
+  if(!items.length){
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">📋</div><p>Нет товаров для инвентаризации</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(p => {
+    const expected = stockMap[p.id]||0;
+    const inv = invs.find(x => x.prodId === p.id);
+    const fact = inv ? inv.fact : (invMode ? 0 : '—');
+    const diff = typeof fact === 'number' ? fact - expected : 0;
+    const hasDiff = invMode && typeof fact === 'number';
+    return '<tr'+(hasDiff&&diff!==0?' style="background:#fff3cd"':'')+'>' +
+      '<td><span class="prod-name">'+p.name+'</span></td>' +
+      '<td style="text-align:center;font-weight:600">'+expected+'</td>' +
+      '<td style="text-align:center;font-weight:600">'+(invMode?'<a onclick="editInvFact('+p.id+',''+p.name+'','+expected+')" style="cursor:pointer;color:var(--primary);text-decoration:underline">'+(typeof fact==='number'?fact:'ввести')+'</a>':'—')+'</td>' +
+      '<td style="text-align:center;font-weight:'+(diff!==0?'700':'400')+';color:'+(diff<0?'#dc3545':diff>0?'#16a34a':'var(--muted)')+'">'+(hasDiff?(diff>0?'+':'')+diff:'—')+'</td>' +
+      '<td style="text-align:right">'+(invMode?'<button class="act-btn" onclick="clearInv('+p.id+')" style="color:var(--muted);font-size:.7rem">сброс</button>':'')+'</td>' +
+    '</tr>';
+  }).join('');
+}
+function editInvFact(prodId, name, expected){
+  document.getElementById('invEditId').value = prodId;
+  document.getElementById('invFact').value = expected;
+  document.getElementById('invModalSub').textContent = name+': учтено '+expected+' шт';
+  document.getElementById('invModal').classList.add('active');
+}
+function closeInvModal(){
+  document.getElementById('invModal').classList.remove('active');
+}
+function saveInvFact(e){
+  e.preventDefault();
+  const prodId = parseInt(document.getElementById('invEditId').value);
+  const fact = parseInt(document.getElementById('invFact').value) || 0;
+  let list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  const idx = list.findIndex(x => x.prodId === prodId);
+  if(idx>=0) list[idx].fact = fact; else list.push({prodId, fact});
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  closeInvModal();
+  renderInventoryPage();
+}
+function clearInv(prodId){
+  let list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  list = list.filter(x => x.prodId !== prodId);
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  renderInventoryPage();
+}
+
+// === СКЛАДЫ ===
+function openWarehouseModal(){
+  document.getElementById('warehouseModal').classList.add('active');
+}
+function closeWarehouseModal(){
+  document.getElementById('warehouseModal').classList.remove('active');
+  document.getElementById('warehouseForm').reset();
+  document.getElementById('editWarehouseId').value = '';
+}
+function saveWarehouse(e){
+  e.preventDefault();
+  const editId = document.getElementById('editWarehouseId').value;
+  const w = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('whName').value.trim(), address: document.getElementById('whAddress').value.trim()};
+  if(!w.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('warehouses88') || '[]');
+  const idx = list.findIndex(x => x.id === w.id);
+  if(idx>=0) list[idx]=w; else list.unshift(w);
+  localStorage.setItem('warehouses88', JSON.stringify(list));
+  closeWarehouseModal();
+  renderWarehousesPage();
+}
+function editWarehouse(id){
+  const list = JSON.parse(localStorage.getItem('warehouses88') || '[]');
+  const w = list.find(x => x.id === id);
+  if(!w) return;
+  document.getElementById('editWarehouseId').value = w.id;
+  document.getElementById('whName').value = w.name;
+  document.getElementById('whAddress').value = w.address||'';
+  document.getElementById('whModalTitle').textContent = 'Редактировать склад';
+  document.getElementById('warehouseModal').classList.add('active');
+}
+function deleteWarehouse(id){
+  if(!confirm('Удалить склад?')) return;
+  let list = JSON.parse(localStorage.getItem('warehouses88') || '[]');
+  list = list.filter(w => w.id !== id);
+  localStorage.setItem('warehouses88', JSON.stringify(list));
+  renderWarehousesPage();
+}
+function renderWarehousesPage(){
+  const list = JSON.parse(localStorage.getItem('warehouses88') || '[]');
+  const tbody = document.getElementById('warehouseTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🏭</div><p>Складов пока нет</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(w => '<tr><td><span class="prod-name">'+w.name+'</span></td><td style="color:var(--muted)">'+(w.address||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editWarehouse('+w.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteWarehouse('+w.id+')">&#10005;</button></td></tr>').join('');
+}
+
+// === КОРЗИНА ===
+function renderTrashPage(){
+  const products = JSON.parse(localStorage.getItem('products88') || '[]').filter(p => p.hidden);
+  const tbody = document.getElementById('trashTableBody');
+  if(!products.length){
+    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🗑️</div><p>Корзина пуста</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = products.map(p => '<tr><td><span class="prod-name">'+p.name+'</span>'+(p.sku?'<br><span class="prod-sku">'+p.sku+'</span>':'')+'</td><td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td><td style="text-align:right"><button class="act-btn" onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button> <button class="act-btn act-del" onclick="deleteProduct('+p.id+')">Удалить</button></td></tr>').join('');
+}
+
 
 // === КАТЕГОРИИ ===
 function openCatModal(type){
