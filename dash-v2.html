@@ -625,14 +625,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Категория</label>
-          <select id="servCat">
-            <option value="repair">Ремонт</option>
-            <option value="cleaning">Клининг</option>
-            <option value="delivery">Доставка</option>
-            <option value="consult">Консультация</option>
-            <option value="install">Монтаж</option>
-            <option value="other">Прочее</option>
-          </select>
+          <select id="servCat"></select>
         </div>
         <div class="form-group">
           <label>Цена (₽)</label>
@@ -733,7 +726,33 @@ function setFilter(filter){
   renderProductsPage();
 }
 
+// Заполняем select категориями из БД
+function fillCatSelect(selectId, storageKey){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const cats = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  sel.innerHTML = cats.map(c => '<option value="'+c.name+'">'+c.name+'</option>').join('');
+  if(!cats.length) sel.innerHTML = '<option value="">— нет категорий —</option>';
+}
+
+// Миграция старых категорий (ключи → русские названия)
+function migrateOldCats(){
+  const map = {material:'Материалы',tool:'Инструменты',service:'Услуги',equipment:'Оборудование',other:'Прочее',repair:'Ремонт',cleaning:'Клининг',delivery:'Доставка',consult:'Консультация',install:'Монтаж'};
+  ['products88','services88'].forEach(key => {
+    let items = JSON.parse(localStorage.getItem(key) || '[]');
+    let changed = false;
+    items = items.map(p => {
+      if(p.cat && map[p.cat]){ p.cat = map[p.cat]; changed = true; }
+      return p;
+    });
+    if(changed) localStorage.setItem(key, JSON.stringify(items));
+  });
+}
+
+migrateOldCats();
+
 function openProductModal(){
+  fillCatSelect('prodCat', 'prodCats88');
   document.getElementById('productModal').classList.add('active');
 }
 function closeProductModal(){
@@ -915,6 +934,7 @@ function setServiceFilter(f){
   renderServicesPage();
 }
 function openServiceModal(){
+  fillCatSelect('servCat', 'svcCats88');
   document.getElementById('serviceModal').classList.add('active');
 }
 function closeServiceModal(){
