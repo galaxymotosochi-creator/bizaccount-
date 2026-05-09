@@ -1155,7 +1155,24 @@ function deleteCategory(type, id){
 function renderCatPage(type){
   const key = type === 'product' ? 'prodCats88' : 'svcCats88';
   const tblId = type === 'product' ? 'prodCatTableBody' : 'svcCatTableBody';
-  const lists = JSON.parse(localStorage.getItem(key) || '[]');
+  const itemsKey = type === 'product' ? 'products88' : 'services88';
+  const catField = type === 'product' ? 'prodCat' : 'servCat';
+  const CAT_MAP = type === 'product' ? CAT_LABELS : SVC_CAT;
+  
+  let lists = JSON.parse(localStorage.getItem(key) || '[]');
+  const items = JSON.parse(localStorage.getItem(itemsKey) || '[]');
+  
+  // Собираем уникальные категории из товаров/услуг
+  const usedCats = [...new Set(items.map(i => i.cat).filter(Boolean))];
+  let changed = false;
+  usedCats.forEach(c => {
+    if(!lists.find(x => x.name === (CAT_MAP[c]||c))){
+      lists.push({id: Date.now() + Math.random(), name: CAT_MAP[c]||c});
+      changed = true;
+    }
+  });
+  if(changed) localStorage.setItem(key, JSON.stringify(lists));
+
   const tbody = document.getElementById(tblId);
   if(!lists.length){
     tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
