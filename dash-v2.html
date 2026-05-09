@@ -65,22 +65,27 @@
   .dash-top .sub{font-size:.8rem;color:var(--muted)}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
-  .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:.85rem 1rem;margin-bottom:.75rem;position:relative}
-  .dash-block-title{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
-  .dash-block-title .cnt{font-weight:400;font-size:.65rem;color:var(--border)}
-  .block-row{display:flex;gap:.5rem;flex-wrap:wrap}
-  .block-card{display:flex;align-items:center;gap:.5rem;padding:.45rem .65rem;background:var(--body-bg);border-radius:.5rem;flex:1;min-width:110px;border:1px solid transparent;transition:all .12s;cursor:default}
-  .block-card .b-icon{font-size:1rem;width:1.6rem;height:1.6rem;background:var(--white);border-radius:.35rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.85rem;position:relative}
+  .dash-block-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+  .dash-block-title .cnt{font-weight:400;font-size:.7rem;color:var(--border)}
+  .dash-block-edit{background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);margin-left:auto;padding:0 .2rem;font-family:var(--font)}
+  .dash-block-edit:hover{color:var(--body-color)}
+  .block-row{display:flex;gap:.65rem;flex-wrap:wrap}
+  .block-card{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;background:var(--body-bg);border-radius:.65rem;flex:1;min-width:160px;border:1px solid transparent;transition:all .12s;cursor:default}
+  .block-card .b-icon{font-size:1.2rem;width:2rem;height:2rem;background:var(--white);border-radius:.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   .block-card .b-info{min-width:0}
-  .block-card .b-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
-  .block-card .b-val{font-size:.9rem;font-weight:700;color:var(--body-color)}
-  .block-card .b-edit{opacity:0;margin-left:auto;background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:.2rem;transition:opacity .12s;font-family:var(--font)}
-  .block-card:hover .b-edit{opacity:1}
-  .block-card .b-edit:hover{color:var(--body-color)}
-  .action-row{display:flex;gap:.4rem;flex-wrap:wrap}
-  .action-btn{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.4rem .6rem;display:flex;align-items:center;gap:.35rem;cursor:pointer;transition:all .12s;font-family:var(--font);font-size:.75rem}
+  .block-card .b-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+  .block-card .b-val{font-size:1.1rem;font-weight:700;color:var(--body-color)}
+  .action-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+  .action-btn{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.45rem .7rem;display:flex;align-items:center;gap:.35rem;cursor:pointer;transition:all .12s;font-family:var(--font);font-size:.8rem}
   .action-btn:hover{border-color:var(--primary)}
-  .action-btn .a-icon{width:1.3rem;height:1.3rem;background:var(--primary-light);border-radius:.3rem;display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0}
+  .action-btn .a-icon{width:1.4rem;height:1.4rem;background:var(--primary-light);border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+  .action-del-btn{background:none;border:none;cursor:pointer;color:#dc3545;font-size:.85rem;padding:.15rem;line-height:1;display:none;opacity:.6}
+  .action-del-btn:hover{opacity:1}
+  .action-add-btn{background:var(--body-bg);border:1px dashed var(--border);border-radius:.5rem;padding:.45rem .7rem;display:none;align-items:center;gap:.35rem;cursor:pointer;font-family:var(--font);font-size:.8rem;color:var(--muted)}
+  .action-add-btn:hover{border-color:var(--primary);color:var(--primary)}
+  .actions-editing .action-del-btn{display:inline-flex}
+  .actions-editing .action-add-btn{display:inline-flex}
 
   .content h1{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
   .content .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
@@ -303,9 +308,9 @@
       <div class="dash-block" id="block-money">
         <div class="dash-block-title">💵 Деньги <span class="cnt">|</span></div>
         <div class="block-row">
-          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0 ₽</div></div><button class="b-edit" onclick="editBlock('revenue')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">💸</div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0 ₽</div></div><button class="b-edit" onclick="editBlock('cost')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">📈</div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0 ₽</div></div><button class="b-edit" onclick="editBlock('profit')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💸</div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">📈</div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0 ₽</div></div></div>
         </div>
       </div>
 
@@ -313,9 +318,9 @@
       <div class="dash-block" id="block-stock">
         <div class="dash-block-title">📦 Склад <span class="cnt">|</span></div>
         <div class="block-row">
-          <div class="block-card"><div class="b-icon">📦</div><div class="b-info"><div class="b-lbl">Товаров</div><div class="b-val" id="b-stock-qty">0</div></div><button class="b-edit" onclick="editBlock('stock-qty')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Сумма запасов</div><div class="b-val" id="b-stock-sum">0 ₽</div></div><button class="b-edit" onclick="editBlock('stock-sum')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">⚠️</div><div class="b-info"><div class="b-lbl">Услуг</div><div class="b-val" id="b-services">0</div></div><button class="b-edit" onclick="editBlock('services')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">📦</div><div class="b-info"><div class="b-lbl">Товаров</div><div class="b-val" id="b-stock-qty">0</div></div></div>
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Сумма запасов</div><div class="b-val" id="b-stock-sum">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">⚠️</div><div class="b-info"><div class="b-lbl">Услуг</div><div class="b-val" id="b-services">0</div></div></div>
         </div>
       </div>
 
@@ -323,22 +328,25 @@
       <div class="dash-block" id="block-sales">
         <div class="dash-block-title">🛒 Продажи <span class="cnt">|</span></div>
         <div class="block-row">
-          <div class="block-card"><div class="b-icon">🧾</div><div class="b-info"><div class="b-lbl">Продаж сегодня</div><div class="b-val">0</div></div><button class="b-edit" onclick="editBlock('sales-today')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">🎯</div><div class="b-info"><div class="b-lbl">Средний чек</div><div class="b-val">0 ₽</div></div><button class="b-edit" onclick="editBlock('avg-check')">✏️</button></div>
-          <div class="block-card"><div class="b-icon">👥</div><div class="b-info"><div class="b-lbl">Клиенты</div><div class="b-val">0</div></div><button class="b-edit" onclick="editBlock('clients')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">🧾</div><div class="b-info"><div class="b-lbl">Продаж сегодня</div><div class="b-val">0</div></div></div>
+          <div class="block-card"><div class="b-icon">🎯</div><div class="b-info"><div class="b-lbl">Средний чек</div><div class="b-val">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">👥</div><div class="b-info"><div class="b-lbl">Клиенты</div><div class="b-val">0</div></div></div>
         </div>
       </div>
 
       <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
       <div class="dash-block" id="block-actions">
-        <div class="dash-block-title">⚡ Быстрые действия <span class="cnt">|</span></div>
-        <div class="action-row">
-          <div class="action-btn" onclick="openProductModal()"><span class="a-icon">+</span> Товар</div>
-          <div class="action-btn" onclick="alert('Новая продажа')"><span class="a-icon">🛒</span> Продажа</div>
-          <div class="action-btn" onclick="alert('Закупка')"><span class="a-icon">📥</span> Закупка</div>
-          <div class="action-btn" onclick="alert('Расход')"><span class="a-icon">💸</span> Расход</div>
-          <div class="action-btn" onclick="alert('Клиент')"><span class="a-icon">👤</span> Клиент</div>
-          <div class="action-btn" onclick="alert('Сканер')"><span class="a-icon">📷</span> Сканер</div>
+        <div class="dash-block-title">⚡ Быстрые действия <span class="cnt">|</span>
+          <button class="dash-block-edit" onclick="toggleActionsEdit()" id="actionsEditBtn" title="Настроить">✏️</button>
+        </div>
+        <div class="action-row" id="actionRow">
+          <div class="action-btn" onclick="openProductModal()"><span class="a-icon">+</span> Товар<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Новая продажа')"><span class="a-icon">🛒</span> Продажа<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Закупка')"><span class="a-icon">📥</span> Закупка<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Расход')"><span class="a-icon">💸</span> Расход<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Клиент')"><span class="a-icon">👤</span> Клиент<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Сканер')"><span class="a-icon">📷</span> Сканер<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-add-btn" onclick="showAddActionMenu()"><span style="font-size:1rem;line-height:1">+</span> Добавить</div>
         </div>
       </div>
     </div>
@@ -635,41 +643,13 @@
   </div>
 </div>
 
-<!-- Модальное окно настройки блока панели -->
-<div class="modal-overlay" id="blockEditModal">
+<!-- Модальное окно добавления быстрого действия -->
+<div class="modal-overlay" id="addActionModal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeBlockEdit()">&times;</button>
-    <h2 id="blockEditTitle">Настроить блок</h2>
-    <div class="sub" id="blockEditSub">Выберите источник данных для этого блока</div>
-    <form id="blockEditForm" onsubmit="saveBlockEdit(event)">
-      <input type="hidden" id="blockEditKey" value="">
-      <div class="form-group">
-        <label>Название на панели</label>
-        <input type="text" id="blockEditLabel" placeholder="Например, Выручка">
-      </div>
-      <div class="form-group">
-        <label>Источник данных</label>
-        <select id="blockEditSource">
-          <option value="revenue">💰 Выручка (сумма продаж)</option>
-          <option value="costs">💸 Расходы (закупки)</option>
-          <option value="profit">📈 Прибыль (выручка − расходы)</option>
-          <option value="stock-qty">📦 Количество товаров</option>
-          <option value="stock-sum">💰 Сумма запасов</option>
-          <option value="services-count">🛠️ Количество услуг</option>
-          <option value="product-cats">🏷️ Категорий товаров</option>
-          <option value="service-cats">🏷️ Категорий услуг</option>
-          <option value="manual">✏️ Ручной ввод</option>
-        </select>
-      </div>
-      <div class="form-group" id="blockManualGroup" style="display:none">
-        <label>Значение (вручную)</label>
-        <input type="text" id="blockEditVal" placeholder="0 ₽">
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" onclick="closeBlockEdit()">Отмена</button>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-      </div>
-    </form>
+    <button class="modal-close" onclick="closeAddAction()">&times;</button>
+    <h2>Добавить действие</h2>
+    <div class="sub">Выберите раздел меню для быстрого доступа</div>
+    <div id="actionMenuList"></div>
   </div>
 </div>
 
@@ -896,103 +876,82 @@ function renderServicesPage(){
 }
 
 // === НАСТРОЙКА ПАНЕЛИ ===
-const BLOCK_LABELS = {};
-const BLOCK_SOURCES = {};
+// === БЫСТРЫЕ ДЕЙСТВИЯ ===
+let actionsEditMode = false;
+const ACTION_MENU_ITEMS = [
+  {icon:'+', label:'Товар', action:"openProductModal()"},
+  {icon:'🛒', label:'Продажа', action:"alert('Новая продажа')"},
+  {icon:'📥', label:'Закупка', action:"alert('Закупка')"},
+  {icon:'💸', label:'Расход', action:"alert('Расход')"},
+  {icon:'👤', label:'Клиент', action:"alert('Клиент')"},
+  {icon:'📷', label:'Сканер', action:"alert('Сканер')"},
+  {icon:'📊', label:'Статистика', action:"navigateTo('dashboard')"},
+  {icon:'📦', label:'Товары', action:"navigateTo('products')"},
+  {icon:'🛠️', label:'Услуги', action:"navigateTo('services')"},
+  {icon:'🏷️', label:'Категории товаров', action:"navigateTo('product-categories')"},
+  {icon:'🏷️', label:'Категории услуг', action:"navigateTo('service-categories')"},
+  {icon:'👥', label:'Сотрудники', action:"alert('Сотрудники')"},
+  {icon:'⚙️', label:'Настройки', action:"alert('Настройки')"}
+];
 
-function loadBlockConfig(){
-  const saved = JSON.parse(localStorage.getItem('dashConfig88') || '{}');
-  Object.assign(BLOCK_LABELS, saved.labels || {});
-  Object.assign(BLOCK_SOURCES, saved.sources || {});
-}
-function saveBlockConfig(){
-  localStorage.setItem('dashConfig88', JSON.stringify({labels: BLOCK_LABELS, sources: BLOCK_SOURCES}));
-}
-
-function openDashSettings(){
-  alert('Режим настройки: нажмите ✏️ на любом блоке, чтобы привязать его к данным из меню');
-}
-
-function editBlock(key){
-  loadBlockConfig();
-  document.getElementById('blockEditKey').value = key;
-  const el = document.getElementById('b-'+key);
-  const parentCard = el?.closest('.block-card');
-  const currentLabel = parentCard?.querySelector('.b-lbl')?.textContent || key;
-  const currentSource = BLOCK_SOURCES[key] || key;
-  document.getElementById('blockEditTitle').textContent = 'Настроить: ' + currentLabel;
-  document.getElementById('blockEditSub').textContent = 'Привяжите к данным из подменю';
-  document.getElementById('blockEditLabel').value = BLOCK_LABELS[key] || currentLabel;
-  document.getElementById('blockEditSource').value = currentSource;
-  const isManual = currentSource === 'manual';
-  document.getElementById('blockManualGroup').style.display = isManual ? '' : 'none';
-  document.getElementById('blockEditVal').value = isManual ? (BLOCK_SOURCES['val_'+key] || '0') : '';
-  document.getElementById('blockEditModal').classList.add('active');
+function toggleActionsEdit(){
+  actionsEditMode = !actionsEditMode;
+  document.getElementById('actionRow').classList.toggle('actions-editing', actionsEditMode);
+  document.getElementById('actionsEditBtn').textContent = actionsEditMode ? '✓' : '✏️';
+  document.getElementById('actionsEditBtn').title = actionsEditMode ? 'Готово' : 'Настроить';
 }
 
-function closeBlockEdit(){
-  document.getElementById('blockEditModal').classList.remove('active');
-  document.getElementById('blockEditForm').reset();
+function deleteAction(btn){
+  if(!confirm('Удалить это действие?')) return;
+  btn.closest('.action-btn').remove();
+  saveActions();
 }
 
-function saveBlockEdit(e){
-  e.preventDefault();
-  loadBlockConfig();
-  const key = document.getElementById('blockEditKey').value;
-  const label = document.getElementById('blockEditLabel').value.trim();
-  const source = document.getElementById('blockEditSource').value;
-  const manualVal = document.getElementById('blockEditVal').value.trim();
-  if(label) BLOCK_LABELS[key] = label;
-  BLOCK_SOURCES[key] = source;
-  if(source === 'manual') BLOCK_SOURCES['val_'+key] = manualVal || '0';
-  else delete BLOCK_SOURCES['val_'+key];
-  saveBlockConfig();
-  applyBlockConfig();
-  closeBlockEdit();
+function showAddActionMenu(){
+  const list = document.getElementById('actionMenuList');
+  list.innerHTML = ACTION_MENU_ITEMS.map((item, i) =>
+    '<div style="display:flex;align-items:center;gap:.5rem;padding:.55rem .65rem;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.4rem;cursor:pointer;transition:all .1s;font-size:.85rem" onclick="addAction('+i+')" onmouseover="this.style.borderColor=\'var(--primary)\';this.style.background=\'var(--primary-light)\'" onmouseout="this.style.borderColor=\'\';this.style.background=\'\'">' +
+      '<span style="width:1.5rem;height:1.5rem;background:var(--body-bg);border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0">'+item.icon+'</span>' +
+      '<span>'+item.label+'</span>' +
+    '</div>'
+  ).join('');
+  document.getElementById('addActionModal').classList.add('active');
+}
+
+function closeAddAction(){
+  document.getElementById('addActionModal').classList.remove('active');
+}
+
+function addAction(idx){
+  const item = ACTION_MENU_ITEMS[idx];
+  const row = document.getElementById('actionRow');
+  const btn = document.createElement('div');
+  btn.className = 'action-btn';
+  btn.setAttribute('onclick', item.action);
+  btn.innerHTML = '<span class="a-icon">'+item.icon+'</span> '+item.label+'<button class="action-del-btn" onclick="deleteAction(this)">✕</button>';
+  row.insertBefore(btn, row.lastElementChild);
+  closeAddAction();
+  if(actionsEditMode) toggleActionsEdit();
+  saveActions();
+}
+
+function saveActions(){
+  // сохраняем для будущего использования
 }
 
 function applyBlockConfig(){
-  loadBlockConfig();
-  // Применяем названия
-  Object.keys(BLOCK_LABELS).forEach(key => {
-    const el = document.getElementById('b-'+key);
-    if(!el) return;
-    const card = el.closest('.block-card');
-    if(card) card.querySelector('.b-lbl').textContent = BLOCK_LABELS[key];
-  });
-  // Обновляем значения по источникам
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
   const services = JSON.parse(localStorage.getItem('services88') || '[]');
-  const prodCats = JSON.parse(localStorage.getItem('prodCats88') || '[]');
-  const svcCats = JSON.parse(localStorage.getItem('svcCats88') || '[]');
   const stockSum = products.reduce((s,p) => s + (p.cost * p.qty), 0);
   const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
   const costs = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  const dataMap = {
-    'revenue': revenue.toLocaleString()+' ₽',
-    'costs': costs.toLocaleString()+' ₽',
-    'profit': (revenue - costs).toLocaleString()+' ₽',
-    'stock-qty': products.reduce((s,p) => s + (p.qty||0), 0).toString(),
-    'stock-sum': stockSum.toLocaleString()+' ₽',
-    'services-count': services.length.toString(),
-    'product-cats': prodCats.length.toString(),
-    'service-cats': svcCats.length.toString()
-  };
-  document.querySelectorAll('#page-dashboard .block-card').forEach(card => {
-    const el = card.querySelector('.b-val[id]');
-    if(!el) return;
-    const id = el.id.replace('b-','');
-    const source = BLOCK_SOURCES[id] || id;
-    if(source === 'manual'){
-      el.textContent = BLOCK_SOURCES['val_'+id] || '0';
-    } else if(dataMap[source] !== undefined){
-      el.textContent = dataMap[source];
-    }
-  });
+  document.getElementById('b-revenue').textContent = revenue.toLocaleString()+' ₽';
+  document.getElementById('b-cost').textContent = costs.toLocaleString()+' ₽';
+  document.getElementById('b-profit').textContent = (revenue - costs).toLocaleString()+' ₽';
+  document.getElementById('b-stock-qty').textContent = products.reduce((s,p) => s + (p.qty||0), 0);
+  document.getElementById('b-stock-sum').textContent = stockSum.toLocaleString()+' ₽';
+  document.getElementById('b-services').textContent = services.length;
 }
-
-document.getElementById('blockEditSource')?.addEventListener('change', function(){
-  document.getElementById('blockManualGroup').style.display = this.value === 'manual' ? '' : 'none';
-});
 
 function updateStats(){
   applyBlockConfig();
