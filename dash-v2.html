@@ -640,15 +640,29 @@
   <div class="modal-box">
     <button class="modal-close" onclick="closeBlockEdit()">&times;</button>
     <h2 id="blockEditTitle">Настроить блок</h2>
-    <div class="sub" id="blockEditSub">Измените отображение блока</div>
+    <div class="sub" id="blockEditSub">Выберите источник данных для этого блока</div>
     <form id="blockEditForm" onsubmit="saveBlockEdit(event)">
       <input type="hidden" id="blockEditKey" value="">
       <div class="form-group">
-        <label>Название</label>
-        <input type="text" id="blockEditLabel" placeholder="Название блока">
+        <label>Название на панели</label>
+        <input type="text" id="blockEditLabel" placeholder="Например, Выручка">
       </div>
       <div class="form-group">
-        <label>Значение (можно ввести вручную)</label>
+        <label>Источник данных</label>
+        <select id="blockEditSource">
+          <option value="revenue">💰 Выручка (сумма продаж)</option>
+          <option value="costs">💸 Расходы (закупки)</option>
+          <option value="profit">📈 Прибыль (выручка − расходы)</option>
+          <option value="stock-qty">📦 Количество товаров</option>
+          <option value="stock-sum">💰 Сумма запасов</option>
+          <option value="services-count">🛠️ Количество услуг</option>
+          <option value="product-cats">🏷️ Категорий товаров</option>
+          <option value="service-cats">🏷️ Категорий услуг</option>
+          <option value="manual">✏️ Ручной ввод</option>
+        </select>
+      </div>
+      <div class="form-group" id="blockManualGroup" style="display:none">
+        <label>Значение (вручную)</label>
         <input type="text" id="blockEditVal" placeholder="0 ₽">
       </div>
       <div class="modal-actions">
@@ -883,32 +897,35 @@ function renderServicesPage(){
 
 // === НАСТРОЙКА ПАНЕЛИ ===
 const BLOCK_LABELS = {};
-const BLOCK_OVERRIDES = {};
+const BLOCK_SOURCES = {};
 
-function loadBlockOverrides(){
-  const saved = JSON.parse(localStorage.getItem('dashOverrides88') || '{}');
+function loadBlockConfig(){
+  const saved = JSON.parse(localStorage.getItem('dashConfig88') || '{}');
   Object.assign(BLOCK_LABELS, saved.labels || {});
-  Object.assign(BLOCK_OVERRIDES, saved.vals || {});
+  Object.assign(BLOCK_SOURCES, saved.sources || {});
 }
-function saveBlockOverrides(){
-  localStorage.setItem('dashOverrides88', JSON.stringify({labels: BLOCK_LABELS, vals: BLOCK_OVERRIDES}));
+function saveBlockConfig(){
+  localStorage.setItem('dashConfig88', JSON.stringify({labels: BLOCK_LABELS, sources: BLOCK_SOURCES}));
 }
 
 function openDashSettings(){
-  alert('Режим настройки: нажмите ✏️ на любом блоке, чтобы изменить название или значение');
+  alert('Режим настройки: нажмите ✏️ на любом блоке, чтобы привязать его к данным из меню');
 }
 
 function editBlock(key){
-  loadBlockOverrides();
+  loadBlockConfig();
   document.getElementById('blockEditKey').value = key;
   const el = document.getElementById('b-'+key);
   const parentCard = el?.closest('.block-card');
   const currentLabel = parentCard?.querySelector('.b-lbl')?.textContent || key;
-  const currentVal = BLOCK_OVERRIDES[key] || el?.textContent || '0';
+  const currentSource = BLOCK_SOURCES[key] || key;
   document.getElementById('blockEditTitle').textContent = 'Настроить: ' + currentLabel;
-  document.getElementById('blockEditSub').textContent = 'Измените название и/или значение';
+  document.getElementById('blockEditSub').textContent = 'Привяжите к данным из подменю';
   document.getElementById('blockEditLabel').value = BLOCK_LABELS[key] || currentLabel;
-  document.getElementById('blockEditVal').value = currentVal;
+  document.getElementById('blockEditSource').value = currentSource;
+  const isManual = currentSource === 'manual';
+  document.getElementById('blockManualGroup').style.display = isManual ? '' : 'none';
+  document.getElementById('blockEditVal').value = isManual ? (BLOCK_SOURCES['val_'+key] || '0') : '';
   document.getElementById('blockEditModal').classList.add('active');
 }
 
@@ -919,45 +936,66 @@ function closeBlockEdit(){
 
 function saveBlockEdit(e){
   e.preventDefault();
-  loadBlockOverrides();
+  loadBlockConfig();
   const key = document.getElementById('blockEditKey').value;
   const label = document.getElementById('blockEditLabel').value.trim();
-  const val = document.getElementById('blockEditVal').value.trim();
+  const source = document.getElementById('blockEditSource').value;
+  const manualVal = document.getElementById('blockEditVal').value.trim();
   if(label) BLOCK_LABELS[key] = label;
-  if(val) BLOCK_OVERRIDES[key] = val;
-  saveBlockOverrides();
-  applyBlockOverrides();
+  BLOCK_SOURCES[key] = source;
+  if(source === 'manual') BLOCK_SOURCES['val_'+key] = manualVal || '0';
+  else delete BLOCK_SOURCES['val_'+key];
+  saveBlockConfig();
+  applyBlockConfig();
   closeBlockEdit();
 }
 
-function applyBlockOverrides(){
-  loadBlockOverrides();
+function applyBlockConfig(){
+  loadBlockConfig();
+  // Применяем названия
   Object.keys(BLOCK_LABELS).forEach(key => {
     const el = document.getElementById('b-'+key);
     if(!el) return;
     const card = el.closest('.block-card');
     if(card) card.querySelector('.b-lbl').textContent = BLOCK_LABELS[key];
   });
-  Object.keys(BLOCK_OVERRIDES).forEach(key => {
-    const el = document.getElementById('b-'+key);
-    if(el) el.textContent = BLOCK_OVERRIDES[key];
+  // Обновляем значения по источникам
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const services = JSON.parse(localStorage.getItem('services88') || '[]');
+  const prodCats = JSON.parse(localStorage.getItem('prodCats88') || '[]');
+  const svcCats = JSON.parse(localStorage.getItem('svcCats88') || '[]');
+  const stockSum = products.reduce((s,p) => s + (p.cost * p.qty), 0);
+  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
+  const costs = products.reduce((s,p) => s + (p.cost * p.qty), 0);
+  const dataMap = {
+    'revenue': revenue.toLocaleString()+' ₽',
+    'costs': costs.toLocaleString()+' ₽',
+    'profit': (revenue - costs).toLocaleString()+' ₽',
+    'stock-qty': products.reduce((s,p) => s + (p.qty||0), 0).toString(),
+    'stock-sum': stockSum.toLocaleString()+' ₽',
+    'services-count': services.length.toString(),
+    'product-cats': prodCats.length.toString(),
+    'service-cats': svcCats.length.toString()
+  };
+  document.querySelectorAll('#page-dashboard .block-card').forEach(card => {
+    const el = card.querySelector('.b-val[id]');
+    if(!el) return;
+    const id = el.id.replace('b-','');
+    const source = BLOCK_SOURCES[id] || id;
+    if(source === 'manual'){
+      el.textContent = BLOCK_SOURCES['val_'+id] || '0';
+    } else if(dataMap[source] !== undefined){
+      el.textContent = dataMap[source];
+    }
   });
 }
 
+document.getElementById('blockEditSource')?.addEventListener('change', function(){
+  document.getElementById('blockManualGroup').style.display = this.value === 'manual' ? '' : 'none';
+});
+
 function updateStats(){
-  const products = JSON.parse(localStorage.getItem('products88') || '[]');
-  const services = JSON.parse(localStorage.getItem('services88') || '[]');
-  const totalItems = products.reduce((s,p) => s + (p.qty||0), 0);
-  const stockSum = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
-  const cost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  document.getElementById('b-revenue').textContent = revenue.toLocaleString()+' ₽';
-  document.getElementById('b-cost').textContent = cost.toLocaleString()+' ₽';
-  document.getElementById('b-profit').textContent = (revenue - cost).toLocaleString()+' ₽';
-  document.getElementById('b-stock-qty').textContent = totalItems;
-  document.getElementById('b-stock-sum').textContent = stockSum.toLocaleString()+' ₽';
-  document.getElementById('b-services').textContent = services.length;
-  applyBlockOverrides();
+  applyBlockConfig();
 }
 
 // === КАТЕГОРИИ ===
