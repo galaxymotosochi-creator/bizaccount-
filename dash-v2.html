@@ -194,7 +194,7 @@
     .qcard{padding:.7rem .8rem;font-size:.8rem}
     .product-table table{font-size:.8rem}
     .product-table th,
-    .product-table td{padding:.5rem .5rem}
+    .product-table td{padding:.35rem .3rem}
     .search-bar input{max-width:100%}
     .page-header{flex-direction:column;align-items:flex-start}
     .page-actions{width:100%}
@@ -535,8 +535,8 @@
 <div class="modal-overlay" id="productModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeProductModal()">&times;</button>
-    <h2>Добавить товар / услугу</h2>
-    <div class="sub">Заполните поля и нажмите Сохранить</div>
+    <h2 id="modalTitle">Добавить товар / услугу</h2>
+    <div class="sub" id="modalSub">Заполните поля и нажмите Сохранить</div>
     <form id="productForm" onsubmit="saveProduct(event)">
       <input type="hidden" id="editProductId" value="">
       <div class="form-group">
