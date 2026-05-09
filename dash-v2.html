@@ -506,6 +506,61 @@
       </div>
     </div>
 
+    <!-- ПОСТАВЩИКИ -->
+    <div class="page-section" id="page-suppliers">
+      <div class="page-header">
+        <div>
+          <h1>Поставщики</h1>
+          <div class="sub">Управляйте списком поставщиков</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openSupplierModal()">+ Добавить</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:35%">Название</th>
+              <th style="width:25%">Контакт</th>
+              <th style="width:25%">Телефон</th>
+              <th style="width:15%"></th>
+            </tr>
+          </thead>
+          <tbody id="supplierTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ПОСТАВКИ -->
+    <div class="page-section" id="page-supplies">
+      <div class="page-header">
+        <div>
+          <h1>Поставки</h1>
+          <div class="sub">Оприходование товаров на склад</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openSupplyModal()">+ Новая поставка</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:30%">Товар</th>
+              <th style="width:20%">Поставщик</th>
+              <th style="width:14%">Кол-во</th>
+              <th style="width:18%">Цена закуп.</th>
+              <th style="width:18%">Сумма</th>
+            </tr>
+          </thead>
+          <tbody id="supplyTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- КАТЕГОРИИ ТОВАРОВ -->
     <div class="page-section" id="page-product-categories">
       <div class="page-header">
@@ -660,6 +715,75 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeServiceModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно добавления поставщика -->
+<div class="modal-overlay" id="supplierModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSupplierModal()">&times;</button>
+    <h2 id="supplierModalTitle">Добавить поставщика</h2>
+    <div class="sub">Введите данные поставщика</div>
+    <form id="supplierForm" onsubmit="saveSupplier(event)">
+      <input type="hidden" id="editSupplierId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="supName" placeholder="Например, ООО СтройМаркет" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Контактное лицо</label>
+          <input type="text" id="supContact" placeholder="Иван Иванов">
+        </div>
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="text" id="supPhone" placeholder="+7 (999) 123-45-67">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeSupplierModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно новой поставки -->
+<div class="modal-overlay" id="supplyModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeSupplyModal()">&times;</button>
+    <h2>Новая поставка</h2>
+    <div class="sub">Оприходуйте товар на склад</div>
+    <form id="supplyForm" onsubmit="saveSupply(event)">
+      <div class="form-group">
+        <label>Товар *</label>
+        <select id="supProduct" required><option value="">— выберите товар —</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Поставщик *</label>
+          <select id="supSupplier" required><option value="">— выберите —</option></select>
+        </div>
+        <div class="form-group">
+          <label>Количество *</label>
+          <input type="number" id="supQty" placeholder="1" value="1" min="1" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Закупочная цена (₽)</label>
+          <input type="number" id="supCost" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Дата</label>
+          <input type="date" id="supDate">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeSupplyModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>
@@ -917,6 +1041,8 @@ function navigateTo(page){
   if(page === 'product-categories') renderCatPage('product');
   if(page === 'service-categories') renderCatPage('service');
   if(page === 'stock') renderStockPage();
+  if(page === 'suppliers') renderSuppliersPage();
+  if(page === 'supplies') renderSuppliesPage();
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
   });
@@ -1070,31 +1196,43 @@ function saveActions(){
 
 // === СТРАНИЦА ОСТАТКИ ===
 function renderStockPage(){
-  let products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  
+  // Собираем остатки из поставок
+  const stockMap = {};
+  supplies.forEach(sp => {
+    if(!stockMap[sp.prodId]) stockMap[sp.prodId] = {qty:0, cost:0};
+    stockMap[sp.prodId].qty += sp.qty||0;
+    stockMap[sp.prodId].cost += (sp.cost||0) * sp.qty;
+  });
+
   const q = (document.getElementById('stockSearch')?.value || '').toLowerCase().trim();
-  if(q) products = products.filter(p => p.name.toLowerCase().includes(q));
+  let items = products.filter(p => stockMap[p.id]);
+  if(q) items = items.filter(p => p.name.toLowerCase().includes(q));
 
   const tbody = document.getElementById('stockTableBody');
-  if(!products.length){
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📦</div><p>Товаров на складе нет</p></div></td></tr>';
+  if(!items.length){
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📦</div><p>Товаров на складе нет. Сделайте первую поставку!</p></div></td></tr>';
     return;
   }
 
   let totalQty = 0, totalCost = 0, totalRetail = 0;
 
-  tbody.innerHTML = products.map(p => {
-    const qty = p.qty || 0;
-    const cost = (p.cost||0) * qty;
+  tbody.innerHTML = items.map(p => {
+    const st = stockMap[p.id];
+    const qty = st.qty;
+    const cost = st.cost;
     const retail = (p.price||0) * qty;
     const mark = retail - cost;
     const markPct = cost > 0 ? Math.round((mark / cost) * 100) : 0;
-    const low = qty > 0 && qty <= 5;
+    const low = qty <= 5;
     totalQty += qty; totalCost += cost; totalRetail += retail;
 
     return '<tr'+(low?' style="background:#fff8e6"':'')+'>' +
       '<td><span class="prod-name">'+p.name+'</span>'+(p.sku?'<br><span class="prod-sku">'+p.sku+'</span>':'')+(low?' <span style="font-size:.6rem;color:#d97706;font-weight:600">⚠ мало</span>':'')+'</td>' +
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td>' +
-      '<td style="text-align:center;font-weight:'+(qty===0?'400':'600')+';color:'+(qty===0?'var(--muted)':'var(--body-color)')+'">'+(qty||'—')+'</td>' +
+      '<td style="text-align:center;font-weight:600">'+qty+'</td>' +
       '<td>'+cost.toLocaleString()+' ₽</td>' +
       '<td>'+retail.toLocaleString()+' ₽</td>' +
       '<td><span'+(mark>0?' style="color:var(--success,green)"':'')+'>'+mark.toLocaleString()+' ₽</span>'+(markPct>0?' <span style="font-size:.7rem;color:var(--muted)">('+markPct+'%)</span>':'')+'</td>' +
@@ -1145,20 +1283,145 @@ document.addEventListener('click', function(e){
 });
 
 function applyBlockConfig(){
+  const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
   const services = JSON.parse(localStorage.getItem('services88') || '[]');
+  const totalQty = supplies.reduce((s,sp) => s + (sp.qty||0), 0);
+  const totalCost = supplies.reduce((s,sp) => s + (sp.cost * sp.qty), 0);
+  const totalRetail = supplies.reduce((s,sp) => {
+    const p = products.find(x => x.id === sp.prodId);
+    return s + ((p?.price||0) * sp.qty);
+  }, 0);
   document.getElementById('b-revenue').textContent = '0 ₽';
   document.getElementById('b-cost').textContent = '0 ₽';
   document.getElementById('b-profit').textContent = '0 ₽';
-  document.getElementById('b-stock-qty').textContent = products.reduce((s,p) => s + (p.qty||0), 0);
-  const stockCost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  const stockRetail = products.reduce((s,p) => s + (p.price * p.qty), 0);
-  document.getElementById('b-stock-sum').textContent = stockCost.toLocaleString()+' ₽';
-  document.getElementById('b-stock-retail').textContent = stockRetail.toLocaleString()+' ₽';
+  document.getElementById('b-stock-qty').textContent = totalQty;
+  document.getElementById('b-stock-sum').textContent = totalCost.toLocaleString()+' ₽';
+  document.getElementById('b-stock-retail').textContent = totalRetail.toLocaleString()+' ₽';
 }
 
 function updateStats(){
   applyBlockConfig();
+}
+
+// === ПОСТАВЩИКИ ===
+function openSupplierModal(){
+  document.getElementById('supplierModal').classList.add('active');
+}
+function closeSupplierModal(){
+  document.getElementById('supplierModal').classList.remove('active');
+  document.getElementById('supplierForm').reset();
+  document.getElementById('editSupplierId').value = '';
+}
+function saveSupplier(e){
+  e.preventDefault();
+  const editId = document.getElementById('editSupplierId').value;
+  const s = {
+    id: editId ? parseInt(editId) : Date.now(),
+    name: document.getElementById('supName').value.trim(),
+    contact: document.getElementById('supContact').value.trim(),
+    phone: document.getElementById('supPhone').value.trim()
+  };
+  if(!s.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  const idx = list.findIndex(x => x.id === s.id);
+  if(idx >= 0) list[idx] = s; else list.unshift(s);
+  localStorage.setItem('suppliers88', JSON.stringify(list));
+  closeSupplierModal();
+  renderSuppliersPage();
+}
+function editSupplier(id){
+  const list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  const s = list.find(x => x.id === id);
+  if(!s) return alert('Поставщик не найден');
+  document.getElementById('editSupplierId').value = s.id;
+  document.getElementById('supName').value = s.name;
+  document.getElementById('supContact').value = s.contact||'';
+  document.getElementById('supPhone').value = s.phone||'';
+  document.getElementById('supplierModalTitle').textContent = 'Редактировать поставщика';
+  document.getElementById('supplierModal').classList.add('active');
+}
+function deleteSupplier(id){
+  if(!confirm('Удалить поставщика?')) return;
+  let list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  list = list.filter(s => s.id !== id);
+  localStorage.setItem('suppliers88', JSON.stringify(list));
+  renderSuppliersPage();
+}
+function renderSuppliersPage(){
+  const list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  const tbody = document.getElementById('supplierTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">🏢</div><p>Поставщиков пока нет. Добавьте первого!</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(s =>
+    '<tr>' +
+      '<td><span class="prod-name">'+s.name+'</span></td>' +
+      '<td style="color:var(--muted)">'+(s.contact||'—')+'</td>' +
+      '<td style="color:var(--muted)">'+(s.phone||'—')+'</td>' +
+      '<td style="text-align:right"><button class="act-btn" onclick="editSupplier('+s.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteSupplier('+s.id+')">&#10005;</button></td>' +
+    '</tr>'
+  ).join('');
+}
+
+// === ПОСТАВКИ ===
+function fillSupplySelects(){
+  // Товары
+  const prodSel = document.getElementById('supProduct');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  prodSel.innerHTML = '<option value="">— выберите товар —</option>' + products.map(p => '<option value="'+p.id+'">'+p.name+'</option>').join('');
+  // Поставщики
+  const supSel = document.getElementById('supSupplier');
+  const suppliers = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  supSel.innerHTML = '<option value="">— выберите —</option>' + suppliers.map(s => '<option value="'+s.id+'">'+s.name+'</option>').join('');
+}
+function openSupplyModal(){
+  fillSupplySelects();
+  const d = new Date();
+  document.getElementById('supDate').value = d.toISOString().split('T')[0];
+  document.getElementById('supplyModal').classList.add('active');
+}
+function closeSupplyModal(){
+  document.getElementById('supplyModal').classList.remove('active');
+  document.getElementById('supplyForm').reset();
+}
+function saveSupply(e){
+  e.preventDefault();
+  const prodId = parseInt(document.getElementById('supProduct').value);
+  const suppId = parseInt(document.getElementById('supSupplier').value);
+  const qty = parseInt(document.getElementById('supQty').value) || 0;
+  const cost = parseFloat(document.getElementById('supCost').value) || 0;
+  const date = document.getElementById('supDate').value || new Date().toISOString().split('T')[0];
+  if(!prodId || !suppId || !qty) return alert('Заполните все поля');
+  const supply = {id: Date.now(), prodId, suppId, qty, cost, date};
+  let list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  list.unshift(supply);
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  closeSupplyModal();
+  renderSuppliesPage();
+  updateStats();
+}
+function renderSuppliesPage(){
+  const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const suppliers = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  const tbody = document.getElementById('supplyTableBody');
+  if(!supplies.length){
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">📥</div><p>Поставок пока нет. Оприходуйте товар!</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = supplies.map(s => {
+    const prod = products.find(p => p.id === s.prodId);
+    const supp = suppliers.find(sp => sp.id === s.suppId);
+    return '<tr>' +
+      '<td><span class="prod-name">'+(prod?prod.name:'Удалён')+'</span></td>' +
+      '<td style="color:var(--muted)">'+(supp?supp.name:'—')+'</td>' +
+      '<td style="text-align:center;font-weight:600">'+s.qty+'</td>' +
+      '<td>'+s.cost.toLocaleString()+' &#8381;</td>' +
+      '<td>'+(s.qty * s.cost).toLocaleString()+' &#8381;</td>' +
+    '</tr>';
+  }).join('');
 }
 
 // === КАТЕГОРИИ ===
