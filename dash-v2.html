@@ -18,9 +18,9 @@
   .sidebar.collapsed .sidebar-item{padding:.65rem;justify-content:center;gap:0}
   .sidebar.collapsed .sidebar-item .ic{width:auto;margin:0;font-size:.95rem}
   .sidebar.collapsed .sidebar-user{padding:.5rem;justify-content:center}
-  .sidebar-toggle{position:absolute;bottom:8px;left:12px;z-index:102;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);font-size:.75rem;font-family:var(--font);line-height:1;transition:all .15s;padding:0}
-  .sidebar-toggle:hover{color:var(--body-color);border-color:var(--muted)}
-  .sidebar.collapsed .sidebar-toggle{left:13px;border:none;background:none;color:var(--muted);font-size:.85rem}
+  .sidebar-toggle{position:absolute;top:8px;right:8px;z-index:102;width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid transparent;background:none;color:var(--muted);font-size:.7rem;font-family:var(--font);line-height:1;transition:all .15s;padding:0}
+  .sidebar-toggle:hover{color:var(--body-color);background:rgba(25,131,221,0.08);border-color:var(--border)}
+  .sidebar.collapsed .sidebar-toggle{right:14px;font-size:.8rem}
 
   .sidebar-user{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
   .sidebar-user-info{font-size:.75rem}
@@ -122,8 +122,8 @@
       <div class="sidebar-user-email">demo@8-8.app</div>
     </div>
     <button class="sidebar-user-logout" onclick="alert('Выход')">Выйти</button>
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Свернуть меню">◀</button>
   </div>
-  <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
   <nav class="sidebar-nav">
     <a class="sidebar-item active" onclick="navigateTo('dashboard')"><span class="ic">&#9632;</span> Панель управления</a>
     <a class="sidebar-item" onclick="navigateTo('products')"><span class="ic">&#9744;</span> Товары и услуги</a>
@@ -298,7 +298,11 @@
 const CAT_LABELS = {material:'Материалы',tool:'Инструменты',service:'Услуги',equipment:'Оборудование',other:'Прочее'};
 
 function toggleSidebar(){
-  document.querySelector('.sidebar').classList.toggle('collapsed');
+  const sb = document.querySelector('.sidebar');
+  sb.classList.toggle('collapsed');
+  const btn = document.querySelector('.sidebar-toggle');
+  btn.textContent = sb.classList.contains('collapsed') ? '▶' : '◀';
+  btn.title = sb.classList.contains('collapsed') ? 'Развернуть меню' : 'Свернуть меню';
 }
 
 function navigateTo(page){
