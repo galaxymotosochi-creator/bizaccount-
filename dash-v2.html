@@ -57,12 +57,16 @@
   .nav-footer{margin-top:auto}
 
   .main{flex:1;display:flex;flex-direction:column;transition:all .25s;overflow-y:auto}
-  .content{padding:1.5rem 2rem 2rem 2.5rem}
+  .content{padding:.75rem 2rem 1.5rem 2.5rem}
 
   /* Dashboard */
-  .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+  .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
   .dash-top h1{font-size:1.3rem;font-weight:600;margin-bottom:0}
   .dash-top .sub{font-size:.8rem;color:var(--muted)}
+  .period-switch{display:flex;gap:2px;background:var(--body-bg);border-radius:.5rem;padding:2px;border:1px solid var(--border)}
+  .period-btn{background:none;border:none;padding:.25rem .55rem;font-size:.72rem;font-family:var(--font);border-radius:.4rem;cursor:pointer;color:var(--muted);transition:all .1s;font-weight:500}
+  .period-btn:hover{color:var(--body-color)}
+  .period-btn.active{background:var(--white);color:var(--body-color);box-shadow:0 1px 2px rgba(0,0,0,.06);font-weight:600}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.85rem;position:relative}
@@ -299,9 +303,14 @@
       <div class="dash-top">
         <div>
           <h1>Панель управления</h1>
-          <div class="sub">Сводка за сегодня</div>
+          <div class="sub" id="periodLabel">Сводка за сегодня</div>
         </div>
-        <button class="dash-settings-btn" onclick="openDashSettings()" title="Настроить панель">⚙️</button>
+        <div class="period-switch">
+          <button class="period-btn active" onclick="setPeriod('today')" id="per-today">Сегодня</button>
+          <button class="period-btn" onclick="setPeriod('week')" id="per-week">Неделя</button>
+          <button class="period-btn" onclick="setPeriod('month')" id="per-month">Месяц</button>
+          <button class="period-btn" onclick="setPeriod('all')" id="per-all">Всё</button>
+        </div>
       </div>
 
       <!-- БЛОК 1: Деньги -->
@@ -937,6 +946,17 @@ function addAction(idx){
 
 function saveActions(){
   // сохраняем для будущего использования
+}
+
+let currentPeriod = 'today';
+
+function setPeriod(period){
+  currentPeriod = period;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('per-'+period).classList.add('active');
+  const labels = {today:'за сегодня', week:'за неделю', month:'за месяц', all:'за всё время'};
+  document.getElementById('periodLabel').textContent = 'Сводка ' + labels[period];
+  updateStats();
 }
 
 function applyBlockConfig(){
