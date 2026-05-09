@@ -59,22 +59,28 @@
   .main{flex:1;display:flex;flex-direction:column;transition:all .25s;overflow-y:auto}
   .content{padding:2rem 2rem 2rem 2.5rem}
 
-  /* Dashboard new */
-  .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+  /* Dashboard */
+  .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
   .dash-top h1{font-size:1.3rem;font-weight:600;margin-bottom:0}
   .dash-top .sub{font-size:.8rem;color:var(--muted)}
-  .metric-row{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
-  .metric-card{background:var(--white);border-radius:var(--radius);padding:.65rem .85rem;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:.6rem;flex:1;min-width:140px}
-  .metric-icon{font-size:1.3rem;width:2rem;height:2rem;background:var(--body-bg);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .metric-info{min-width:0}
-  .metric-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
-  .metric-val{font-size:1rem;font-weight:700;color:var(--body-color)}
-  .sec-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.65rem}
-  .action-row{display:flex;gap:.45rem;flex-wrap:wrap}
-  .action-btn{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.45rem .65rem;display:flex;align-items:center;gap:.4rem;cursor:pointer;transition:all .12s;font-family:var(--font)}
+  .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
+  .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
+  .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:.85rem 1rem;margin-bottom:.75rem;position:relative}
+  .dash-block-title{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.65rem;display:flex;align-items:center;gap:.4rem}
+  .dash-block-title .cnt{font-weight:400;font-size:.65rem;color:var(--border)}
+  .block-row{display:flex;gap:.5rem;flex-wrap:wrap}
+  .block-card{display:flex;align-items:center;gap:.5rem;padding:.45rem .65rem;background:var(--body-bg);border-radius:.5rem;flex:1;min-width:110px;border:1px solid transparent;transition:all .12s;cursor:default}
+  .block-card .b-icon{font-size:1rem;width:1.6rem;height:1.6rem;background:var(--white);border-radius:.35rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .block-card .b-info{min-width:0}
+  .block-card .b-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
+  .block-card .b-val{font-size:.9rem;font-weight:700;color:var(--body-color)}
+  .block-card .b-edit{opacity:0;margin-left:auto;background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:.2rem;transition:opacity .12s;font-family:var(--font)}
+  .block-card:hover .b-edit{opacity:1}
+  .block-card .b-edit:hover{color:var(--body-color)}
+  .action-row{display:flex;gap:.4rem;flex-wrap:wrap}
+  .action-btn{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.4rem .6rem;display:flex;align-items:center;gap:.35rem;cursor:pointer;transition:all .12s;font-family:var(--font);font-size:.75rem}
   .action-btn:hover{border-color:var(--primary)}
-  .action-icon{width:1.5rem;height:1.5rem;background:var(--primary-light);border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
-  .action-lbl{font-size:.75rem;font-weight:500;color:var(--body-color)}
+  .action-btn .a-icon{width:1.3rem;height:1.3rem;background:var(--primary-light);border-radius:.3rem;display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0}
 
   .content h1{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
   .content .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
@@ -288,40 +294,51 @@
       <div class="dash-top">
         <div>
           <h1>Панель управления</h1>
-          <div class="sub">Сводка за сегодня</div>
+          <div class="sub">Вся картина бизнеса за сегодня</div>
+        </div>
+        <button class="dash-settings-btn" onclick="openDashSettings()" title="Настроить панель">⚙️</button>
+      </div>
+
+      <!-- БЛОК 1: Деньги -->
+      <div class="dash-block" id="block-money">
+        <div class="dash-block-title">💵 Деньги <span class="cnt">|</span></div>
+        <div class="block-row">
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0 ₽</div></div><button class="b-edit" onclick="editBlock('revenue')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">💸</div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0 ₽</div></div><button class="b-edit" onclick="editBlock('cost')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">📈</div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0 ₽</div></div><button class="b-edit" onclick="editBlock('profit')">✏️</button></div>
         </div>
       </div>
-      <div class="metric-row">
-        <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-info"><div class="metric-lbl">Выручка</div><div class="metric-val" id="metric-revenue">0 ₽</div></div></div>
-        <div class="metric-card"><div class="metric-icon">📦</div><div class="metric-info"><div class="metric-lbl">На складе</div><div class="metric-val" id="metric-stock">0 шт</div></div></div>
-        <div class="metric-card"><div class="metric-icon">📈</div><div class="metric-info"><div class="metric-lbl">Прибыль</div><div class="metric-val" id="metric-profit">0 ₽</div></div></div>
-        <div class="metric-card"><div class="metric-icon">👥</div><div class="metric-info"><div class="metric-lbl">Клиенты</div><div class="metric-val">0</div></div></div>
+
+      <!-- БЛОК 2: Склад -->
+      <div class="dash-block" id="block-stock">
+        <div class="dash-block-title">📦 Склад <span class="cnt">|</span></div>
+        <div class="block-row">
+          <div class="block-card"><div class="b-icon">📦</div><div class="b-info"><div class="b-lbl">Товаров</div><div class="b-val" id="b-stock-qty">0</div></div><button class="b-edit" onclick="editBlock('stock-qty')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Сумма запасов</div><div class="b-val" id="b-stock-sum">0 ₽</div></div><button class="b-edit" onclick="editBlock('stock-sum')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">⚠️</div><div class="b-info"><div class="b-lbl">Услуг</div><div class="b-val" id="b-services">0</div></div><button class="b-edit" onclick="editBlock('services')">✏️</button></div>
+        </div>
       </div>
-      <div class="sec-title">Быстрые действия</div>
-      <div class="action-row">
-        <div class="action-btn" onclick="openProductModal()" title="Добавить товар">
-          <span class="action-icon"><span style="font-size:1.2rem">+</span></span>
-          <span class="action-lbl">Товар</span>
+
+      <!-- БЛОК 3: Продажи -->
+      <div class="dash-block" id="block-sales">
+        <div class="dash-block-title">🛒 Продажи <span class="cnt">|</span></div>
+        <div class="block-row">
+          <div class="block-card"><div class="b-icon">🧾</div><div class="b-info"><div class="b-lbl">Продаж сегодня</div><div class="b-val">0</div></div><button class="b-edit" onclick="editBlock('sales-today')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">🎯</div><div class="b-info"><div class="b-lbl">Средний чек</div><div class="b-val">0 ₽</div></div><button class="b-edit" onclick="editBlock('avg-check')">✏️</button></div>
+          <div class="block-card"><div class="b-icon">👥</div><div class="b-info"><div class="b-lbl">Клиенты</div><div class="b-val">0</div></div><button class="b-edit" onclick="editBlock('clients')">✏️</button></div>
         </div>
-        <div class="action-btn" onclick="alert('Новая продажа')" title="Новая продажа">
-          <span class="action-icon">🛒</span>
-          <span class="action-lbl">Продажа</span>
-        </div>
-        <div class="action-btn" onclick="alert('Закупка')" title="Закупка">
-          <span class="action-icon">📥</span>
-          <span class="action-lbl">Закупка</span>
-        </div>
-        <div class="action-btn" onclick="alert('Расход')" title="Расход">
-          <span class="action-icon">💸</span>
-          <span class="action-lbl">Расход</span>
-        </div>
-        <div class="action-btn" onclick="alert('Клиент')" title="Новый клиент">
-          <span class="action-icon">👤</span>
-          <span class="action-lbl">Клиент</span>
-        </div>
-        <div class="action-btn" onclick="alert('Сканер')" title="Сканер штрихкода">
-          <span class="action-icon">📷</span>
-          <span class="action-lbl">Сканер</span>
+      </div>
+
+      <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
+      <div class="dash-block" id="block-actions">
+        <div class="dash-block-title">⚡ Быстрые действия <span class="cnt">|</span></div>
+        <div class="action-row">
+          <div class="action-btn" onclick="openProductModal()"><span class="a-icon">+</span> Товар</div>
+          <div class="action-btn" onclick="alert('Новая продажа')"><span class="a-icon">🛒</span> Продажа</div>
+          <div class="action-btn" onclick="alert('Закупка')"><span class="a-icon">📥</span> Закупка</div>
+          <div class="action-btn" onclick="alert('Расход')"><span class="a-icon">💸</span> Расход</div>
+          <div class="action-btn" onclick="alert('Клиент')"><span class="a-icon">👤</span> Клиент</div>
+          <div class="action-btn" onclick="alert('Сканер')"><span class="a-icon">📷</span> Сканер</div>
         </div>
       </div>
     </div>
@@ -618,6 +635,30 @@
   </div>
 </div>
 
+<!-- Модальное окно настройки блока панели -->
+<div class="modal-overlay" id="blockEditModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeBlockEdit()">&times;</button>
+    <h2 id="blockEditTitle">Настроить блок</h2>
+    <div class="sub" id="blockEditSub">Измените отображение блока</div>
+    <form id="blockEditForm" onsubmit="saveBlockEdit(event)">
+      <input type="hidden" id="blockEditKey" value="">
+      <div class="form-group">
+        <label>Название</label>
+        <input type="text" id="blockEditLabel" placeholder="Название блока">
+      </div>
+      <div class="form-group">
+        <label>Значение (можно ввести вручную)</label>
+        <input type="text" id="blockEditVal" placeholder="0 ₽">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeBlockEdit()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 const CAT_LABELS = {material:'Материалы',tool:'Инструменты',service:'Услуги',equipment:'Оборудование',other:'Прочее'};
 
@@ -840,15 +881,83 @@ function renderServicesPage(){
   ).join('');
 }
 
+// === НАСТРОЙКА ПАНЕЛИ ===
+const BLOCK_LABELS = {};
+const BLOCK_OVERRIDES = {};
+
+function loadBlockOverrides(){
+  const saved = JSON.parse(localStorage.getItem('dashOverrides88') || '{}');
+  Object.assign(BLOCK_LABELS, saved.labels || {});
+  Object.assign(BLOCK_OVERRIDES, saved.vals || {});
+}
+function saveBlockOverrides(){
+  localStorage.setItem('dashOverrides88', JSON.stringify({labels: BLOCK_LABELS, vals: BLOCK_OVERRIDES}));
+}
+
+function openDashSettings(){
+  alert('Режим настройки: нажмите ✏️ на любом блоке, чтобы изменить название или значение');
+}
+
+function editBlock(key){
+  loadBlockOverrides();
+  document.getElementById('blockEditKey').value = key;
+  const el = document.getElementById('b-'+key);
+  const parentCard = el?.closest('.block-card');
+  const currentLabel = parentCard?.querySelector('.b-lbl')?.textContent || key;
+  const currentVal = BLOCK_OVERRIDES[key] || el?.textContent || '0';
+  document.getElementById('blockEditTitle').textContent = 'Настроить: ' + currentLabel;
+  document.getElementById('blockEditSub').textContent = 'Измените название и/или значение';
+  document.getElementById('blockEditLabel').value = BLOCK_LABELS[key] || currentLabel;
+  document.getElementById('blockEditVal').value = currentVal;
+  document.getElementById('blockEditModal').classList.add('active');
+}
+
+function closeBlockEdit(){
+  document.getElementById('blockEditModal').classList.remove('active');
+  document.getElementById('blockEditForm').reset();
+}
+
+function saveBlockEdit(e){
+  e.preventDefault();
+  loadBlockOverrides();
+  const key = document.getElementById('blockEditKey').value;
+  const label = document.getElementById('blockEditLabel').value.trim();
+  const val = document.getElementById('blockEditVal').value.trim();
+  if(label) BLOCK_LABELS[key] = label;
+  if(val) BLOCK_OVERRIDES[key] = val;
+  saveBlockOverrides();
+  applyBlockOverrides();
+  closeBlockEdit();
+}
+
+function applyBlockOverrides(){
+  loadBlockOverrides();
+  Object.keys(BLOCK_LABELS).forEach(key => {
+    const el = document.getElementById('b-'+key);
+    if(!el) return;
+    const card = el.closest('.block-card');
+    if(card) card.querySelector('.b-lbl').textContent = BLOCK_LABELS[key];
+  });
+  Object.keys(BLOCK_OVERRIDES).forEach(key => {
+    const el = document.getElementById('b-'+key);
+    if(el) el.textContent = BLOCK_OVERRIDES[key];
+  });
+}
+
 function updateStats(){
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
   const services = JSON.parse(localStorage.getItem('services88') || '[]');
   const totalItems = products.reduce((s,p) => s + (p.qty||0), 0);
-  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0) + services.reduce((s,p) => s + (p.price||0), 0);
+  const stockSum = products.reduce((s,p) => s + (p.cost * p.qty), 0);
+  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
   const cost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  document.getElementById('metric-revenue').textContent = revenue.toLocaleString()+' ₽';
-  document.getElementById('metric-stock').textContent = totalItems + ' шт';
-  document.getElementById('metric-profit').textContent = (revenue - cost).toLocaleString()+' ₽';
+  document.getElementById('b-revenue').textContent = revenue.toLocaleString()+' ₽';
+  document.getElementById('b-cost').textContent = cost.toLocaleString()+' ₽';
+  document.getElementById('b-profit').textContent = (revenue - cost).toLocaleString()+' ₽';
+  document.getElementById('b-stock-qty').textContent = totalItems;
+  document.getElementById('b-stock-sum').textContent = stockSum.toLocaleString()+' ₽';
+  document.getElementById('b-services').textContent = services.length;
+  applyBlockOverrides();
 }
 
 // === КАТЕГОРИИ ===
