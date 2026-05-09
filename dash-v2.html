@@ -419,13 +419,11 @@
         <table>
           <thead>
             <tr>
-              <th style="width:32%">Название</th>
-              <th style="width:11%">Категория</th>
-              <th style="width:14%" class="prod-price">Цена</th>
-              <th style="width:11%">Наценка</th>
-              <th style="width:8%">Остаток</th>
-              <th style="width:8%">Ед.</th>
-              <th style="width:16%"></th>
+              <th style="width:38%">Название</th>
+              <th style="width:15%">Категория</th>
+              <th style="width:18%" class="prod-price">Цена</th>
+              <th style="width:10%">Ед.</th>
+              <th style="width:19%"></th>
             </tr>
           </thead>
           <tbody id="productTableBody">
@@ -578,26 +576,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Категория</label>
-          <select id="prodCat">
-            <option value="material">Материалы</option>
-            <option value="tool">Инструменты</option>
-            <option value="service">Услуги</option>
-            <option value="equipment">Оборудование</option>
-            <option value="other">Прочее</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Тип</label>
-          <select id="prodType">
-            <option value="product">Товар</option>
-            <option value="service">Услуга</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Закупочная цена (₽)</label>
-          <input type="number" id="prodCost" placeholder="0" min="0">
+          <select id="prodCat"></select>
         </div>
         <div class="form-group">
           <label>Розничная цена (₽)</label>
@@ -606,8 +585,8 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Количество</label>
-          <input type="number" id="prodQty" placeholder="1" value="1" min="0">
+          <label>Артикул / код</label>
+          <input type="text" id="prodSku" placeholder="Например, KR-001">
         </div>
         <div class="form-group">
           <label>Ед. измерения</label>
@@ -622,10 +601,7 @@
           </select>
         </div>
       </div>
-      <div class="form-group">
-        <label>Артикул / код</label>
-        <input type="text" id="prodSku" placeholder="Например, KR-001">
-      </div>
+
       <div class="form-group">
         <label>Описание</label>
         <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
@@ -802,10 +778,7 @@ function editProduct(id){
   document.getElementById('editProductId').value = p.id;
   document.getElementById('prodName').value = p.name;
   document.getElementById('prodCat').value = p.cat;
-  document.getElementById('prodType').value = p.type;
-  document.getElementById('prodCost').value = p.cost;
   document.getElementById('prodPrice').value = p.price;
-  document.getElementById('prodQty').value = p.qty;
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodDesc').value = p.desc || '';
@@ -834,10 +807,7 @@ function saveProduct(e){
     id: editId ? parseInt(editId) : Date.now(),
     name: document.getElementById('prodName').value.trim(),
     cat: document.getElementById('prodCat').value,
-    type: document.getElementById('prodType').value,
-    cost: parseFloat(document.getElementById('prodCost').value) || 0,
     price: parseFloat(document.getElementById('prodPrice').value) || 0,
-    qty: parseInt(document.getElementById('prodQty').value) || 0,
     unit: document.getElementById('prodUnit').value,
     sku: document.getElementById('prodSku').value.trim(),
     desc: document.getElementById('prodDesc').value.trim(),
@@ -861,19 +831,15 @@ function renderProductsPage(){
 
   const tbody = document.getElementById('productTableBody');
   if(!products.length){
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = products.map(p => {
-    const markup = p.price - (p.cost||0);
-    const markupPct = p.cost > 0 ? Math.round((markup / p.cost) * 100) : 0;
     const isHidden = p.hidden;
     return '<tr'+(isHidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' +
       '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span>'+(isHidden?' <span class="prod-hidden-badge">Скрыто</span>':'')+'</td>' +
-      '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span>'+(p.cost?'<br><span style="font-size:.7rem;color:var(--muted)">закуп: '+p.cost.toLocaleString()+' &#8381;</span>':'')+'</td>' +
-      '<td><span class="prod-price">'+markup.toLocaleString()+' &#8381;</span><br><span style="font-size:.7rem;color:'+(markupPct>0?'var(--success,green)':'var(--muted)')+'">'+markupPct+'%</span></td>' +
-      '<td style="text-align:center;font-weight:600">'+p.qty+'</td>' +
+      '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span></td>' +
       '<td>'+p.unit+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
         '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
