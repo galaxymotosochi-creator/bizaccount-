@@ -2559,6 +2559,22 @@ function renderVenuesPage(){
   tbody.innerHTML = list.map(v => '<tr><td><span class="prod-name">'+v.name+'</span></td><td style="color:var(--muted);font-size:.8rem">'+(v.address||'—')+'</td><td style="color:var(--muted)">'+(v.phone||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editVenue('+v.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteVenue('+v.id+')">&#10005;</button></td></tr>').join('');
 }
 
+
+function renderShiftsPage(){
+  var shifts = JSON.parse(localStorage.getItem("shifts88") || "[]");
+  var tbody = document.getElementById("shiftTableBody");
+  if(!tbody) return;
+  if(!shifts.length){
+    tbody.innerHTML = "<tr><td colspan=\"6\"><div class=\"empty-products\"><div class=\"big-icon\">\uD83D\uDCCA</div><p>\u0421\u043c\u0435\u043d \u043f\u043e\u043a\u0430 \u043d\u0435\u0442</p></div></td></tr>";
+    return;
+  }
+  tbody.innerHTML = shifts.map(function(s){
+    var sc = s.status === "open" ? "#16a34a" : "var(--muted)";
+    var st = s.status === "open" ? "\u2705 \u041e\u0442\u043a\u0440\u044b\u0442\u0430" : "\u274C \u0417\u0430\u043a\u0440\u044b\u0442\u0430";
+    return "<tr><td style=\"font-size:.8rem\">" + (s.openedAt||"\u2014") + "</td><td style=\"font-size:.8rem\">" + (s.closedAt||"\u2014") + "</td><td>" + (s.employeeName||"\u2014") + "</td><td>" + (s.totalSales||0).toLocaleString() + " \u20BD</td><td>" + (s.closingBalance||0).toLocaleString() + " \u20BD</td><td><span style=\"color:" + sc + ";font-weight:600\">" + st + "</span></td></tr>";
+  }).join("");
+}
+
 // === КАТЕГОРИИ ===
 function openCatModal(type){
   document.getElementById('catType').value = type;
