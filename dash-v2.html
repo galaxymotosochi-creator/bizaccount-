@@ -15,7 +15,7 @@
   .sidebar.collapsed .sidebar-user-logout,
 
   .sidebar.collapsed .sidebar-item{font-size:0;padding:.65rem;justify-content:center;gap:0}
-  .sidebar.collapsed .sidebar-item .ic{font-size:.95rem;width:auto;margin:0}
+  .sidebar.collapsed .sidebar-item .ic{font-size:1.1rem;width:auto;margin:0}
   .sidebar.collapsed .sidebar-user{font-size:0;padding:.5rem;justify-content:center}
   .sidebar.collapsed .sidebar-user .sidebar-toggle,
   .sidebar.collapsed .sidebar-user .sidebar-toggle:hover{font-size:.8rem;border:none;background:none;color:var(--muted)}
@@ -33,7 +33,7 @@
   .sidebar-item{display:flex;align-items:center;gap:.75rem;padding:.55rem 1.25rem;font-size:.85rem;color:var(--body-color);cursor:pointer;transition:all .12s;border-left:2px solid transparent;text-decoration:none}
   .sidebar-item:hover{background:rgba(25,131,221,0.08)}
   .sidebar-item.active{background:var(--primary-light);border-left-color:var(--primary);color:var(--primary);font-weight:500}
-  .sidebar-item .ic{width:1.5rem;text-align:center;font-size:.8rem;color:var(--muted);flex-shrink:0}
+  .sidebar-item .ic{width:1.5rem;text-align:center;font-size:1rem;line-height:1;flex-shrink:0}
   .sidebar-item.active .ic{color:var(--primary)}
 
   .main{flex:1;margin-left:var(--sidebar-width);display:flex;flex-direction:column;transition:margin-left .25s}
@@ -126,23 +126,23 @@
     <button class="sidebar-toggle" onclick="toggleSidebar()" title="Свернуть меню">◀</button>
   </div>
   <nav class="sidebar-nav">
-    <a class="sidebar-item active" onclick="navigateTo('dashboard')"><span class="ic">&#9632;</span> Панель управления</a>
-    <a class="sidebar-item" onclick="navigateTo('products')"><span class="ic">&#9744;</span> Товары и услуги</a>
-    <a class="sidebar-item"><span class="ic">&#9776;</span> Категории</a>
-    <a class="sidebar-item"><span class="ic">&#10070;</span> Клиенты</a>
-    <a class="sidebar-item"><span class="ic">&#9881;</span> Поставщики</a>
-    <a class="sidebar-item"><span class="ic">&#8593;</span> Закупки</a>
-    <a class="sidebar-item"><span class="ic">&#36;</span> Продажи / Касса</a>
-    <a class="sidebar-item"><span class="ic">&#8634;</span> Возвраты</a>
-    <a class="sidebar-item"><span class="ic">&#9733;</span> Магазины</a>
-    <a class="sidebar-item"><span class="ic">&#9201;</span> Смены</a>
-    <a class="sidebar-item"><span class="ic">&#9998;</span> Счета</a>
-    <a class="sidebar-item"><span class="ic">&#128203;</span> Документы</a>
-    <a class="sidebar-item"><span class="ic">&#128101;</span> Сотрудники</a>
-    <a class="sidebar-item"><span class="ic">&#9913;</span> Роли и доступы</a>
-    <a class="sidebar-item"><span class="ic">&#8730;</span> Отчеты</a>
-    <a class="sidebar-item"><span class="ic">&#9881;</span> Настройки</a>
-    <a class="sidebar-item"><span class="ic">&#9679;</span> Корзина</a>
+    <a class="sidebar-item active" onclick="navigateTo('dashboard')"><span class="ic">📊</span> Панель управления</a>
+    <a class="sidebar-item" onclick="navigateTo('products')"><span class="ic">📦</span> Товары и услуги</a>
+    <a class="sidebar-item"><span class="ic">🏷️</span> Категории</a>
+    <a class="sidebar-item"><span class="ic">👤</span> Клиенты</a>
+    <a class="sidebar-item"><span class="ic">🚚</span> Поставщики</a>
+    <a class="sidebar-item"><span class="ic">📥</span> Закупки</a>
+    <a class="sidebar-item"><span class="ic">🛒</span> Продажи / Касса</a>
+    <a class="sidebar-item"><span class="ic">↩️</span> Возвраты</a>
+    <a class="sidebar-item"><span class="ic">🏪</span> Магазины</a>
+    <a class="sidebar-item"><span class="ic">🔄</span> Смены</a>
+    <a class="sidebar-item"><span class="ic">📄</span> Счета</a>
+    <a class="sidebar-item"><span class="ic">📋</span> Документы</a>
+    <a class="sidebar-item"><span class="ic">👥</span> Сотрудники</a>
+    <a class="sidebar-item"><span class="ic">🔐</span> Роли и доступы</a>
+    <a class="sidebar-item"><span class="ic">📈</span> Отчеты</a>
+    <a class="sidebar-item"><span class="ic">🔧</span> Настройки</a>
+    <a class="sidebar-item"><span class="ic">🗑️</span> Корзина</a>
     <a class="sidebar-item" onclick="alert('Выход')" style="margin-top:auto"><span class="ic">🚪</span> Выйти</a>
   </nav>
 </aside>
