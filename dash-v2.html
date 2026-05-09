@@ -9,8 +9,8 @@
   :root{--primary:#1983dd;--primary-light:#eaf5ff;--body-bg:#f8f9fa;--body-color:#212529;--font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;--radius:.75rem;--shadow:0 .5rem 1rem rgba(0,0,0,.08);--border:#dee2e6;--white:#fff;--muted:#6c757d;--sidebar-width:270px}
   html{font-size:17px}
   body{font-family:var(--font);background:var(--body-bg);color:var(--body-color);line-height:1.5;display:flex;min-height:100vh}
-  .sidebar{position:fixed;top:0;left:0;bottom:0;z-index:100}
-  .sidebar-inner{width:fit-content;min-width:var(--sidebar-width);background:#eaf5ff;height:100%;display:flex;flex-direction:column;border-right:1px solid var(--border);transition:width .25s;position:relative}
+  .sidebar{display:flex;flex-shrink:0}
+  .sidebar-inner{width:fit-content;padding-right:.5rem;background:#eaf5ff;min-height:100vh;display:flex;flex-direction:column;border-right:1px solid var(--border);transition:width .25s;position:relative}
   .sidebar.collapsed .sidebar-inner{width:52px;min-width:52px}
   .sidebar.collapsed .sidebar-user-info,
   .sidebar.collapsed .sidebar-user-logout,
@@ -26,6 +26,7 @@
   .sidebar-toggle:hover{color:var(--body-color);background:rgba(25,131,221,0.08);border-color:var(--border)}
   .sidebar.collapsed .sidebar-toggle{right:14px;font-size:.8rem}
 
+
   .sidebar-user{padding:.75rem .65rem;display:flex;align-items:center;justify-content:space-between}
   .sidebar-user-info{font-size:.75rem}
   .sidebar-user-email{color:var(--muted)}
@@ -37,8 +38,7 @@
   .sidebar-item .ic{width:1.5rem;text-align:center;font-size:1rem;line-height:1;flex-shrink:0}
   .sidebar-item.active .ic{color:var(--primary)}
 
-  .main{flex:1;margin-left:var(--sidebar-width);display:flex;flex-direction:column;transition:margin-left .25s;box-shadow:-1px 0 0 var(--border)}
-  .sidebar.collapsed ~ .main{margin-left:52px}
+  .main{flex:1;display:flex;flex-direction:column;transition:all .25s}
 
   .content h1{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
   .content .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
