@@ -287,10 +287,10 @@
     <div class="nav-group">
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">⌘</span> Доступ<span class="arrow">▶</span></a>
       <div class="nav-children">
-        <a class="nav-child">Сотрудники</a>
-        <a class="nav-child">Должности</a>
-        <a class="nav-child">Кассы</a>
-        <a class="nav-child">Заведения</a>
+        <a class="nav-child" onclick="navigateTo('employees')">Сотрудники</a>
+        <a class="nav-child" onclick="navigateTo('positions')">Должности</a>
+        <a class="nav-child" onclick="navigateTo('registers')">Кассы</a>
+        <a class="nav-child" onclick="navigateTo('venues')">Заведения</a>
       </div>
     </div>
 
@@ -671,6 +671,70 @@
       </div>
     </div>
 
+    <!-- СОТРУДНИКИ -->
+    <div class="page-section" id="page-employees">
+      <div class="page-header">
+        <div>
+          <h1>Сотрудники</h1>
+          <div class="sub">Управляйте персоналом и доступом к системе</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openEmployeeModal()">+ Добавить сотрудника</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:28%">ФИО</th><th style="width:18%">Телефон</th><th style="width:18%">Должность</th><th style="width:12%">Статус</th><th style="width:12%">Пин</th><th style="width:12%"></th></tr></thead><tbody id="employeeTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ДОЛЖНОСТИ -->
+    <div class="page-section" id="page-positions">
+      <div class="page-header">
+        <div>
+          <h1>Должности</h1>
+          <div class="sub">Настройте роли и права доступа</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openPositionModal()">+ Добавить должность</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:35%">Название</th><th style="width:40%">Права доступа</th><th style="width:25%"></th></tr></thead><tbody id="positionTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- КАССЫ -->
+    <div class="page-section" id="page-registers">
+      <div class="page-header">
+        <div>
+          <h1>Кассы</h1>
+          <div class="sub">Рабочие места и смены</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openRegisterModal()">+ Добавить кассу</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:25%">Название</th><th style="width:20%">Код</th><th style="width:20%">Баланс</th><th style="width:20%">Заведение</th><th style="width:15%"></th></tr></thead><tbody id="registerTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ЗАВЕДЕНИЯ -->
+    <div class="page-section" id="page-venues">
+      <div class="page-header">
+        <div>
+          <h1>Заведения</h1>
+          <div class="sub">Точки вашего бизнеса</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openVenueModal()">+ Добавить заведение</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:30%">Название</th><th style="width:35%">Адрес</th><th style="width:20%">Телефон</th><th style="width:15%"></th></tr></thead><tbody id="venueTableBody"></tbody></table>
+      </div>
+    </div>
+
     <!-- КАТЕГОРИИ ТОВАРОВ -->
       <div class="page-header">
         <div>
@@ -972,6 +1036,151 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeInvModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно сотрудника -->
+<div class="modal-overlay" id="employeeModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeEmployeeModal()">&times;</button>
+    <h2 id="empModalTitle">Добавить сотрудника</h2>
+    <div class="sub">Введите данные сотрудника</div>
+    <form id="employeeForm" onsubmit="saveEmployee(event)">
+      <input type="hidden" id="editEmpId" value="">
+      <div class="form-group">
+        <label>ФИО *</label>
+        <input type="text" id="empName" placeholder="Иванов Иван Иванович" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="text" id="empPhone" placeholder="+7 (999) 123-45-67">
+        </div>
+        <div class="form-group">
+          <label>Пин-код (4 цифры)</label>
+          <input type="number" id="empPin" placeholder="1234" min="0" max="9999">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Должность</label>
+          <select id="empPosition"></select>
+        </div>
+        <div class="form-group">
+          <label>Заведение</label>
+          <select id="empVenue"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Статус</label>
+        <select id="empStatus">
+          <option value="active">На смене</option>
+          <option value="off">Не на смене</option>
+          <option value="vacation">В отпуске</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeEmployeeModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно должности -->
+<div class="modal-overlay" id="positionModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePositionModal()">&times;</button>
+    <h2 id="posModalTitle">Добавить должность</h2>
+    <div class="sub">Укажите название и уровень доступа</div>
+    <form id="positionForm" onsubmit="savePosition(event)">
+      <input type="hidden" id="editPosId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="posName" placeholder="Кассир" required>
+      </div>
+      <div class="form-group">
+        <label>Уровень доступа</label>
+        <select id="posLevel">
+          <option value="cashier">Кассир — только касса</option>
+          <option value="storekeeper">Кладовщик — склад + товары</option>
+          <option value="manager">Менеджер — всё кроме настроек</option>
+          <option value="admin">Администратор — полный доступ</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Описание прав</label>
+        <textarea id="posDesc" placeholder="Какие разделы доступны..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closePositionModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно кассы -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+    <h2 id="regModalTitle">Добавить кассу</h2>
+    <div class="sub">Настройте рабочее место</div>
+    <form id="registerForm" onsubmit="saveRegister(event)">
+      <input type="hidden" id="editRegId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="regName" placeholder="Касса 1" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Код открытия</label>
+          <input type="number" id="regCode" placeholder="0000" min="0" max="9999">
+        </div>
+        <div class="form-group">
+          <label>Начальный баланс (₽)</label>
+          <input type="number" id="regBalance" placeholder="10000" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Заведение</label>
+        <select id="regVenue"></select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeRegisterModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно заведения -->
+<div class="modal-overlay" id="venueModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeVenueModal()">&times;</button>
+    <h2 id="venModalTitle">Добавить заведение</h2>
+    <div class="sub">Добавьте точку бизнеса</div>
+    <form id="venueForm" onsubmit="saveVenue(event)">
+      <input type="hidden" id="editVenId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="venName" placeholder="Магазин на Ленина" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Адрес</label>
+          <input type="text" id="venAddress" placeholder="ул. Ленина, 15">
+        </div>
+        <div class="form-group">
+          <label>Телефон</label>
+          <input type="text" id="venPhone" placeholder="+7 (862) 123-45-67">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeVenueModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>
@@ -1350,6 +1559,10 @@ function navigateTo(page){
   if(page === 'clients') renderClientsPage();
   if(page === 'loyalty') renderLoyaltyPage();
   if(page === 'promos') renderPromosPage();
+  if(page === 'employees') renderEmployeesPage();
+  if(page === 'positions') renderPositionsPage();
+  if(page === 'registers') renderRegistersPage();
+  if(page === 'venues') renderVenuesPage();
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
   });
@@ -2063,6 +2276,232 @@ function renderPromosPage(){
     const statusColor = {active:'#16a34a', planned:'#d97706', ended:'var(--muted)'};
     return '<tr><td><span class="prod-name">'+p.name+'</span></td><td><span style="font-size:.85rem;font-weight:600;color:#dc3545">-'+p.discount+'%</span></td><td style="color:var(--muted);font-size:.8rem">'+(p.desc||'—')+'</td><td style="font-size:.8rem">'+(p.start||'')+' — '+(p.end||'')+'<br><span style="color:'+(statusColor[p.status]||'var(--muted)')+';font-weight:500">'+ (PROMO_STATUS[p.status]||p.status)+'</span></td></tr>';
   }).join('');
+}
+
+
+// === ДОСТУП: СОТРУДНИКИ ===
+function openEmployeeModal(){
+  fillSelects();
+  document.getElementById('employeeModal').classList.add('active');
+}
+function closeEmployeeModal(){
+  document.getElementById('employeeModal').classList.remove('active');
+  document.getElementById('employeeForm').reset();
+  document.getElementById('editEmpId').value = '';
+}
+function fillSelects(){
+  const posSel = document.getElementById('empPosition');
+  const venSel = document.getElementById('empVenue');
+  const positions = JSON.parse(localStorage.getItem('positions88') || '[]');
+  const venues = JSON.parse(localStorage.getItem('venues88') || '[]');
+  posSel.innerHTML = '<option value="">— не выбрана —</option>' + positions.map(p => '<option value="'+p.id+'">'+p.name+'</option>').join('');
+  venSel.innerHTML = '<option value="">— не выбрано —</option>' + venues.map(v => '<option value="'+v.id+'">'+v.name+'</option>').join('');
+}
+function saveEmployee(e){
+  e.preventDefault();
+  const editId = document.getElementById('editEmpId').value;
+  const emp = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('empName').value.trim(), phone: document.getElementById('empPhone').value.trim(), pin: document.getElementById('empPin').value, posId: parseInt(document.getElementById('empPosition').value)||0, venId: parseInt(document.getElementById('empVenue').value)||0, status: document.getElementById('empStatus').value};
+  if(!emp.name) return alert('Введите ФИО');
+  let list = JSON.parse(localStorage.getItem('employees88') || '[]');
+  const idx = list.findIndex(x => x.id === emp.id);
+  if(idx>=0) list[idx]=emp; else list.unshift(emp);
+  localStorage.setItem('employees88', JSON.stringify(list));
+  closeEmployeeModal();
+  renderEmployeesPage();
+}
+function editEmployee(id){
+  const list = JSON.parse(localStorage.getItem('employees88') || '[]');
+  const e = list.find(x => x.id === id);
+  if(!e) return;
+  fillSelects();
+  document.getElementById('editEmpId').value = e.id;
+  document.getElementById('empName').value = e.name;
+  document.getElementById('empPhone').value = e.phone||'';
+  document.getElementById('empPin').value = e.pin||'';
+  document.getElementById('empPosition').value = e.posId||'';
+  document.getElementById('empVenue').value = e.venId||'';
+  document.getElementById('empStatus').value = e.status||'active';
+  document.getElementById('empModalTitle').textContent = 'Редактировать сотрудника';
+  document.getElementById('employeeModal').classList.add('active');
+}
+function deleteEmployee(id){
+  if(!confirm('Удалить сотрудника?')) return;
+  let list = JSON.parse(localStorage.getItem('employees88') || '[]');
+  list = list.filter(e => e.id !== id);
+  localStorage.setItem('employees88', JSON.stringify(list));
+  renderEmployeesPage();
+}
+const EMP_STATUS = {active:'✅ На смене', off:'❌ Не на смене', vacation:'🌴 В отпуске'};
+function renderEmployeesPage(){
+  const list = JSON.parse(localStorage.getItem('employees88') || '[]');
+  const positions = JSON.parse(localStorage.getItem('positions88') || '[]');
+  const venues = JSON.parse(localStorage.getItem('venues88') || '[]');
+  const tbody = document.getElementById('employeeTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">👤</div><p>Сотрудников пока нет</p></div></td></tr>';
+    return;
+  }
+  const posMap = {}; positions.forEach(p => posMap[p.id] = p.name);
+  const venMap = {}; venues.forEach(v => venMap[v.id] = v.name);
+  tbody.innerHTML = list.map(e => '<tr><td><span class="prod-name">'+e.name+'</span></td><td style="color:var(--muted)">'+(e.phone||'—')+'</td><td>'+(posMap[e.posId]||'—')+'</td><td><span style="font-size:.75rem;font-weight:500">'+EMP_STATUS[e.status]||e.status+'</span></td><td>'+(e.pin?'<span style="font-family:monospace;font-size:.8rem">••••</span>':'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editEmployee('+e.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteEmployee('+e.id+')">&#10005;</button></td></tr>').join('');
+}
+
+// === ДОСТУП: ДОЛЖНОСТИ ===
+function openPositionModal(){
+  document.getElementById('positionModal').classList.add('active');
+}
+function closePositionModal(){
+  document.getElementById('positionModal').classList.remove('active');
+  document.getElementById('positionForm').reset();
+  document.getElementById('editPosId').value = '';
+}
+function savePosition(e){
+  e.preventDefault();
+  const editId = document.getElementById('editPosId').value;
+  const pos = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('posName').value.trim(), level: document.getElementById('posLevel').value, desc: document.getElementById('posDesc').value.trim()};
+  if(!pos.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('positions88') || '[]');
+  const idx = list.findIndex(x => x.id === pos.id);
+  if(idx>=0) list[idx]=pos; else list.unshift(pos);
+  localStorage.setItem('positions88', JSON.stringify(list));
+  closePositionModal();
+  renderPositionsPage();
+}
+function editPosition(id){
+  const list = JSON.parse(localStorage.getItem('positions88') || '[]');
+  const p = list.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('editPosId').value = p.id;
+  document.getElementById('posName').value = p.name;
+  document.getElementById('posLevel').value = p.level;
+  document.getElementById('posDesc').value = p.desc||'';
+  document.getElementById('posModalTitle').textContent = 'Редактировать должность';
+  document.getElementById('positionModal').classList.add('active');
+}
+function deletePosition(id){
+  if(!confirm('Удалить должность?')) return;
+  let list = JSON.parse(localStorage.getItem('positions88') || '[]');
+  list = list.filter(p => p.id !== id);
+  localStorage.setItem('positions88', JSON.stringify(list));
+  renderPositionsPage();
+}
+const POS_LEVEL_LABELS = {cashier:'🔒 Только касса', storekeeper:'🔓 Склад + товары', manager:'🔑 Всё, кроме настроек', admin:'👑 Полный доступ'};
+function renderPositionsPage(){
+  const list = JSON.parse(localStorage.getItem('positions88') || '[]');
+  const tbody = document.getElementById('positionTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">📋</div><p>Должностей пока нет</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(p => '<tr><td><span class="prod-name">'+p.name+'</span></td><td style="color:var(--muted);font-size:.8rem">'+(POS_LEVEL_LABELS[p.level]||p.level)+(p.desc?'<br>'+p.desc:'')+'</td><td style="text-align:right"><button class="act-btn" onclick="editPosition('+p.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deletePosition('+p.id+')">&#10005;</button></td></tr>').join('');
+}
+
+// === ДОСТУП: КАССЫ ===
+function fillRegVenues(){
+  const sel = document.getElementById('regVenue');
+  const venues = JSON.parse(localStorage.getItem('venues88') || '[]');
+  sel.innerHTML = '<option value="">— не выбрано —</option>' + venues.map(v => '<option value="'+v.id+'">'+v.name+'</option>').join('');
+}
+function openRegisterModal(){
+  fillRegVenues();
+  document.getElementById('registerModal').classList.add('active');
+}
+function closeRegisterModal(){
+  document.getElementById('registerModal').classList.remove('active');
+  document.getElementById('registerForm').reset();
+  document.getElementById('editRegId').value = '';
+}
+function saveRegister(e){
+  e.preventDefault();
+  const editId = document.getElementById('editRegId').value;
+  const r = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('regName').value.trim(), code: document.getElementById('regCode').value, balance: parseFloat(document.getElementById('regBalance').value)||0, venId: parseInt(document.getElementById('regVenue').value)||0};
+  if(!r.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('registers88') || '[]');
+  const idx = list.findIndex(x => x.id === r.id);
+  if(idx>=0) list[idx]=r; else list.unshift(r);
+  localStorage.setItem('registers88', JSON.stringify(list));
+  closeRegisterModal();
+  renderRegistersPage();
+}
+function editRegister(id){
+  const list = JSON.parse(localStorage.getItem('registers88') || '[]');
+  const r = list.find(x => x.id === id);
+  if(!r) return;
+  fillRegVenues();
+  document.getElementById('editRegId').value = r.id;
+  document.getElementById('regName').value = r.name;
+  document.getElementById('regCode').value = r.code||'';
+  document.getElementById('regBalance').value = r.balance||'';
+  document.getElementById('regVenue').value = r.venId||'';
+  document.getElementById('regModalTitle').textContent = 'Редактировать кассу';
+  document.getElementById('registerModal').classList.add('active');
+}
+function deleteRegister(id){
+  if(!confirm('Удалить кассу?')) return;
+  let list = JSON.parse(localStorage.getItem('registers88') || '[]');
+  list = list.filter(r => r.id !== id);
+  localStorage.setItem('registers88', JSON.stringify(list));
+  renderRegistersPage();
+}
+function renderRegistersPage(){
+  const list = JSON.parse(localStorage.getItem('registers88') || '[]');
+  const venues = JSON.parse(localStorage.getItem('venues88') || '[]');
+  const venMap = {}; venues.forEach(v => venMap[v.id] = v.name);
+  const tbody = document.getElementById('registerTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">🖥️</div><p>Касс пока нет</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(r => '<tr><td><span class="prod-name">'+r.name+'</span></td><td style="color:var(--muted)">'+(r.code?'<span style="font-family:monospace">••••</span>':'—')+'</td><td>'+ (r.balance||0).toLocaleString()+' ₽</td><td style="color:var(--muted);font-size:.8rem">'+(venMap[r.venId]||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editRegister('+r.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteRegister('+r.id+')">&#10005;</button></td></tr>').join('');
+}
+
+// === ДОСТУП: ЗАВЕДЕНИЯ ===
+function openVenueModal(){
+  document.getElementById('venueModal').classList.add('active');
+}
+function closeVenueModal(){
+  document.getElementById('venueModal').classList.remove('active');
+  document.getElementById('venueForm').reset();
+  document.getElementById('editVenId').value = '';
+}
+function saveVenue(e){
+  e.preventDefault();
+  const editId = document.getElementById('editVenId').value;
+  const v = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('venName').value.trim(), address: document.getElementById('venAddress').value.trim(), phone: document.getElementById('venPhone').value.trim()};
+  if(!v.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('venues88') || '[]');
+  const idx = list.findIndex(x => x.id === v.id);
+  if(idx>=0) list[idx]=v; else list.unshift(v);
+  localStorage.setItem('venues88', JSON.stringify(list));
+  closeVenueModal();
+  renderVenuesPage();
+}
+function editVenue(id){
+  const list = JSON.parse(localStorage.getItem('venues88') || '[]');
+  const v = list.find(x => x.id === id);
+  if(!v) return;
+  document.getElementById('editVenId').value = v.id;
+  document.getElementById('venName').value = v.name;
+  document.getElementById('venAddress').value = v.address||'';
+  document.getElementById('venPhone').value = v.phone||'';
+  document.getElementById('venModalTitle').textContent = 'Редактировать заведение';
+  document.getElementById('venueModal').classList.add('active');
+}
+function deleteVenue(id){
+  if(!confirm('Удалить заведение?')) return;
+  let list = JSON.parse(localStorage.getItem('venues88') || '[]');
+  list = list.filter(v => v.id !== id);
+  localStorage.setItem('venues88', JSON.stringify(list));
+  renderVenuesPage();
+}
+function renderVenuesPage(){
+  const list = JSON.parse(localStorage.getItem('venues88') || '[]');
+  const tbody = document.getElementById('venueTableBody');
+  if(!list.length){
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">🏪</div><p>Заведений пока нет</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(v => '<tr><td><span class="prod-name">'+v.name+'</span></td><td style="color:var(--muted);font-size:.8rem">'+(v.address||'—')+'</td><td style="color:var(--muted)">'+(v.phone||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editVenue('+v.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteVenue('+v.id+')">&#10005;</button></td></tr>').join('');
 }
 
 // === КАТЕГОРИИ ===
