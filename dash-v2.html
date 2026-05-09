@@ -16,7 +16,7 @@
   .sidebar.collapsed .sidebar-user-logout,
 
   .sidebar.collapsed .nav-parent{font-size:0;padding:.6rem .55rem;justify-content:center;gap:0}
-  .sidebar.collapsed .nav-parent .ic{font-size:1.2rem;width:auto;margin:0;filter:none;opacity:1}
+  .sidebar.collapsed .nav-parent .ic{font-size:1.4rem;width:auto;margin:0;filter:none;opacity:1}
   .sidebar.collapsed .nav-parent .arrow{display:none}
   .sidebar.collapsed .nav-children{display:none!important}
   .sidebar.collapsed .nav-child{display:none}
@@ -43,7 +43,7 @@
   .nav-parent{display:flex;align-items:center;gap:.55rem;padding:.5rem .8rem .5rem .65rem;font-size:.85rem;font-weight:600;color:#1a1a1a;cursor:pointer;transition:all .12s;border-left:2px solid transparent;text-decoration:none;user-select:none}
   .nav-parent:hover{background:rgba(25,131,221,0.08)}
   .nav-parent.active{background:var(--primary-light);border-left-color:var(--primary)}
-  .nav-parent .ic{width:1.6rem;text-align:center;font-size:1.1rem;line-height:1;flex-shrink:0;filter:grayscale(1) brightness(.4);opacity:.8}
+  .nav-parent .ic{width:1.8rem;text-align:center;font-size:1.3rem;line-height:1;flex-shrink:0;filter:grayscale(1) brightness(.35);opacity:.9}
   .nav-parent .arrow{margin-left:auto;font-size:.55rem;color:var(--muted);transition:transform .2s}
   .nav-parent.open .arrow{transform:rotate(90deg)}
 
@@ -230,10 +230,10 @@
   </div>
   <nav class="sidebar-nav">
 
-    <a class="nav-parent" onclick="navigateTo('dashboard')"><span class="ic">▣</span> Панель управления</a>
+    <a class="nav-parent" onclick="navigateTo('dashboard')"><span class="ic">⊟</span> Панель управления</a>
 
     <div class="nav-group">
-      <a class="nav-parent open" onclick="toggleGroup(this)"><span class="ic">◇</span> Статистика<span class="arrow">▶</span></a>
+      <a class="nav-parent open" onclick="toggleGroup(this)"><span class="ic">⍋</span> Статистика<span class="arrow">▶</span></a>
       <div class="nav-children open">
         <a class="nav-child">Транзакции</a>
         <a class="nav-child">Кассовые смены</a>
@@ -247,7 +247,7 @@
     </div>
 
     <div class="nav-group">
-      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">◐</span> Товары и услуги<span class="arrow">▶</span></a>
+      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">☲</span> Товары и услуги<span class="arrow">▶</span></a>
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('products')">Товары</a>
         <a class="nav-child" onclick="navigateTo('services')">Услуги</a>
@@ -257,7 +257,7 @@
     </div>
 
     <div class="nav-group">
-      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">≡</span> Склад<span class="arrow">▶</span></a>
+      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">🏗</span> Склад<span class="arrow">▶</span></a>
       <div class="nav-children">
         <a class="nav-child">Остатки</a>
         <a class="nav-child">Поставки</a>
@@ -270,7 +270,7 @@
     </div>
 
     <div class="nav-group">
-      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">★</span> Маркетинг<span class="arrow">▶</span></a>
+      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">※</span> Маркетинг<span class="arrow">▶</span></a>
       <div class="nav-children">
         <a class="nav-child">Клиенты</a>
         <a class="nav-child">Программы лояльности</a>
@@ -279,7 +279,7 @@
     </div>
 
     <div class="nav-group">
-      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">●</span> Доступ<span class="arrow">▶</span></a>
+      <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">⌘</span> Доступ<span class="arrow">▶</span></a>
       <div class="nav-children">
         <a class="nav-child">Сотрудники</a>
         <a class="nav-child">Должности</a>
@@ -299,7 +299,7 @@
 
     <div class="nav-footer">
       <div class="nav-sep"></div>
-      <a class="nav-parent" onclick="alert('Выход')"><span class="ic">✕</span> Выход</a>
+      <a class="nav-parent" onclick="alert('Выход')"><span class="ic">⏻</span> Выход</a>
     </div>
 
   </nav>
