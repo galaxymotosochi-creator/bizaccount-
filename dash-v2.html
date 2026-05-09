@@ -828,7 +828,7 @@ function renderProductsPage(){
       '<td style="text-align:right;white-space:nowrap">' +
         '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
-          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">•••</button>' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
             '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
             (isHidden?'<button onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideProduct('+p.id+')">Скрыть</button>') +
