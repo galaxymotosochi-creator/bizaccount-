@@ -169,7 +169,7 @@
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">▤</span> Товары и услуги<span class="arrow">▶</span></a>
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('products')">Товары</a>
-        <a class="nav-child">Услуги</a>
+        <a class="nav-child" onclick="navigateTo('services')">Услуги</a>
         <a class="nav-child">Категории товаров</a>
         <a class="nav-child">Категории услуг</a>
       </div>
@@ -251,13 +251,12 @@
       </div>
     </div>
 
-    <!-- ТОВАРЫ И УСЛУГИ -->
+    <!-- ТОВАРЫ -->
     <div class="page-section" id="page-products">
       <div class="page-header">
         <div>
-          <
-          <h1>Товары и услуги</h1>
-          <div class="sub">Управляйте ассортиментом — добавляйте, редактируйте, ищите</div>
+          <h1>Товары</h1>
+          <div class="sub">Управляйте товарами — добавляйте, редактируйте, ищите</div>
         </div>
         <div class="page-actions">
           <button class="btn btn-primary" onclick="openProductModal()">+ Добавить товар</button>
@@ -272,7 +271,6 @@
         <span class="filter-tab active" data-filter="all" onclick="setFilter('all')">Все</span>
         <span class="filter-tab" data-filter="material" onclick="setFilter('material')">Материалы</span>
         <span class="filter-tab" data-filter="tool" onclick="setFilter('tool')">Инструменты</span>
-        <span class="filter-tab" data-filter="service" onclick="setFilter('service')">Услуги</span>
         <span class="filter-tab" data-filter="equipment" onclick="setFilter('equipment')">Оборудование</span>
         <span class="filter-tab" data-filter="other" onclick="setFilter('other')">Прочее</span>
       </div>
@@ -283,13 +281,56 @@
             <tr>
               <th style="width:38%">Название</th>
               <th style="width:13%">Категория</th>
-              <th style="width:16%">Цена</th>
-              <th style="width:8%">Кол-во</th>
+              <th style="width:16%" class="prod-price">Цена</th>
+              <th style="width:8%">Остаток</th>
               <th style="width:10%">Ед.</th>
               <th style="width:15%"></th>
             </tr>
           </thead>
           <tbody id="productTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- УСЛУГИ -->
+    <div class="page-section" id="page-services">
+      <div class="page-header">
+        <div>
+          <h1>Услуги</h1>
+          <div class="sub">Управляйте услугами — добавляйте цены и описания</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openServiceModal()">+ Добавить услугу</button>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="serviceSearch" placeholder="Поиск по названию..." oninput="renderServicesPage()">
+      </div>
+
+      <div class="filter-tabs" id="serviceFilterTabs">
+        <span class="filter-tab active" data-filter="all" onclick="setServiceFilter('all')">Все</span>
+        <span class="filter-tab" data-filter="repair" onclick="setServiceFilter('repair')">Ремонт</span>
+        <span class="filter-tab" data-filter="cleaning" onclick="setServiceFilter('cleaning')">Клининг</span>
+        <span class="filter-tab" data-filter="delivery" onclick="setServiceFilter('delivery')">Доставка</span>
+        <span class="filter-tab" data-filter="consult" onclick="setServiceFilter('consult')">Консультация</span>
+        <span class="filter-tab" data-filter="install" onclick="setServiceFilter('install')">Монтаж</span>
+        <span class="filter-tab" data-filter="other" onclick="setServiceFilter('other')">Прочее</span>
+      </div>
+
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:35%">Название</th>
+              <th style="width:15%">Категория</th>
+              <th style="width:15%">Цена</th>
+              <th style="width:12%">Длит.</th>
+              <th style="width:23%"></th>
+            </tr>
+          </thead>
+          <tbody id="serviceTableBody">
           </tbody>
         </table>
       </div>
@@ -373,6 +414,62 @@
   </div>
 </div>
 
+<!-- Модальное окно добавления услуги -->
+<div class="modal-overlay" id="serviceModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+    <h2 id="serviceModalTitle">Добавить услугу</h2>
+    <div class="sub">Заполните поля и нажмите Сохранить</div>
+    <form id="serviceForm" onsubmit="saveService(event)">
+      <input type="hidden" id="editServiceId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="servName" placeholder="Например, Укладка плитки" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Категория</label>
+          <select id="servCat">
+            <option value="repair">Ремонт</option>
+            <option value="cleaning">Клининг</option>
+            <option value="delivery">Доставка</option>
+            <option value="consult">Консультация</option>
+            <option value="install">Монтаж</option>
+            <option value="other">Прочее</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Цена (₽)</label>
+          <input type="number" id="servPrice" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Единица</label>
+          <select id="servUnit">
+            <option value="час">час</option>
+            <option value="день">день</option>
+            <option value="м²">м²</option>
+            <option value="услуга">услуга</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Длительность</label>
+          <input type="number" id="servDuration" placeholder="1" value="1" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Описание</label>
+        <textarea id="servDesc" placeholder="Что входит в услугу..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeServiceModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 const CAT_LABELS = {material:'Материалы',tool:'Инструменты',service:'Услуги',equipment:'Оборудование',other:'Прочее'};
 
@@ -394,16 +491,7 @@ function toggleSidebar(){
   btn.title = sb.classList.contains('collapsed') ? 'Развернуть меню' : 'Свернуть меню';
 }
 
-function navigateTo(page){
-  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('.sidebar-item').forEach(i => {
-    if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
-  });
-  if(page === 'products') renderProductsPage();
-  if(page === 'dashboard') updateStats();
-}
+
 
 let currentFilter = 'all';
 function setFilter(filter){
@@ -499,15 +587,114 @@ function deleteProduct(id){
   updateStats();
 }
 
+const SVC_CAT = {repair:'Ремонт',cleaning:'Клининг',delivery:'Доставка',consult:'Консультация',install:'Монтаж',other:'Прочее'};
+
+function navigateTo(page){
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.nav-parent').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.nav-child').forEach(i => i.classList.remove('active'));
+  const sec = document.getElementById('page-' + page);
+  if(sec) sec.classList.add('active');
+  if(page === 'products') renderProductsPage();
+  if(page === 'services') renderServicesPage();
+  if(page === 'dashboard') updateStats();
+  document.querySelectorAll('.nav-child').forEach(i => {
+    if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
+  });
+}
+
+// === СТРАНИЦА УСЛУГ ===
+let svcFilter = 'all';
+function setServiceFilter(f){
+  svcFilter = f;
+  document.querySelectorAll('#serviceFilterTabs .filter-tab').forEach(t => t.classList.remove('active'));
+  const tab = document.querySelector('#serviceFilterTabs .filter-tab[data-filter="'+f+'"]');
+  if(tab) tab.classList.add('active');
+  renderServicesPage();
+}
+function openServiceModal(){
+  document.getElementById('serviceModal').classList.add('active');
+}
+function closeServiceModal(){
+  document.getElementById('serviceModal').classList.remove('active');
+  document.getElementById('serviceForm').reset();
+  document.getElementById('servDuration').value = 1;
+  document.getElementById('editServiceId').value = '';
+  document.getElementById('serviceModalTitle').textContent = 'Добавить услугу';
+}
+function saveService(e){
+  e.preventDefault();
+  const editId = document.getElementById('editServiceId').value;
+  const s = {
+    id: editId ? parseInt(editId) : Date.now(),
+    name: document.getElementById('servName').value.trim(),
+    cat: document.getElementById('servCat').value,
+    price: parseFloat(document.getElementById('servPrice').value) || 0,
+    unit: document.getElementById('servUnit').value,
+    duration: parseFloat(document.getElementById('servDuration').value) || 1,
+    desc: document.getElementById('servDesc').value.trim()
+  };
+  if(!s.name) return alert('Введите название');
+  let list = JSON.parse(localStorage.getItem('services88') || '[]');
+  const idx = list.findIndex(x => x.id === s.id);
+  if(idx >= 0) list[idx] = s; else list.unshift(s);
+  localStorage.setItem('services88', JSON.stringify(list));
+  closeServiceModal();
+  renderServicesPage();
+}
+function editService(id){
+  const list = JSON.parse(localStorage.getItem('services88') || '[]');
+  const s = list.find(x => x.id === id);
+  if(!s) return alert('Услуга не найдена');
+  document.getElementById('editServiceId').value = s.id;
+  document.getElementById('servName').value = s.name;
+  document.getElementById('servCat').value = s.cat;
+  document.getElementById('servPrice').value = s.price;
+  document.getElementById('servUnit').value = s.unit;
+  document.getElementById('servDuration').value = s.duration;
+  document.getElementById('servDesc').value = s.desc || '';
+  document.getElementById('serviceModalTitle').textContent = 'Редактировать услугу';
+  document.getElementById('serviceModal').classList.add('active');
+}
+function deleteService(id){
+  if(!confirm('Удалить услугу?')) return;
+  let list = JSON.parse(localStorage.getItem('services88') || '[]');
+  list = list.filter(s => s.id !== id);
+  localStorage.setItem('services88', JSON.stringify(list));
+  renderServicesPage();
+}
+function renderServicesPage(){
+  let services = JSON.parse(localStorage.getItem('services88') || '[]');
+  const q = (document.getElementById('serviceSearch')?.value || '').toLowerCase().trim();
+  if(svcFilter !== 'all') services = services.filter(s => s.cat === svcFilter);
+  if(q) services = services.filter(s => s.name.toLowerCase().includes(q));
+  const tbody = document.getElementById('serviceTableBody');
+  if(!services.length){
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">&#128295;</div><p>Услуг пока нет. Нажмите «+ Добавить услугу»</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = services.map(s =>
+    '<tr>' +
+      '<td><span class="prod-name">'+s.name+'</span>'+(s.desc?'<br><span class="prod-sku">'+s.desc.substring(0,40)+(s.desc.length>40?'...':'')+'</span>':'')+'</td>' +
+      '<td><span class="prod-cat">'+(SVC_CAT[s.cat]||s.cat)+'</span></td>' +
+      '<td><span class="prod-price">'+s.price.toLocaleString()+' &#8381;</span></td>' +
+      '<td>'+s.duration+' '+s.unit+'</td>' +
+      '<td class="product-table-actions" style="text-align:right"><button class="act-btn" onclick="editService('+s.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteService('+s.id+')">&#10005;</button></td>' +
+    '</tr>'
+  ).join('');
+}
+
 function updateStats(){
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const services = JSON.parse(localStorage.getItem('services88') || '[]');
   const totalItems = products.reduce((s,p) => s + (p.qty||0), 0);
-  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
+  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0) + services.reduce((s,p) => s + (p.price||0), 0);
   const cost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
   const vals = document.querySelectorAll('#page-dashboard .stat-card .val');
   if(vals.length>=3){
     vals[0].textContent = revenue.toLocaleString()+' ₽';
-    vals[1].textContent = totalItems;
+    vals[1].textContent = totalItems + ' тов.';
     vals[2].textContent = (revenue - cost).toLocaleString()+' ₽';
   }
 }
