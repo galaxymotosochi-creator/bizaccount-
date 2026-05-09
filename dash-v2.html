@@ -159,8 +159,13 @@
   .product-table .prod-price{font-weight:500}
   .product-table .act-btn{background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.3rem .5rem;border-radius:.3rem;font-family:var(--font)}
   .product-table .act-btn:hover{background:var(--body-bg);color:var(--body-color)}
-  .product-table .act-del{color:#dc3545}
-  .product-table .act-del:hover{background:#fef2f2}
+  .prod-edit-btn{font-size:.75rem!important;font-weight:600;color:var(--primary)!important;background:var(--primary-light)!important;padding:.2rem .45rem!important;border-radius:.3rem}
+  .prod-edit-btn:hover{background:var(--primary)!important;color:var(--white)!important}
+  .prod-more-btn{font-size:.75rem!important;font-weight:600;letter-spacing:1px}
+  .prod-dropdown{display:none;position:absolute;right:0;top:100%;margin-top:2px;background:var(--white);border:1px solid var(--border);border-radius:.4rem;box-shadow:0 .3rem .8rem rgba(0,0,0,.1);z-index:50;min-width:130px;padding:.25rem 0}
+  .prod-dropdown.open{display:block}
+  .prod-dropdown button{display:block;width:100%;text-align:left;padding:.4rem .7rem;font-size:.78rem;font-family:var(--font);border:none;background:none;cursor:pointer;color:var(--body-color)}
+  .prod-dropdown button:hover{background:var(--body-bg)}
   .empty-products{text-align:center;padding:3rem 1rem;color:var(--muted)}
   .empty-products .big-icon{font-size:3rem;opacity:.15;margin-bottom:.5rem}
   .empty-products p{font-size:.9rem}
@@ -413,12 +418,13 @@
         <table>
           <thead>
             <tr>
-              <th style="width:38%">Название</th>
-              <th style="width:13%">Категория</th>
-              <th style="width:16%" class="prod-price">Цена</th>
+              <th style="width:32%">Название</th>
+              <th style="width:11%">Категория</th>
+              <th style="width:14%" class="prod-price">Цена</th>
+              <th style="width:11%">Наценка</th>
               <th style="width:8%">Остаток</th>
-              <th style="width:10%">Ед.</th>
-              <th style="width:15%"></th>
+              <th style="width:8%">Ед.</th>
+              <th style="width:16%"></th>
             </tr>
           </thead>
           <tbody id="productTableBody">
@@ -785,19 +791,62 @@ function renderProductsPage(){
 
   const tbody = document.getElementById('productTableBody');
   if(!products.length){
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = products.map(p =>
-    '<tr>' +
+  tbody.innerHTML = products.map(p => {
+    const markup = p.price - (p.cost||0);
+    const markupPct = p.cost > 0 ? Math.round((markup / p.cost) * 100) : 0;
+    return '<tr>' +
       '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span></td>' +
-      '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span>'+(p.cost?'<br><span style="font-size:.75rem;color:var(--muted)">закуп: '+p.cost.toLocaleString()+' &#8381;</span>':'')+'</td>' +
-      '<td style="text-align:center">'+p.qty+'</td>' +
+      '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span>'+(p.cost?'<br><span style="font-size:.7rem;color:var(--muted)">закуп: '+p.cost.toLocaleString()+' &#8381;</span>':'')+'</td>' +
+      '<td><span class="prod-price">'+markup.toLocaleString()+' &#8381;</span><br><span style="font-size:.7rem;color:'+(markupPct>0?'var(--success,green)':'var(--muted)')+'">'+markupPct+'%</span></td>' +
+      '<td style="text-align:center;font-weight:600">'+p.qty+'</td>' +
       '<td>'+p.unit+'</td>' +
-      '<td class="product-table-actions" style="text-align:right"><button class="act-btn act-del" onclick="deleteProduct('+p.id+')">Удалить</button></td>' +
-    '</tr>'
-  ).join('');
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">•••</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
+            '<button onclick="hideProduct('+p.id+')">Скрыть</button>' +
+            '<button onclick="deleteProduct('+p.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+// Закрыть все меню ••• при клике вне
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.prod-more-wrap')){
+    document.querySelectorAll('.prod-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function toggleProdMenu(btn){
+  const dd = btn.nextElementSibling;
+  document.querySelectorAll('.prod-dropdown.open').forEach(d => { if(d !== dd) d.classList.remove('open'); });
+  dd.classList.toggle('open');
+}
+
+function copyProduct(id){
+  const list = JSON.parse(localStorage.getItem('products88') || '[]');
+  const p = list.find(x => x.id === id);
+  if(!p) return;
+  const copy = {...p, id: Date.now(), name: p.name + ' (копия)'};
+  list.push(copy);
+  localStorage.setItem('products88', JSON.stringify(list));
+  renderProductsPage();
+}
+
+function hideProduct(id){
+  let list = JSON.parse(localStorage.getItem('products88') || '[]');
+  list = list.filter(x => x.id !== id);
+  localStorage.setItem('products88', JSON.stringify(list));
+  renderProductsPage();
 }
 
 function deleteProduct(id){
