@@ -52,7 +52,34 @@
   .qcard .pl{width:2rem;height:2rem;background:var(--primary-light);border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:600;color:var(--primary);flex-shrink:0}
   .tip{background:var(--primary-light);border:1px solid rgba(25,131,221,.15);border-radius:var(--radius);padding:1rem 1.25rem;font-size:.85rem;display:flex;gap:.75rem;align-items:flex-start;color:var(--body-color)}
   .tip .info{width:1.5rem;height:1.5rem;background:var(--primary);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
-  
+
+  /* Modal */
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+  .modal-overlay.active{display:flex}
+  .modal-box{background:var(--white);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;box-shadow:0 1rem 2rem rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
+  .modal-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.25rem}
+  .modal-box .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+  .modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);font-family:var(--font);padding:.25rem}
+  .modal-close:hover{color:var(--body-color)}
+  .form-group{margin-bottom:1rem}
+  .form-group label{display:block;font-size:.8rem;font-weight:500;margin-bottom:.3rem;color:var(--body-color)}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;transition:border-color .15s;background:var(--white);color:var(--body-color)}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,131,221,.1)}
+  .form-group textarea{min-height:60px;resize:vertical}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+  .modal-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+  .btn{padding:.6rem 1.25rem;border-radius:var(--radius);font-size:.85rem;font-family:var(--font);cursor:pointer;border:none;font-weight:500;transition:all .12s}
+  .btn-primary{background:var(--primary);color:var(--white)}
+  .btn-primary:hover{background:var(--primary-dark)}
+  .btn-outline{background:none;color:var(--muted);border:1px solid var(--border)}
+  .btn-outline:hover{background:var(--body-bg);color:var(--body-color)}
+  .product-list{margin-top:1rem}
+  .product-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.4rem;font-size:.85rem}
+  .product-item .name{font-weight:500}
+  .product-item .price{color:var(--muted)}
+  .product-item .del{cursor:pointer;color:#dc3545;opacity:.5;background:none;border:none;font-size:.9rem}
+  .product-item .del:hover{opacity:1}
+
   @media(max-width:768px){
     .sidebar{transform:translateX(0)}
     
@@ -85,7 +112,7 @@
   </div>
   <nav class="sidebar-nav">
     <a class="sidebar-item active"><span class="ic">&#9632;</span> Панель управления</a>
-    <a class="sidebar-item"><span class="ic">&#9744;</span> Товары и услуги</a>
+    <a class="sidebar-item" onclick="openProductModal()"><span class="ic">&#9744;</span> Товары и услуги</a>
     <a class="sidebar-item"><span class="ic">&#9776;</span> Категории</a>
     <a class="sidebar-item"><span class="ic">&#10070;</span> Клиенты</a>
     <a class="sidebar-item"><span class="ic">&#9881;</span> Поставщики</a>
@@ -121,7 +148,7 @@
 
     <div class="qt">Быстрые действия</div>
     <div class="qgrid">
-      <div class="qcard" onclick="alert('Добавить товар')"><span class="pl">+</span> Добавить товар</div>
+      <div class="qcard" onclick="openProductModal()"><span class="pl">+</span> Добавить товар</div>
       <div class="qcard" onclick="alert('Новая продажа')"><span class="pl">+</span> Новая продажа</div>
       <div class="qcard" onclick="alert('Закупка')"><span class="pl">+</span> Закупка</div>
       <div class="qcard" onclick="alert('Новый клиент')"><span class="pl">+</span> Новый клиент</div>
@@ -134,6 +161,146 @@
   </div>
 </div>
 
+<!-- Модальное окно: Товары и услуги -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeProductModal()">&times;</button>
+    <h2>Добавить товар / услугу</h2>
+    <div class="sub">Заполните поля и нажмите Сохранить</div>
+    <form id="productForm" onsubmit="saveProduct(event)">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="prodName" placeholder="Например, Кирпич красный" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Категория</label>
+          <select id="prodCat">
+            <option value="material">Материалы</option>
+            <option value="tool">Инструменты</option>
+            <option value="service">Услуги</option>
+            <option value="equipment">Оборудование</option>
+            <option value="other">Прочее</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Тип</label>
+          <select id="prodType">
+            <option value="product">Товар</option>
+            <option value="service">Услуга</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Закупочная цена (₽)</label>
+          <input type="number" id="prodCost" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Розничная цена (₽)</label>
+          <input type="number" id="prodPrice" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Количество</label>
+          <input type="number" id="prodQty" placeholder="1" value="1" min="0">
+        </div>
+        <div class="form-group">
+          <label>Ед. измерения</label>
+          <select id="prodUnit">
+            <option value="шт">шт</option>
+            <option value="кг">кг</option>
+            <option value="м">м</option>
+            <option value="л">л</option>
+            <option value="м²">м²</option>
+            <option value="м³">м³</option>
+            <option value="усл">услуга</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Артикул / код</label>
+        <input type="text" id="prodSku" placeholder="Например, KR-001">
+      </div>
+      <div class="form-group">
+        <label>Описание</label>
+        <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeProductModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+    <div class="product-list" id="productList"></div>
+  </div>
+</div>
+
+<script>
+function openProductModal(){
+  document.getElementById('productModal').classList.add('active');
+  renderProductList();
+}
+function closeProductModal(){
+  document.getElementById('productModal').classList.remove('active');
+  document.getElementById('productForm').reset();
+}
+function saveProduct(e){
+  e.preventDefault();
+  const product = {
+    id: Date.now(),
+    name: document.getElementById('prodName').value.trim(),
+    cat: document.getElementById('prodCat').value,
+    type: document.getElementById('prodType').value,
+    cost: parseFloat(document.getElementById('prodCost').value) || 0,
+    price: parseFloat(document.getElementById('prodPrice').value) || 0,
+    qty: parseInt(document.getElementById('prodQty').value) || 0,
+    unit: document.getElementById('prodUnit').value,
+    sku: document.getElementById('prodSku').value.trim(),
+    desc: document.getElementById('prodDesc').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  if(!product.name) return alert('Введите название');
+  let products = JSON.parse(localStorage.getItem('products88') || '[]');
+  products.unshift(product);
+  localStorage.setItem('products88', JSON.stringify(products));
+  document.getElementById('productForm').reset();
+  document.getElementById('prodQty').value = 1;
+  renderProductList();
+  updateStats();
+}
+function renderProductList(){
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const list = document.getElementById('productList');
+  if(!products.length){
+    list.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem">Товаров пока нет. Добавьте первый!</div>';
+    return;
+  }
+  list.innerHTML = '<div style="font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase">Сохранённые товары</div>' + 
+    products.slice(0, 10).map(p => 
+      '<div class="product-item"><span><span class="name">' + p.name + '</span> <span class="price">' + p.price + ' ₽ / ' + p.unit + '</span></span><button class="del" onclick="deleteProduct(' + p.id + ')">&times;</button></div>'
+    ).join('');
+}
+function deleteProduct(id){
+  let products = JSON.parse(localStorage.getItem('products88') || '[]');
+  products = products.filter(p => p.id !== id);
+  localStorage.setItem('products88', JSON.stringify(products));
+  renderProductList();
+  updateStats();
+}
+function updateStats(){
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const totalItems = products.reduce((s,p) => s + (p.qty || 0), 0);
+  const totalRevenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
+  const cost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
+  const profit = totalRevenue - cost;
+  document.querySelectorAll('.stat-card .val')[0].textContent = totalRevenue.toLocaleString() + ' ₽';
+  document.querySelectorAll('.stat-card .val')[1].textContent = totalItems;
+  document.querySelectorAll('.stat-card .val')[2].textContent = profit.toLocaleString() + ' ₽';
+}
+// Загружаем сохранённые товары при старте
+document.addEventListener('DOMContentLoaded', updateStats);
+</script>
 
 </body>
 </html>
