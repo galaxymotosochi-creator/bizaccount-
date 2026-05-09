@@ -536,7 +536,7 @@
 <div class="modal-overlay" id="productModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeProductModal()">&times;</button>
-    <h2 id="modalTitle">Добавить товар / услугу</h2>
+    <h2 id="modalTitle">Добавить товар</h2>
     <div class="sub" id="modalSub">Заполните поля и нажмите Сохранить</div>
     <form id="productForm" onsubmit="saveProduct(event)">
       <input type="hidden" id="editProductId" value="">
@@ -741,7 +741,7 @@ function closeProductModal(){
   document.getElementById('productForm').reset();
   document.getElementById('prodQty').value = 1;
   document.getElementById('editProductId').value = '';
-  document.getElementById('modalTitle').textContent = 'Добавить товар / услугу';
+  document.getElementById('modalTitle').textContent = 'Добавить товар';
   document.getElementById('modalSub').textContent = 'Заполните поля и нажмите Сохранить';
 }
 
