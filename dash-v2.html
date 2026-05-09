@@ -276,12 +276,13 @@
   <nav class="sidebar-nav">
 
     <a class="nav-parent" onclick="navigateTo('dashboard')"><span class="ic">⊟</span> Панель управления</a>
+    <a class="nav-parent" onclick="openRegister()"><span class="ic">🛒</span> Касса</a>
 
     <div class="nav-group">
       <a class="nav-parent open" onclick="toggleGroup(this)"><span class="ic">⍋</span> Статистика<span class="arrow">▶</span></a>
       <div class="nav-children open">
         <a class="nav-child">Транзакции</a>
-        <a class="nav-child">Кассовые смены</a>
+        <a class="nav-child" onclick="navigateTo('shifts')">Кассовые смены</a>
         <a class="nav-child">Зарплата</a>
         <a class="nav-child">Счета</a>
         <a class="nav-child">Категории</a>
@@ -775,7 +776,20 @@
     </div>
 
     <div class="page-section" id="page-product-categories">
-      <!-- КАТЕГОРИИ ТОВАРОВ -->
+      <!-- КАССОВЫЕ СМЕНЫ -->
+    <div class="page-section" id="page-shifts">
+      <div class="page-header">
+        <div>
+          <h1>Кассовые смены</h1>
+          <div class="sub">История открытых и закрытых смен</div>
+        </div>
+      </div>
+      <div class="product-table">
+        <table><thead><tr><th style="width:18%">Дата открытия</th><th style="width:18%">Дата закрытия</th><th style="width:20%">Сотрудник</th><th style="width:14%">Продажи</th><th style="width:14%">Касса</th><th style="width:16%">Статус</th></tr></thead><tbody id="shiftTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- КАТЕГОРИИ ТОВАРОВ -->
       <div class="page-header">
         <div>
           <h1>Категории товаров</h1>
@@ -1599,6 +1613,7 @@ function navigateTo(page){
   if(page === 'clients') renderClientsPage();
   if(page === 'loyalty') renderLoyaltyPage();
   if(page === 'promos') renderPromosPage();
+  if(page === 'shifts') renderShiftsPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
   if(page === 'registers') renderRegistersPage();
@@ -2684,8 +2699,8 @@ function openR(){pin="";document.getElementById("pinOverlay").classList.add("ope
 function pinP(d){if(pin.length>=4)return;pin+=d;var e=document.getElementById("pinDisplay");e.textContent=e.textContent+"\u2022";}
 function pinClose(){document.getElementById("pinOverlay").classList.remove("open");pin="";document.getElementById("pinDisplay").textContent="";}
 function pinC(){pin="";document.getElementById("pinDisplay").textContent="";}
-function pinO(){if(pin.length<4)return;var E=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(x){return x.pin==pin&&x.status==="active"});if(!E)return alert("Не найден");curEmp=E;document.getElementById("pinOverlay").classList.remove("open");document.getElementById("regEmp").textContent=E.name;document.getElementById("regOverlay").classList.add("open");RI=[];rCat="all";rT();upR();}
-function regClose(){if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
+function pinO(){function regClose(){var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");var os=shifts.find(function(s){return s.status==="open"});if(os){var now=new Date();os.status="closed";os.closedAt=now.toLocaleString("ru-RU");var sales=JSON.parse(localStorage.getItem("sales88")||"[]");var ss=sales.filter(function(s){return s.date>=os.openedAt});os.totalSales=ss.reduce(function(sum,s){return sum+s.total},0);os.closingBalance=(os.startingBalance||0)+os.totalSales;localStorage.setItem("shifts88",JSON.stringify(shifts));}
+if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
 function rT(){var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var cats=[];P.concat(S).forEach(function(i){if(i.cat&&cats.indexOf(i.cat)<0)cats.push(i.cat)});var h='<button class="reg-cat-btn" onclick="setRC(\'all\')">\u0412\u0441\u0435</button>';cats.forEach(function(c){h+='<button class="reg-cat-btn" onclick="setRC(\''+c+'\')">'+c+'</button>'});document.getElementById("regCats").innerHTML=h;var items=[];P.forEach(function(x){items.push({id:x.id,sv:0,name:x.name,price:x.price||0})});S.forEach(function(x){items.push({id:x.id,sv:1,name:x.name,price:x.price||0})});if(rCat!="all")items=items.filter(function(x){return x.cat==rCat});var el=document.getElementById("regTiles");if(!items.length){el.innerHTML="<div style=\"padding:2rem;text-align:center;color:var(--muted)\">\u041d\u0435\u0442 \u0442\u043e\u0432\u0430\u0440\u043e\u0432</div>";return;}
 var h2="";items.forEach(function(x){h2+='<div class="reg-tile" onclick="addRI('+x.id+','+x.sv+')"><div class="t-name">'+x.name+'</div>'+(x.price?'<div class="t-price">'+x.price.toLocaleString()+'</div>':'')+'</div>'});el.innerHTML=h2;}
 function setRC(c){rCat=c;rT();}
