@@ -265,7 +265,7 @@
     <div class="nav-group">
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic">🏗</span> Склад<span class="arrow">▶</span></a>
       <div class="nav-children">
-        <a class="nav-child">Остатки</a>
+        <a class="nav-child" onclick="navigateTo('stock')">Остатки</a>
         <a class="nav-child">Поставки</a>
         <a class="nav-child">Списания</a>
         <a class="nav-child">Инвентаризация</a>
@@ -472,6 +472,37 @@
             </tr>
           </thead>
           <tbody id="serviceTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ОСТАТКИ -->
+    <div class="page-section" id="page-stock">
+      <div class="page-header">
+        <div>
+          <h1>Остатки</h1>
+          <div class="sub">Все товары на складе с количеством и стоимостью</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="stockSearch" placeholder="Поиск по названию..." oninput="renderStockPage()">
+      </div>
+
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:30%">Товар</th>
+              <th style="width:12%">Категория</th>
+              <th style="width:12%">Остаток</th>
+              <th style="width:14%">Себестоимость</th>
+              <th style="width:14%">В продаже</th>
+              <th style="width:18%">Наценка</th>
+            </tr>
+          </thead>
+          <tbody id="stockTableBody">
           </tbody>
         </table>
       </div>
@@ -919,6 +950,7 @@ function navigateTo(page){
   if(page === 'dashboard') updateStats();
   if(page === 'product-categories') renderCatPage('product');
   if(page === 'service-categories') renderCatPage('service');
+  if(page === 'stock') renderStockPage();
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
   });
@@ -1068,6 +1100,47 @@ function addAction(idx){
 
 function saveActions(){
   // сохраняем для будущего использования
+}
+
+// === СТРАНИЦА ОСТАТКИ ===
+function renderStockPage(){
+  let products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const q = (document.getElementById('stockSearch')?.value || '').toLowerCase().trim();
+  if(q) products = products.filter(p => p.name.toLowerCase().includes(q));
+
+  const tbody = document.getElementById('stockTableBody');
+  if(!products.length){
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📦</div><p>Товаров на складе нет</p></div></td></tr>';
+    return;
+  }
+
+  let totalQty = 0, totalCost = 0, totalRetail = 0;
+
+  tbody.innerHTML = products.map(p => {
+    const qty = p.qty || 0;
+    const cost = (p.cost||0) * qty;
+    const retail = (p.price||0) * qty;
+    const mark = retail - cost;
+    const markPct = cost > 0 ? Math.round((mark / cost) * 100) : 0;
+    const low = qty > 0 && qty <= 5;
+    totalQty += qty; totalCost += cost; totalRetail += retail;
+
+    return '<tr'+(low?' style="background:#fff8e6"':'')+'>' +
+      '<td><span class="prod-name">'+p.name+'</span>'+(p.sku?'<br><span class="prod-sku">'+p.sku+'</span>':'')+(low?' <span style="font-size:.6rem;color:#d97706;font-weight:600">⚠ мало</span>':'')+'</td>' +
+      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td>' +
+      '<td style="text-align:center;font-weight:'+(qty===0?'400':'600')+';color:'+(qty===0?'var(--muted)':'var(--body-color)')+'">'+(qty||'—')+'</td>' +
+      '<td>'+cost.toLocaleString()+' ₽</td>' +
+      '<td>'+retail.toLocaleString()+' ₽</td>' +
+      '<td><span'+(mark>0?' style="color:var(--success,green)"':'')+'>'+mark.toLocaleString()+' ₽</span>'+(markPct>0?' <span style="font-size:.7rem;color:var(--muted)">('+markPct+'%)</span>':'')+'</td>' +
+    '</tr>';
+  }).join('') +
+  '<tr style="font-weight:700;background:var(--body-bg)">' +
+    '<td>Итого</td><td></td>' +
+    '<td style="text-align:center">'+totalQty+'</td>' +
+    '<td>'+totalCost.toLocaleString()+' ₽</td>' +
+    '<td>'+totalRetail.toLocaleString()+' ₽</td>' +
+    '<td>'+(totalRetail-totalCost).toLocaleString()+' ₽</td>' +
+  '</tr>';
 }
 
 let currentPeriod = 'today';
