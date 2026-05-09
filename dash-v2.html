@@ -2635,7 +2635,8 @@ document.addEventListener('DOMContentLoaded', updateStats);
 
 <!-- ПИН -->
 <div class="pin-overlay" id="pinOverlay">
-  <div class="pin-box">
+  <div class="pin-box" style="position:relative">
+    <button onclick="pinClose()" style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted)">✕</button>
     <h2>Вход в кассу</h2>
     <div class="sub">ПИН-код</div>
     <div class="pin-display" id="pinDisplay"></div>
@@ -2681,6 +2682,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
 let RI=[],pin="",curEmp=null,rCat="all",payM="cash";
 function openR(){pin="";document.getElementById("pinOverlay").classList.add("open");}
 function pinP(d){if(pin.length>=4)return;pin+=d;var e=document.getElementById("pinDisplay");e.textContent=e.textContent+"\u2022";}
+function pinClose(){document.getElementById("pinOverlay").classList.remove("open");pin="";document.getElementById("pinDisplay").textContent="";}
 function pinC(){pin="";document.getElementById("pinDisplay").textContent="";}
 function pinO(){if(pin.length<4)return;var E=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(x){return x.pin==pin&&x.status==="active"});if(!E)return alert("Не найден");curEmp=E;document.getElementById("pinOverlay").classList.remove("open");document.getElementById("regEmp").textContent=E.name;document.getElementById("regOverlay").classList.add("open");RI=[];rCat="all";rT();upR();}
 function regClose(){if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
