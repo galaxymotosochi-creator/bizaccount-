@@ -1092,8 +1092,10 @@ function applyBlockConfig(){
   document.getElementById('b-cost').textContent = '0 ₽';
   document.getElementById('b-profit').textContent = '0 ₽';
   document.getElementById('b-stock-qty').textContent = products.reduce((s,p) => s + (p.qty||0), 0);
-  document.getElementById('b-stock-sum').textContent = '0 ₽';
-  document.getElementById('b-stock-retail').textContent = '0 ₽';
+  const stockCost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
+  const stockRetail = products.reduce((s,p) => s + (p.price * p.qty), 0);
+  document.getElementById('b-stock-sum').textContent = stockCost.toLocaleString()+' ₽';
+  document.getElementById('b-stock-retail').textContent = stockRetail.toLocaleString()+' ₽';
 }
 
 function updateStats(){
