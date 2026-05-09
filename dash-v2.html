@@ -1649,7 +1649,7 @@ function renderInventoryPage(){
     return '<tr'+(hasDiff&&diff!==0?' style="background:#fff3cd"':'')+'>' +
       '<td><span class="prod-name">'+p.name+'</span></td>' +
       '<td style="text-align:center;font-weight:600">'+expected+'</td>' +
-      '<td style="text-align:center;font-weight:600">'+(invMode?'<a onclick="editInvFact('+p.id+',\'+p.name+'\','+expected+')" style="cursor:pointer;color:var(--primary);text-decoration:underline">'+(typeof fact==='number'?fact:'ввести')+'</a>':'—')+'</td>' +
+      '<td style="text-align:center;font-weight:600">'+(invMode?'<a onclick="editInvFact('+p.id+',\''+p.name+'\','+expected+')" style="cursor:pointer;color:var(--primary);text-decoration:underline">'+(typeof fact==='number'?fact:'ввести')+'</a>':'—')+'</td>' +
       '<td style="text-align:center;font-weight:'+(diff!==0?'700':'400')+';color:'+(diff<0?'#dc3545':diff>0?'#16a34a':'var(--muted)')+'">'+(hasDiff?(diff>0?'+':'')+diff:'—')+'</td>' +
       '<td style="text-align:right">'+(invMode?'<button class="act-btn" onclick="clearInv('+p.id+')" style="color:var(--muted);font-size:.7rem">сброс</button>':'')+'</td>' +
     '</tr>';
