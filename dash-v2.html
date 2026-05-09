@@ -354,6 +354,7 @@
         <div class="block-row">
           <div class="block-card"><div class="b-icon">📦</div><div class="b-info"><div class="b-lbl">Товаров</div><div class="b-val" id="b-stock-qty">0</div></div></div>
           <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Себестоимость</div><div class="b-val" id="b-stock-sum">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💵</div><div class="b-info"><div class="b-lbl">По цене продажи</div><div class="b-val" id="b-stock-retail">0 ₽</div></div></div>
         </div>
       </div>
 
@@ -1018,6 +1019,7 @@ function applyBlockConfig(){
   document.getElementById('b-profit').textContent = (revenue - costs).toLocaleString()+' ₽';
   document.getElementById('b-stock-qty').textContent = products.reduce((s,p) => s + (p.qty||0), 0);
   document.getElementById('b-stock-sum').textContent = stockSum.toLocaleString()+' ₽';
+  document.getElementById('b-stock-retail').textContent = revenue.toLocaleString()+' ₽';
 }
 
 function updateStats(){
