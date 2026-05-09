@@ -110,6 +110,7 @@
     </div>
     <button class="sidebar-user-logout" onclick="alert('Выход')">Выйти</button>
   </div>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
   <nav class="sidebar-nav">
     <a class="sidebar-item active" onclick="navigateTo('dashboard')"><span class="ic">&#9632;</span> Панель управления</a>
     <a class="sidebar-item" onclick="navigateTo('products')"><span class="ic">&#9744;</span> Товары и услуги</a>
@@ -212,6 +213,7 @@
     <h2>Добавить товар / услугу</h2>
     <div class="sub">Заполните поля и нажмите Сохранить</div>
     <form id="productForm" onsubmit="saveProduct(event)">
+      <input type="hidden" id="editProductId" value="">
       <div class="form-group">
         <label>Название *</label>
         <input type="text" id="prodName" placeholder="Например, Кирпич красный" required>
@@ -308,6 +310,28 @@ function closeProductModal(){
   document.getElementById('productModal').classList.remove('active');
   document.getElementById('productForm').reset();
   document.getElementById('prodQty').value = 1;
+  document.getElementById('editProductId').value = '';
+  document.getElementById('modalTitle').textContent = 'Добавить товар / услугу';
+  document.getElementById('modalSub').textContent = 'Заполните поля и нажмите Сохранить';
+}
+
+function editProduct(id){
+  const list = JSON.parse(localStorage.getItem('products88') || '[]');
+  const p = list.find(x => x.id === id);
+  if(!p) return alert('Товар не найден');
+  document.getElementById('editProductId').value = p.id;
+  document.getElementById('prodName').value = p.name;
+  document.getElementById('prodCat').value = p.cat;
+  document.getElementById('prodType').value = p.type;
+  document.getElementById('prodCost').value = p.cost;
+  document.getElementById('prodPrice').value = p.price;
+  document.getElementById('prodQty').value = p.qty;
+  document.getElementById('prodUnit').value = p.unit;
+  document.getElementById('prodSku').value = p.sku;
+  document.getElementById('prodDesc').value = p.desc || '';
+  document.getElementById('modalTitle').textContent = 'Редактировать товар';
+  document.getElementById('modalSub').textContent = 'Измените поля и нажмите Сохранить';
+  document.getElementById('productModal').classList.add('active');
 }
 
 function saveProduct(e){
