@@ -817,9 +817,10 @@ function renderProductsPage(){
   tbody.innerHTML = products.map(p => {
     const markup = p.price - (p.cost||0);
     const markupPct = p.cost > 0 ? Math.round((markup / p.cost) * 100) : 0;
-    return '<tr>' +
+    const isHidden = p.hidden;
+    return '<tr'+(isHidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' +
       '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
-      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span></td>' +
+      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span>'+(isHidden?' <span class="prod-hidden-badge">Скрыто</span>':'')+'</td>' +
       '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span>'+(p.cost?'<br><span style="font-size:.7rem;color:var(--muted)">закуп: '+p.cost.toLocaleString()+' &#8381;</span>':'')+'</td>' +
       '<td><span class="prod-price">'+markup.toLocaleString()+' &#8381;</span><br><span style="font-size:.7rem;color:'+(markupPct>0?'var(--success,green)':'var(--muted)')+'">'+markupPct+'%</span></td>' +
       '<td style="text-align:center;font-weight:600">'+p.qty+'</td>' +
@@ -830,7 +831,7 @@ function renderProductsPage(){
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">•••</button>' +
           '<div class="prod-dropdown">' +
             '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
-            '<button onclick="hideProduct('+p.id+')">Скрыть</button>' +
+            (isHidden?'<button onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideProduct('+p.id+')">Скрыть</button>') +
             '<button onclick="deleteProduct('+p.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
