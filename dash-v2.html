@@ -149,8 +149,10 @@
   </div>
   <nav class="sidebar-nav">
 
+    <a class="nav-parent" onclick="navigateTo('dashboard')"><span class="ic">⬩</span> Панель управления</a>
+
     <div class="nav-group">
-      <a class="nav-parent active open" onclick="navigateTo('dashboard')"><span class="ic">◉</span> Статистика<span class="arrow">▶</span></a>
+      <a class="nav-parent open" onclick="toggleGroup(this)"><span class="ic">◉</span> Статистика<span class="arrow">▶</span></a>
       <div class="nav-children open">
         <a class="nav-child">Транзакции</a>
         <a class="nav-child">Кассовые смены</a>
