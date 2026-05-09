@@ -59,6 +59,23 @@
   .main{flex:1;display:flex;flex-direction:column;transition:all .25s;overflow-y:auto}
   .content{padding:2rem 2rem 2rem 2.5rem}
 
+  /* Dashboard new */
+  .dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+  .dash-top h1{font-size:1.3rem;font-weight:600;margin-bottom:0}
+  .dash-top .sub{font-size:.8rem;color:var(--muted)}
+  .metric-row{display:flex;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .metric-card{background:var(--white);border-radius:var(--radius);padding:.65rem .85rem;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;align-items:center;gap:.6rem;flex:1;min-width:140px}
+  .metric-icon{font-size:1.3rem;width:2rem;height:2rem;background:var(--body-bg);border-radius:.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .metric-info{min-width:0}
+  .metric-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
+  .metric-val{font-size:1rem;font-weight:700;color:var(--body-color)}
+  .sec-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.65rem}
+  .action-row{display:flex;gap:.45rem;flex-wrap:wrap}
+  .action-btn{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:.45rem .65rem;display:flex;align-items:center;gap:.4rem;cursor:pointer;transition:all .12s;font-family:var(--font)}
+  .action-btn:hover{border-color:var(--primary)}
+  .action-icon{width:1.5rem;height:1.5rem;background:var(--primary-light);border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+  .action-lbl{font-size:.75rem;font-weight:500;color:var(--body-color)}
+
   .content h1{font-size:1.5rem;font-weight:600;margin-bottom:.25rem}
   .content .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
@@ -268,24 +285,44 @@
 
     <!-- ПАНЕЛЬ УПРАВЛЕНИЯ -->
     <div class="page-section active" id="page-dashboard">
-      <h1>Панель управления</h1>
-      <div class="sub">Общая картина вашего бизнеса</div>
-      <div class="stats">
-        <div class="stat-card"><div class="lbl">Выручка сегодня</div><div class="val">0 ₽</div></div>
-        <div class="stat-card"><div class="lbl">Товаров на складе</div><div class="val">0</div></div>
-        <div class="stat-card"><div class="lbl">Прибыль</div><div class="val">0 ₽</div></div>
-        <div class="stat-card"><div class="lbl">Клиентов</div><div class="val">0</div></div>
+      <div class="dash-top">
+        <div>
+          <h1>Панель управления</h1>
+          <div class="sub">Сводка за сегодня</div>
+        </div>
       </div>
-      <div class="qt">Быстрые действия</div>
-      <div class="qgrid">
-        <div class="qcard" onclick="openProductModal()"><span class="pl">+</span> Добавить товар</div>
-        <div class="qcard" onclick="alert('Новая продажа')"><span class="pl">+</span> Новая продажа</div>
-        <div class="qcard" onclick="alert('Закупка')"><span class="pl">+</span> Закупка</div>
-        <div class="qcard" onclick="alert('Новый клиент')"><span class="pl">+</span> Новый клиент</div>
+      <div class="metric-row">
+        <div class="metric-card"><div class="metric-icon">💰</div><div class="metric-info"><div class="metric-lbl">Выручка</div><div class="metric-val" id="metric-revenue">0 ₽</div></div></div>
+        <div class="metric-card"><div class="metric-icon">📦</div><div class="metric-info"><div class="metric-lbl">На складе</div><div class="metric-val" id="metric-stock">0 шт</div></div></div>
+        <div class="metric-card"><div class="metric-icon">📈</div><div class="metric-info"><div class="metric-lbl">Прибыль</div><div class="metric-val" id="metric-profit">0 ₽</div></div></div>
+        <div class="metric-card"><div class="metric-icon">👥</div><div class="metric-info"><div class="metric-lbl">Клиенты</div><div class="metric-val">0</div></div></div>
       </div>
-      <div class="tip">
-        <span class="info">i</span>
-        <span>Начните с добавления товаров на склад. После этого сможете оформлять продажи и следить за прибылью.</span>
+      <div class="sec-title">Быстрые действия</div>
+      <div class="action-row">
+        <div class="action-btn" onclick="openProductModal()" title="Добавить товар">
+          <span class="action-icon"><span style="font-size:1.2rem">+</span></span>
+          <span class="action-lbl">Товар</span>
+        </div>
+        <div class="action-btn" onclick="alert('Новая продажа')" title="Новая продажа">
+          <span class="action-icon">🛒</span>
+          <span class="action-lbl">Продажа</span>
+        </div>
+        <div class="action-btn" onclick="alert('Закупка')" title="Закупка">
+          <span class="action-icon">📥</span>
+          <span class="action-lbl">Закупка</span>
+        </div>
+        <div class="action-btn" onclick="alert('Расход')" title="Расход">
+          <span class="action-icon">💸</span>
+          <span class="action-lbl">Расход</span>
+        </div>
+        <div class="action-btn" onclick="alert('Клиент')" title="Новый клиент">
+          <span class="action-icon">👤</span>
+          <span class="action-lbl">Клиент</span>
+        </div>
+        <div class="action-btn" onclick="alert('Сканер')" title="Сканер штрихкода">
+          <span class="action-icon">📷</span>
+          <span class="action-lbl">Сканер</span>
+        </div>
       </div>
     </div>
 
@@ -809,12 +846,9 @@ function updateStats(){
   const totalItems = products.reduce((s,p) => s + (p.qty||0), 0);
   const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0) + services.reduce((s,p) => s + (p.price||0), 0);
   const cost = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  const vals = document.querySelectorAll('#page-dashboard .stat-card .val');
-  if(vals.length>=3){
-    vals[0].textContent = revenue.toLocaleString()+' ₽';
-    vals[1].textContent = totalItems + ' тов.';
-    vals[2].textContent = (revenue - cost).toLocaleString()+' ₽';
-  }
+  document.getElementById('metric-revenue').textContent = revenue.toLocaleString()+' ₽';
+  document.getElementById('metric-stock').textContent = totalItems + ' шт';
+  document.getElementById('metric-profit').textContent = (revenue - cost).toLocaleString()+' ₽';
 }
 
 // === КАТЕГОРИИ ===
