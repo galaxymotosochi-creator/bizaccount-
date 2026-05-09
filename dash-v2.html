@@ -2561,16 +2561,26 @@ function renderVenuesPage(){
 
 
 function renderShiftsPage(){
-  var tmpl = "<table><thead><tr><th>Data</th><th>Time</th><th>User</th></tr></thead><tbody>";
+  var tb = document.getElementById("shiftTableBody");
+  if(!tb) return;
   var shifts = JSON.parse(localStorage.getItem("shifts88") || "[]");
+  if(!shifts.length){
+    tb.innerHTML = "<tr><td colspan=\'6\'><div class=\'empty-products\'><div class=\'big-icon\'>📊</div><p>Смен пока нет. Откройте кассу!</p></div></td></tr>";
+    return;
+  }
+  var h = "";
   for(var i=0;i<shifts.length;i++){
     var s = shifts[i];
-    tmpl += "<tr><td>" + (s.openedAt||"-") + "</td><td>" + (s.closedAt||"-") + "</td><td>" + (s.employeeName||"-") + "</td></tr>";
+    h += "<tr>";
+    h += "<td style=\'font-size:.8rem\'>" + (s.openedAt||"\u2014") + "</td>";
+    h += "<td style=\'font-size:.8rem\'>" + (s.closedAt||"\u2014") + "</td>";
+    h += "<td>" + (s.employeeName||"\u2014") + "</td>";
+    h += "<td>" + (s.totalSales||0) + " ₽</td>";
+    h += "<td>" + (s.closingBalance||0) + " ₽</td>";
+    h += "<td><span style=\'color:" + (s.status==="open"?"#16a34a":"var(--muted)") + ";font-weight:600\'>" + (s.status==="open"?"✅ Открыта":"❌ Закрыта") + "</span></td>";
+    h += "</tr>";
   }
-  tmpl += "</tbody></table>";
-  if(!shifts.length) tmpl = "<p>No shifts yet</p>";
-  var tb = document.getElementById("shiftTableBody");
-  if(tb) tb.innerHTML = tmpl;
+  tb.innerHTML = h;
 }
 // === КАТЕГОРИИ ===
 function openCatModal(type){
