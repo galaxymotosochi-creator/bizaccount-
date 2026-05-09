@@ -156,12 +156,13 @@
   .product-table .prod-name{font-weight:500}
   .product-table .prod-sku{color:var(--muted);font-size:.75rem}
   .product-table .prod-cat{font-size:.75rem;padding:.15rem .5rem;border-radius:20px;background:var(--body-bg);color:var(--muted);display:inline-block}
+  .prod-hidden-badge{font-size:.6rem;padding:.1rem .35rem;border-radius:4px;background:#fef3cd;color:#856404;display:inline-block;margin-left:.25rem;font-weight:500}
   .product-table .prod-price{font-weight:500}
   .product-table .act-btn{background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.3rem .5rem;border-radius:.3rem;font-family:var(--font)}
   .product-table .act-btn:hover{background:var(--body-bg);color:var(--body-color)}
   .prod-edit-btn{font-size:.75rem!important;font-weight:600;color:var(--primary)!important;background:var(--primary-light)!important;padding:.2rem .45rem!important;border-radius:.3rem}
   .prod-edit-btn:hover{background:var(--primary)!important;color:var(--white)!important}
-  .prod-more-btn{font-size:.75rem!important;font-weight:600;letter-spacing:1px}
+  .prod-more-btn{font-size:.65rem!important;font-weight:600;letter-spacing:0!important;padding:.2rem .25rem!important}
   .prod-dropdown{display:none;position:absolute;right:0;top:100%;margin-top:2px;background:var(--white);border:1px solid var(--border);border-radius:.4rem;box-shadow:0 .3rem .8rem rgba(0,0,0,.1);z-index:50;min-width:130px;padding:.25rem 0}
   .prod-dropdown.open{display:block}
   .prod-dropdown button{display:block;width:100%;text-align:left;padding:.4rem .7rem;font-size:.78rem;font-family:var(--font);border:none;background:none;cursor:pointer;color:var(--body-color)}
@@ -598,6 +599,9 @@
         <label>Описание</label>
         <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
       </div>
+      <div id="restoreSection" style="display:none;margin-bottom:1rem">
+        <button type="button" class="btn btn-primary" onclick="restoreProduct()" style="background:var(--success,green);width:100%">Восстановить товар</button>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeProductModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -755,15 +759,29 @@ function editProduct(id){
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodDesc').value = p.desc || '';
-  document.getElementById('modalTitle').textContent = 'Редактировать товар';
-  document.getElementById('modalSub').textContent = 'Измените поля и нажмите Сохранить';
+  document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
+  document.getElementById('modalSub').textContent = p.hidden ? 'Восстановите или измените товар' : 'Измените поля и нажмите Сохранить';
+  const restoreSec = document.getElementById('restoreSection');
+  if(restoreSec) restoreSec.style.display = p.hidden ? '' : 'none';
   document.getElementById('productModal').classList.add('active');
+}
+
+function restoreProduct(){
+  const id = parseInt(document.getElementById('editProductId').value);
+  if(!id) return;
+  let list = JSON.parse(localStorage.getItem('products88') || '[]');
+  list = list.map(p => p.id === id ? {...p, hidden: false} : p);
+  localStorage.setItem('products88', JSON.stringify(list));
+  closeProductModal();
+  renderProductsPage();
+  updateStats();
 }
 
 function saveProduct(e){
   e.preventDefault();
+  const editId = document.getElementById('editProductId')?.value;
   const p = {
-    id: Date.now(),
+    id: editId ? parseInt(editId) : Date.now(),
     name: document.getElementById('prodName').value.trim(),
     cat: document.getElementById('prodCat').value,
     type: document.getElementById('prodType').value,
@@ -772,11 +790,13 @@ function saveProduct(e){
     qty: parseInt(document.getElementById('prodQty').value) || 0,
     unit: document.getElementById('prodUnit').value,
     sku: document.getElementById('prodSku').value.trim(),
-    desc: document.getElementById('prodDesc').value.trim()
+    desc: document.getElementById('prodDesc').value.trim(),
+    hidden: false
   };
   if(!p.name) return alert('Введите название');
   let list = JSON.parse(localStorage.getItem('products88') || '[]');
-  list.unshift(p);
+  const idx = list.findIndex(x => x.id === p.id);
+  if(idx >= 0) list[idx] = p; else list.unshift(p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
   renderProductsPage();
@@ -836,7 +856,7 @@ function copyProduct(id){
   const list = JSON.parse(localStorage.getItem('products88') || '[]');
   const p = list.find(x => x.id === id);
   if(!p) return;
-  const copy = {...p, id: Date.now(), name: p.name + ' (копия)'};
+  const copy = {...p, id: Date.now(), hidden: false};
   list.push(copy);
   localStorage.setItem('products88', JSON.stringify(list));
   renderProductsPage();
@@ -844,7 +864,14 @@ function copyProduct(id){
 
 function hideProduct(id){
   let list = JSON.parse(localStorage.getItem('products88') || '[]');
-  list = list.filter(x => x.id !== id);
+  list = list.map(p => p.id === id ? {...p, hidden: true} : p);
+  localStorage.setItem('products88', JSON.stringify(list));
+  renderProductsPage();
+}
+
+function unhideProduct(id){
+  let list = JSON.parse(localStorage.getItem('products88') || '[]');
+  list = list.map(p => p.id === id ? {...p, hidden: false} : p);
   localStorage.setItem('products88', JSON.stringify(list));
   renderProductsPage();
 }
