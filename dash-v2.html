@@ -2561,28 +2561,17 @@ function renderVenuesPage(){
 
 
 function renderShiftsPage(){
+  var tmpl = "<table><thead><tr><th>Data</th><th>Time</th><th>User</th></tr></thead><tbody>";
   var shifts = JSON.parse(localStorage.getItem("shifts88") || "[]");
-  var tb = document.getElementById("shiftTableBody");
-  if(!tb) return;
-  if(!shifts.length) {
-    tb.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">&#128202;</div><p>Net smen</p></div></td></tr>';
-    return;
-  }
-  var h = "";
   for(var i=0;i<shifts.length;i++){
     var s = shifts[i];
-    h += '<tr>';
-    h += '<td>' + (s.openedAt||"-") + '</td>';
-    h += '<td>' + (s.closedAt||"-") + '</td>';
-    h += '<td>' + (s.employeeName||"-") + '</td>';
-    h += '<td>' + (s.totalSales||0) + '</td>';
-    h += '<td>' + (s.closingBalance||0) + '</td>';
-    h += '<td>' + (s.status==="open"?"Otkr":"Zakr") + '</td>';
-    h += '</tr>';
+    tmpl += "<tr><td>" + (s.openedAt||"-") + "</td><td>" + (s.closedAt||"-") + "</td><td>" + (s.employeeName||"-") + "</td></tr>";
   }
-  tb.innerHTML = h;
+  tmpl += "</tbody></table>";
+  if(!shifts.length) tmpl = "<p>No shifts yet</p>";
+  var tb = document.getElementById("shiftTableBody");
+  if(tb) tb.innerHTML = tmpl;
 }
-
 // === КАТЕГОРИИ ===
 function openCatModal(type){
   document.getElementById('catType').value = type;
