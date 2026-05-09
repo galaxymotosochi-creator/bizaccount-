@@ -1088,15 +1088,12 @@ document.addEventListener('click', function(e){
 function applyBlockConfig(){
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
   const services = JSON.parse(localStorage.getItem('services88') || '[]');
-  const stockSum = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  const revenue = products.reduce((s,p) => s + (p.price * p.qty), 0);
-  const costs = products.reduce((s,p) => s + (p.cost * p.qty), 0);
-  document.getElementById('b-revenue').textContent = revenue.toLocaleString()+' ₽';
-  document.getElementById('b-cost').textContent = costs.toLocaleString()+' ₽';
-  document.getElementById('b-profit').textContent = (revenue - costs).toLocaleString()+' ₽';
+  document.getElementById('b-revenue').textContent = '0 ₽';
+  document.getElementById('b-cost').textContent = '0 ₽';
+  document.getElementById('b-profit').textContent = '0 ₽';
   document.getElementById('b-stock-qty').textContent = products.reduce((s,p) => s + (p.qty||0), 0);
-  document.getElementById('b-stock-sum').textContent = stockSum.toLocaleString()+' ₽';
-  document.getElementById('b-stock-retail').textContent = revenue.toLocaleString()+' ₽';
+  document.getElementById('b-stock-sum').textContent = '0 ₽';
+  document.getElementById('b-stock-retail').textContent = '0 ₽';
 }
 
 function updateStats(){
