@@ -122,24 +122,62 @@
   .empty-products .big-icon{font-size:3rem;opacity:.15;margin-bottom:.5rem}
   .empty-products p{font-size:.9rem}
 
-  @media(max-width:768px){
-    .sidebar{transform:translateX(0)}
-    .main{margin-left:0}
-    .content{padding:1rem}
+  /* MOBILE OVERLAY MENU */
+  .mobile-menu-btn{display:none;position:fixed;top:8px;left:8px;z-index:103;width:36px;height:36px;border-radius:8px;background:var(--white);border:1px solid var(--border);cursor:pointer;font-size:1.1rem;align-items:center;justify-content:center;box-shadow:var(--shadow);color:var(--body-color)}
+  .mobile-menu-btn:hover{background:var(--body-bg)}
+  .mobile-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.3);z-index:99}
+  .mobile-overlay.active{display:block}
+
+  @media(max-width:820px){
+    .mobile-menu-btn{display:flex}
+    body{overflow-x:hidden}
+    .sidebar{position:fixed;top:0;left:-100%;bottom:0;z-index:100;transition:left .25s;box-shadow:4px 0 20px rgba(0,0,0,.1)}
+    .sidebar.open{left:0}
+    .sidebar .sidebar-toggle{display:none}
+    .sidebar-inner{min-height:100vh}
+    .main{width:100%}
+    .content{padding:1rem 1rem 1rem 1.2rem}
+    .content h1{font-size:1.2rem}
     .stats{grid-template-columns:repeat(2,1fr);gap:.6rem}
-    .stat-card{padding:.9rem 1rem}
-    .stat-card .val{font-size:1.2rem}
+    .stat-card{padding:.8rem}
+    .stat-card .val{font-size:1.1rem}
+    .stat-card .lbl{font-size:.7rem}
+    .qgrid{grid-template-columns:repeat(2,1fr)}
+    .qcard{padding:.7rem .8rem;font-size:.8rem}
+    .product-table table{font-size:.8rem}
+    .product-table th,
+    .product-table td{padding:.5rem .5rem}
     .search-bar input{max-width:100%}
+    .page-header{flex-direction:column;align-items:flex-start}
+    .page-actions{width:100%}
+    .page-actions .btn{width:100%;text-align:center}
+    .modal-box{padding:1.25rem;margin:.5rem;max-width:100%}
+    .form-row{grid-template-columns:1fr}
+    .filter-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:.25rem}
+    .filter-tab{white-space:nowrap;flex-shrink:0}
   }
   @media(max-width:480px){
-    .stats{grid-template-columns:1fr 1fr;gap:.5rem}
-    .stat-card .val{font-size:1.1rem}
+    .content{padding:.75rem}
+    .stats{grid-template-columns:1fr 1fr;gap:.4rem}
+    .stat-card{padding:.6rem}
+    .stat-card .val{font-size:1rem}
+    .qgrid{grid-template-columns:1fr 1fr;gap:.4rem}
+    .qcard{padding:.6rem .7rem;font-size:.75rem}
+    .qcard .pl{width:1.5rem;height:1.5rem;font-size:.8rem}
+    .tip{padding:.7rem;font-size:.8rem}
+    .product-table table{font-size:.75rem}
+    .product-table th,
+    .product-table td{padding:.4rem .3rem}
+    .nav-child{padding-left:2rem!important;font-size:.8rem}
   }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
+<button class="mobile-menu-btn" onclick="toggleMobileMenu()" id="mobileMenuBtn">☰</button>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
+<aside class="sidebar" id="mainSidebar">
 <div class="sidebar-inner">
   <div class="sidebar-user">
     <div class="sidebar-user-info">
@@ -545,6 +583,11 @@
 
 <script>
 const CAT_LABELS = {material:'Материалы',tool:'Инструменты',service:'Услуги',equipment:'Оборудование',other:'Прочее'};
+
+function toggleMobileMenu(){
+  document.getElementById('mainSidebar').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('active');
+}
 
 function toggleGroup(el){
   el.classList.toggle('open');
