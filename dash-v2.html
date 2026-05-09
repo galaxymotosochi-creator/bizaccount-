@@ -219,6 +219,45 @@
     .product-table td{padding:.4rem .3rem}
     .nav-child{padding-left:2rem!important;font-size:.8rem}
   }
+
+  .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--white);display:none}
+  .reg-overlay.open{display:flex}
+  .reg-wrap{display:flex;width:100%;height:100vh}
+  .reg-left{flex:2;display:flex;flex-direction:column;background:#f5f7fa;border-right:1px solid var(--border)}
+  .reg-right{flex:1;display:flex;flex-direction:column;min-width:280px}
+  .reg-top{display:flex;align-items:center;padding:.4rem .65rem;background:var(--white);border-bottom:1px solid var(--border);gap:.4rem}
+  .reg-top .emp-name{font-size:.8rem;font-weight:600}
+  .reg-cats{display:flex;gap:2px;padding:.35rem .65rem;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--border)}
+  .reg-cat-btn{padding:.2rem .55rem;font-size:.7rem;border:1px solid var(--border);border-radius:5px;background:var(--white);cursor:pointer;white-space:nowrap;font-family:var(--font)}
+  .reg-cat-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+  .reg-tiles{padding:.4rem;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.35rem}
+  .reg-tile{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:62px}
+  .reg-tile:hover{border-color:var(--primary)}
+  .reg-tile .t-name{font-size:.65rem;font-weight:500}
+  .reg-tile .t-price{font-size:.7rem;font-weight:700;color:var(--primary)}
+  .pin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
+  .pin-overlay.open{display:flex}
+  .pin-box{background:var(--white);border-radius:1rem;padding:2rem;max-width:300px;width:100%;text-align:center;box-shadow:0 1rem 2rem rgba(0,0,0,.2)}
+  .pin-box h2{font-size:1rem;margin-bottom:.25rem}
+  .pin-display{font-size:1.5rem;letter-spacing:8px;margin-bottom:.75rem;min-height:2rem}
+  .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;max-width:210px;margin:0 auto}
+  .pin-btn{height:44px;border-radius:8px;border:1px solid var(--border);font-size:1rem;cursor:pointer;font-family:var(--font)}
+  .pin-btn-clear{border-color:#dc3545;color:#dc3545}
+  .pin-btn-ok{background:var(--primary);color:var(--white);border-color:var(--primary)}
+  .receipt-items{flex:1;overflow-y:auto;padding:.65rem}
+  .receipt-header{font-size:.65rem;color:var(--muted);margin-bottom:.35rem}
+  .receipt-item{display:flex;align-items:center;padding:.3rem 0;font-size:.75rem;gap:.3rem}
+  .receipt-item .ri-name{flex:1;font-weight:500}
+  .receipt-item .ri-qty{color:var(--muted);min-width:30px}
+  .receipt-item .ri-price{min-width:60px;text-align:right;font-weight:600}
+  .receipt-item .ri-del{cursor:pointer;color:#dc3545;border:none;background:none}
+  .receipt-total{margin-top:auto;padding:.65rem;border-top:2px solid var(--body-color)}
+  .receipt-total .total-row{display:flex;justify-content:space-between;font-size:.85rem;font-weight:700}
+  .reg-pay{display:flex;gap:.35rem;padding:.5rem .65rem}
+  .reg-pay button{flex:1;padding:.5rem;border:1px solid var(--border);border-radius:.5rem;font-size:.7rem;cursor:pointer;font-family:var(--font)}
+  .reg-pay .pay-active{background:var(--primary);color:var(--white)}
+  .reg-pay-go{display:block;width:calc(100% - 1.3rem);margin:0 .65rem .65rem;padding:.55rem;border:none;background:var(--primary);color:var(--white);font-size:.8rem;cursor:pointer;font-family:var(--font)}
+  .reg-pay-go:disabled{opacity:.4;cursor:default}
 </style>
 </head>
 <body>
@@ -381,7 +420,7 @@
         </div>
         <div class="action-row" id="actionRow">
           <div class="action-btn" onclick="openProductModal()"><span class="a-icon">+</span> Товар<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Новая продажа')"><span class="a-icon">🛒</span> Продажа<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="openR()"><span class="a-icon">🛒</span> Продажа<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-btn" onclick="alert('Закупка')"><span class="a-icon">📥</span> Закупка<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-btn" onclick="alert('Расход')"><span class="a-icon">💸</span> Расход<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-btn" onclick="alert('Клиент')"><span class="a-icon">👤</span> Клиент<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
@@ -2593,5 +2632,69 @@ function renderCatPage(type){
 document.addEventListener('DOMContentLoaded', updateStats);
 </script>
 
+
+<!-- ПИН -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-box">
+    <h2>Вход в кассу</h2>
+    <div class="sub">ПИН-код</div>
+    <div class="pin-display" id="pinDisplay"></div>
+    <div class="pin-grid">
+      <button class="pin-btn" onclick="pinP(1)">1</button>
+      <button class="pin-btn" onclick="pinP(2)">2</button>
+      <button class="pin-btn" onclick="pinP(3)">3</button>
+      <button class="pin-btn" onclick="pinP(4)">4</button>
+      <button class="pin-btn" onclick="pinP(5)">5</button>
+      <button class="pin-btn" onclick="pinP(6)">6</button>
+      <button class="pin-btn" onclick="pinP(7)">7</button>
+      <button class="pin-btn" onclick="pinP(8)">8</button>
+      <button class="pin-btn" onclick="pinP(9)">9</button>
+      <button class="pin-btn pin-btn-clear" onclick="pinC()">C</button>
+      <button class="pin-btn" onclick="pinP(0)">0</button>
+      <button class="pin-btn pin-btn-ok" onclick="pinO()">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="reg-overlay" id="regOverlay">
+  <div class="reg-wrap">
+    <div class="reg-left">
+      <div class="reg-top"><span class="emp-name" id="regEmp">Касса</span><button style="margin-left:auto;background:none;border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-size:.7rem;font-family:var(--font)" onclick="regClose()">Закрыть</button></div>
+      <div class="reg-cats" id="regCats"></div>
+      <div class="reg-tiles" id="regTiles"></div>
+    </div>
+    <div class="reg-right">
+      <div class="reg-top"><b>Чек</b></div>
+      <div class="receipt-items" id="receiptItems"></div>
+      <div class="receipt-total"><div class="total-row"><span style="color:var(--muted);font-weight:400">Итого</span><span id="receiptT">0</span></div></div>
+      <div class="reg-pay" id="payM">
+        <button class="pay-active" onclick="setPM(this,'cash')">Наличные</button>
+        <button onclick="setPM(this,'card')">Карта</button>
+        <button onclick="setPM(this,'transfer')">Перевод</button>
+      </div>
+      <button class="reg-pay-go" id="payB" disabled onclick="payR()">Оплатить</button>
+    </div>
+  </div>
+</div>
+<script>
+// КАССА
+let RI=[],pin="",curEmp=null,rCat="all",payM="cash";
+function openR(){pin="";document.getElementById("pinOverlay").classList.add("open");}
+function pinP(d){if(pin.length>=4)return;pin+=d;var e=document.getElementById("pinDisplay");e.textContent=e.textContent+"\u2022";}
+function pinC(){pin="";document.getElementById("pinDisplay").textContent="";}
+function pinO(){if(pin.length<4)return;var E=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(x){return x.pin==pin&&x.status==="active"});if(!E)return alert("Не найден");curEmp=E;document.getElementById("pinOverlay").classList.remove("open");document.getElementById("regEmp").textContent=E.name;document.getElementById("regOverlay").classList.add("open");RI=[];rCat="all";rT();upR();}
+function regClose(){if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
+function rT(){var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var cats=[];P.concat(S).forEach(function(i){if(i.cat&&cats.indexOf(i.cat)<0)cats.push(i.cat)});var h='<button class="reg-cat-btn" onclick="setRC(\'all\')">\u0412\u0441\u0435</button>';cats.forEach(function(c){h+='<button class="reg-cat-btn" onclick="setRC(\''+c+'\')">'+c+'</button>'});document.getElementById("regCats").innerHTML=h;var items=[];P.forEach(function(x){items.push({id:x.id,sv:0,name:x.name,price:x.price||0})});S.forEach(function(x){items.push({id:x.id,sv:1,name:x.name,price:x.price||0})});if(rCat!="all")items=items.filter(function(x){return x.cat==rCat});var el=document.getElementById("regTiles");if(!items.length){el.innerHTML="<div style=\"padding:2rem;text-align:center;color:var(--muted)\">\u041d\u0435\u0442 \u0442\u043e\u0432\u0430\u0440\u043e\u0432</div>";return;}
+var h2="";items.forEach(function(x){h2+='<div class="reg-tile" onclick="addRI('+x.id+','+x.sv+')"><div class="t-name">'+x.name+'</div>'+(x.price?'<div class="t-price">'+x.price.toLocaleString()+'</div>':'')+'</div>'});el.innerHTML=h2;}
+function setRC(c){rCat=c;rT();}
+function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
+function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML="<div class=\"receipt-header\">\u0422\u043e\u0432\u0430\u0440\u044b \u043d\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u044b</div>";}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty">x'+i.q+'</span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">x</button></div>'});el.innerHTML=h;}
+document.getElementById("receiptT").textContent=total.toLocaleString();var b=document.getElementById("payB");b.textContent="\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c "+total.toLocaleString();b.disabled=total===0;}
+function remRI(i){RI.splice(i,1);upR();}
+function setPM(b,m){payM=m;document.querySelectorAll("#payM button").forEach(function(x){x.classList.remove("pay-active")});b.classList.add("pay-active");}
+function payR(){var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!total)return;if(!confirm("\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c "+total.toLocaleString()+"?"))return;var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,date:new Date().toISOString()});localStorage.setItem("sales88",JSON.stringify(Sa));
+var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
+alert("\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e "+total.toLocaleString());RI=[];upR();rT();}
+</script>
 </body>
 </html>
