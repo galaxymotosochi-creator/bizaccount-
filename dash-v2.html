@@ -170,8 +170,8 @@
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('products')">Товары</a>
         <a class="nav-child" onclick="navigateTo('services')">Услуги</a>
-        <a class="nav-child">Категории товаров</a>
-        <a class="nav-child">Категории услуг</a>
+        <a class="nav-child" onclick="navigateTo('product-categories')">Категории товаров</a>
+        <a class="nav-child" onclick="navigateTo('service-categories')">Категории услуг</a>
       </div>
     </div>
 
@@ -336,6 +336,58 @@
       </div>
     </div>
 
+    <!-- КАТЕГОРИИ ТОВАРОВ -->
+    <div class="page-section" id="page-product-categories">
+      <div class="page-header">
+        <div>
+          <h1>Категории товаров</h1>
+          <div class="sub">Управляйте категориями для товаров</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openCatModal('product')">+ Добавить категорию</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60%">Название</th>
+              <th style="width:25%">Товаров</th>
+              <th style="width:15%"></th>
+            </tr>
+          </thead>
+          <tbody id="prodCatTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- КАТЕГОРИИ УСЛУГ -->
+    <div class="page-section" id="page-service-categories">
+      <div class="page-header">
+        <div>
+          <h1>Категории услуг</h1>
+          <div class="sub">Управляйте категориями для услуг</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openCatModal('service')">+ Добавить категорию</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60%">Название</th>
+              <th style="width:25%">Услуг</th>
+              <th style="width:15%"></th>
+            </tr>
+          </thead>
+          <tbody id="svcCatTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -464,6 +516,27 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeServiceModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно добавления категории -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeCatModal()">&times;</button>
+    <h2 id="catModalTitle">Добавить категорию</h2>
+    <div class="sub" id="catModalSub">Введите название категории</div>
+    <form id="catForm" onsubmit="saveCategory(event)">
+      <input type="hidden" id="editCatId" value="">
+      <input type="hidden" id="catType" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="catName" placeholder="Например, Электроинструменты" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeCatModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>
@@ -599,6 +672,8 @@ function navigateTo(page){
   if(page === 'products') renderProductsPage();
   if(page === 'services') renderServicesPage();
   if(page === 'dashboard') updateStats();
+  if(page === 'product-categories') renderCatPage('product');
+  if(page === 'service-categories') renderCatPage('service');
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
   });
@@ -697,6 +772,74 @@ function updateStats(){
     vals[1].textContent = totalItems + ' тов.';
     vals[2].textContent = (revenue - cost).toLocaleString()+' ₽';
   }
+}
+
+// === КАТЕГОРИИ ===
+function openCatModal(type){
+  document.getElementById('catType').value = type;
+  document.getElementById('catModalTitle').textContent = 'Добавить категорию ' + (type === 'product' ? 'товаров' : 'услуг');
+  document.getElementById('catModalSub').textContent = 'Введите название новой категории';
+  document.getElementById('catModal').classList.add('active');
+}
+function closeCatModal(){
+  document.getElementById('catModal').classList.remove('active');
+  document.getElementById('catForm').reset();
+  document.getElementById('editCatId').value = '';
+}
+function saveCategory(e){
+  e.preventDefault();
+  const type = document.getElementById('catType').value;
+  const editId = document.getElementById('editCatId').value;
+  const name = document.getElementById('catName').value.trim();
+  if(!name) return alert('Введите название');
+  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
+  let list = JSON.parse(localStorage.getItem(key) || '[]');
+  if(editId){
+    const idx = list.findIndex(c => c.id === parseInt(editId));
+    if(idx >= 0) list[idx].name = name;
+  } else {
+    list.push({id: Date.now(), name});
+  }
+  localStorage.setItem(key, JSON.stringify(list));
+  closeCatModal();
+  renderCatPage(type);
+}
+function editCategory(type, id){
+  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
+  const list = JSON.parse(localStorage.getItem(key) || '[]');
+  const c = list.find(x => x.id === id);
+  if(!c) return alert('Категория не найдена');
+  document.getElementById('catType').value = type;
+  document.getElementById('editCatId').value = c.id;
+  document.getElementById('catName').value = c.name;
+  document.getElementById('catModalTitle').textContent = 'Редактировать категорию';
+  document.getElementById('catModalSub').textContent = 'Измените название категории';
+  document.getElementById('catModal').classList.add('active');
+}
+function deleteCategory(type, id){
+  if(!confirm('Удалить категорию?')) return;
+  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
+  let list = JSON.parse(localStorage.getItem(key) || '[]');
+  list = list.filter(c => c.id !== id);
+  localStorage.setItem(key, JSON.stringify(list));
+  renderCatPage(type);
+}
+function renderCatPage(type){
+  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
+  const tblId = type === 'product' ? 'prodCatTableBody' : 'svcCatTableBody';
+  const lists = JSON.parse(localStorage.getItem(key) || '[]');
+  const tbody = document.getElementById(tblId);
+  if(!lists.length){
+    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = lists.map(c =>
+    '<tr>' +
+      '<td><span class="prod-name">'+c.name+'</span></td>' +
+      '<td style="color:var(--muted)">—</td>' +
+      '<td style="text-align:right"><button class="act-btn" onclick="editCategory(\''+type+'\','+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteCategory(\''+type+'\','+c.id+')">&#10005;</button></td>' +
+    '</tr>'
+  ).join('');
 }
 
 document.addEventListener('DOMContentLoaded', updateStats);
