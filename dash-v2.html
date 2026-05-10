@@ -695,6 +695,9 @@
         <div class="cl-empty-title">Здесь будет статистика покупок клиентов</div>
         <div class="cl-empty-sub">Добавьте ваших гостей, чтобы контролировать выручку, средний чек и количество продаж по каждому из них</div>
       </div>
+      <div class="product-table" id="clTable" style="display:none">
+        <table><thead><tr><th style="width:22%">Клиент</th><th style="width:13%">Телефон</th><th style="width:10%">Продажи</th><th style="width:15%">Выручка</th><th style="width:15%">Средний чек</th><th style="width:15%">Email</th><th style="width:10%"></th></tr></thead><tbody id="clientTableBody"></tbody></table>
+      </div>
     </div>
 
     <!-- ПРОГРАММЫ ЛОЯЛЬНОСТИ -->
@@ -2418,13 +2421,35 @@ function deleteClient(id){
   renderClientsPage();
 }
 function renderClientsPage(){
-  const list = JSON.parse(localStorage.getItem('clients88') || '[]');
-  const tbody = document.getElementById('clientTableBody');
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  var stats = document.getElementById('clStats');
+  var table = document.getElementById('clTable');
+  var tbody = document.getElementById('clientTableBody');
   if(!list.length){
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">👥</div><p>Клиентов пока нет</p></div></td></tr>';
+    if(stats) stats.style.display = 'block';
+    if(table) table.style.display = 'none';
     return;
   }
-  tbody.innerHTML = list.map(c => '<tr><td><span class="prod-name">'+c.name+'</span></td><td style="color:var(--muted)">'+(c.phone||'—')+'</td><td style="color:var(--muted)">'+(c.email||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editClient('+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteClient('+c.id+')">&#10005;</button></td></tr>').join('');
+  if(stats) stats.style.display = 'none';
+  if(table) table.style.display = 'block';
+  if(!tbody) return;
+  var h = '';
+  for(var i=0;i<list.length;i++){
+    var c = list[i];
+    var sales = c.sales || 0;
+    var revenue = c.revenue || 0;
+    var avg = sales > 0 ? Math.round(revenue/sales) : 0;
+    h += '<tr>';
+    h += '<td><span class="prod-name">'+c.name+'</span></td>';
+    h += '<td style="color:var(--muted)">'+(c.phone||'-')+'</td>';
+    h += '<td style="text-align:center">'+sales+'</td>';
+    h += '<td>'+revenue.toLocaleString()+'</td>';
+    h += '<td>'+avg.toLocaleString()+'</td>';
+    h += '<td style="color:var(--muted);font-size:.75rem">'+(c.email||'-')+'</td>';
+    h += '<td style="text-align:right"><button class="act-btn" onclick="editClient('+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteClient('+c.id+')">&#10005;</button></td>';
+    h += '</tr>';
+  }
+  tbody.innerHTML = h;
 }
 
 // === МАРКЕТИНГ: ПРОГРАММЫ ЛОЯЛЬНОСТИ ===
