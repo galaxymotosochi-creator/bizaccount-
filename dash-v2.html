@@ -3409,10 +3409,11 @@ function showChecksHistory(){
   var el=document.getElementById("checksHistoryContent");
   if(!ss.length){el.innerHTML='<div class="reg-check-empty">За смену ещё не было продаж</div>';}
   else {
-    var h="";
+    var h="";var pm={cash:"&#128181;",card:"&#128179;",transfer:"&#128242;"};
     ss.forEach(function(s,i){
-      h+='<div class="reg-check-row">';
+      h+='<div class="reg-check-row" onclick="showCheckDetail('+s.id+')" style="cursor:pointer">';
       h+='<span class="cr-num">#'+(i+1)+'</span>';
+      h+='<span class="cr-pay">'+(pm[s.payM]||'')+'</span>';
       h+='<span class="cr-time">'+ (s.date?s.date.substring(11,16):"") +'</span>';
       if(s.clientName) h+='<span style="font-size:.65rem;color:var(--muted)">'+s.clientName+'</span>';
       h+='<span class="cr-total">'+s.total.toLocaleString()+'</span>';
@@ -3420,6 +3421,25 @@ function showChecksHistory(){
     });el.innerHTML=h;
   }
   document.getElementById("checksHistoryModal").classList.add("open");
+}
+function showCheckDetail(id){
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var s=sales.find(function(x){return x.id==id});
+  if(!s){alert("Чек не найден");return;}
+  var items=s.items||[];var pm={cash:"&#128181; Наличные",card:"&#128179; Карта",transfer:"&#128242; Перевод"};
+  var h='<div style="margin-bottom:.5rem">';
+  items.forEach(function(it){
+    h+='<div style="display:flex;justify-content:space-between;padding:.25rem 0;font-size:.82rem;border-bottom:1px solid var(--border)"><span>'+it.name+' x'+it.q+'</span><span style="font-weight:600">'+(it.price*it.q).toLocaleString()+'</span></div>';
+  });
+  h+='</div>';
+  h+='<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;padding:.3rem 0"><span>Итого</span><span>'+s.total.toLocaleString()+'</span></div>';
+  h+='<div style="font-size:.82rem;color:var(--muted);margin-top:.2rem">Способ: '+(pm[s.payM]||s.payM)+'</div>';
+  if(s.clientName) h+='<div style="font-size:.82rem;color:var(--muted)">Клиент: '+s.clientName+'</div>';
+  if(s.empName) h+='<div style="font-size:.82rem;color:var(--muted)">Кассир: '+s.empName+'</div>';
+  h+='<div style="font-size:.82rem;color:var(--muted)">Время: '+(s.date?s.date.substring(0,19):"")+'</div>';
+  document.getElementById("checkDetailContent").innerHTML=h;
+  document.getElementById("checksHistoryModal").classList.remove("open");
+  document.getElementById("checkDetailModal").classList.add("open");
 }
 function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
 function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#129510;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").textContent=total.toLocaleString()+" ";var b=document.getElementById("payB");b.textContent=total?"Оплатить "+total.toLocaleString():"Оплатить";b.disabled=total===0;}
@@ -3493,6 +3513,17 @@ function setRegFilter(btn,filter){
   </div>
 </div>
 
+<div class="shift-overlay" id="checkDetailModal">
+  <div class="shift-box" style="max-width:460px">
+    <h2>&#128203; Детали чека</h2>
+    <div id="checkDetailContent" style="margin-bottom:.5rem"></div>
+    <div style="display:flex;gap:.5rem">
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('checkDetailModal').classList.remove('open');showChecksHistory()">Назад</button>
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('checkDetailModal').classList.remove('open')">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 <div class="shift-overlay" id="clientSelectModal">
   <div class="shift-box" style="max-width:420px">
     <h2>&#128100; Выбор клиента</h2>
@@ -3506,7 +3537,7 @@ function setRegFilter(btn,filter){
         <input type="text" id="newClientPhone" placeholder="Телефон" style="flex:1;padding:.4rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:8px;outline:none;font-family:var(--font)">
       </div>
       <input type="text" id="newClientComment" placeholder="Комментарий" style="width:100%;padding:.4rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:8px;outline:none;font-family:var(--font);margin-bottom:.3rem">
-      <button class="shift-btn" style="width:100%;padding:.4rem;font-size:.85rem" onclick="addNewClient()">+</button>
+      <button class="shift-btn" style="width:100%;padding:.4rem;font-size:.85rem" onclick="addNewClient()">Добавить +</button>
     </div>
     <div style="display:flex;gap:.5rem;margin-top:.7rem">
       <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="closeClientModal()">Без клиента</button>
