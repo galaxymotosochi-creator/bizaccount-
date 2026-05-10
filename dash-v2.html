@@ -273,9 +273,11 @@
   .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px}
   .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa}
   /* ===== TOPBAR ===== */
-  .reg-topbar{display:flex;align-items:center;padding:.4rem .6rem;background:var(--white);border-bottom:1px solid var(--border);gap:.4rem}
-  .reg-topbar-left{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.15rem .35rem;border:1px solid var(--border);flex-shrink:0}
-  .reg-topbar-right{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.15rem .35rem;border:1px solid var(--border);min-width:0;flex-wrap:nowrap}
+  .reg-topbar{display:flex;align-items:stretch;background:var(--white);border-bottom:1px solid var(--border)}
+  .reg-topbar-left{flex:1;min-width:340px;max-width:400px;padding:.3rem .6rem;display:flex;align-items:center}
+  .reg-topbar-left .pill{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.1rem .35rem;border:1px solid var(--border)}
+  .reg-topbar-right{flex:2;padding:.3rem .6rem .3rem .5rem;display:flex;align-items:center}
+  .reg-topbar-right .pill{display:flex;align-items:center;gap:.2rem}
   .reg-back{display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;border-radius:5px;padding:0;flex-shrink:0}
   .reg-back:hover{background:var(--white);color:var(--body-color)}
   .reg-emp-name{font-size:.75rem;font-weight:600;color:var(--body-color);white-space:nowrap;margin-right:.1rem}
@@ -3150,28 +3152,32 @@ document.addEventListener('DOMContentLoaded', updateStats);
 <div class="reg-overlay" id="regOverlay">
   <div class="reg-topbar">
     <div class="reg-topbar-left">
-      <button class="reg-back" onclick="regClose()">&#9664;</button>
-      <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
-      <span class="reg-sep">|</span>
-      <button class="reg-header-btn">Чек</button>
-      <button class="reg-header-btn">Клиент</button>
+      <div class="pill">
+        <button class="reg-back" onclick="regClose()">&#9664;</button>
+        <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
+        <span class="reg-sep">|</span>
+        <button class="reg-header-btn">Чек</button>
+        <button class="reg-header-btn">Клиент</button>
+      </div>
     </div>
     <div class="reg-topbar-right">
-      <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
-      <button class="reg-filter-btn" onclick="setRegFilter(this,'products')">Товары</button>
-      <button class="reg-filter-btn" onclick="setRegFilter(this,'services')">Услуги</button>
-      <span class="reg-sep" style="opacity:.3">|</span>
-      <button class="reg-icon-btn" onclick="alert('Ручной ввод')" title="Ввести штрихкод">&#128290;</button>
-      <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
-      <div class="reg-search-input">
-        <span style="font-size:.7rem;color:var(--muted)">&#128269;</span>
-        <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
-      </div>
-      <div style="position:relative;display:inline-block">
-        <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
-        <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
-          <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
-          <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
+      <div class="pill">
+        <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
+        <button class="reg-filter-btn" onclick="setRegFilter(this,'products')">Товары</button>
+        <button class="reg-filter-btn" onclick="setRegFilter(this,'services')">Услуги</button>
+        <span class="reg-sep" style="opacity:.3">|</span>
+        <button class="reg-icon-btn" onclick="alert('Ручной ввод')" title="Ввести штрихкод">&#128290;</button>
+        <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
+        <div class="reg-search-input">
+          <span style="font-size:.7rem;color:var(--muted)">&#128269;</span>
+          <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
+        </div>
+        <div style="position:relative;display:inline-block">
+          <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
+          <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
+            <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
+            <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
+          </div>
         </div>
       </div>
     </div>
