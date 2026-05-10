@@ -94,7 +94,7 @@
   .action-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
   .action-btn{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.45rem .7rem;display:flex;align-items:center;gap:.35rem;cursor:pointer;transition:all .12s;font-family:var(--font);font-size:.8rem}
   .action-btn:hover{border-color:var(--primary)}
-  .action-btn .a-icon{width:1.4rem;height:1.4rem;background:var(--primary-light);border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0}
+  
   .action-del-btn{background:none;border:none;cursor:pointer;color:#dc3545;font-size:.85rem;padding:.15rem;line-height:1;display:none;opacity:.6}
   .action-del-btn:hover{opacity:1}
   .action-add-btn{background:var(--body-bg);border:1px dashed var(--border);border-radius:.5rem;padding:.45rem .7rem;display:none;align-items:center;gap:.35rem;cursor:pointer;font-family:var(--font);font-size:.8rem;color:var(--muted)}
@@ -440,15 +440,15 @@
       <!-- БЫСТРЫЕ ДЕЙСТВИЯ -->
       <div class="dash-block" id="block-actions">
         <div class="dash-block-title">⚡ Быстрые действия <span class="cnt">|</span>
-          <button class="dash-block-edit" onclick="toggleActionsEdit()" id="actionsEditBtn" title="Настроить">✏️</button>
+          <button class="dash-block-edit" onclick="toggleActionsEdit()" id="actionsEditBtn" title="Настроить">Ред.</button>
         </div>
         <div class="action-row" id="actionRow">
-          <div class="action-btn" onclick="openProductModal()"><span class="a-icon">+</span> Товар<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="openR()"><span class="a-icon">🛒</span> Продажа<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Закупка')"><span class="a-icon">📥</span> Закупка<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Расход')"><span class="a-icon">💸</span> Расход<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Клиент')"><span class="a-icon">👤</span> Клиент<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Сканер')"><span class="a-icon">📷</span> Сканер<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="openProductModal()">Товар<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="openR()">Продажа<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Закупка')">Закупка<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Расход')">Расход<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Клиент')">Клиент<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="alert('Сканер')">Сканер<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-add-btn" onclick="showAddActionMenu()"><span style="font-size:1rem;line-height:1">+</span> Добавить</div>
         </div>
       </div>
@@ -1985,7 +1985,7 @@ function addAction(idx){
   const btn = document.createElement('div');
   btn.className = 'action-btn';
   btn.setAttribute('onclick', item.action);
-  btn.innerHTML = '<span class="a-icon">'+item.icon+'</span> '+item.label+'<button class="action-del-btn" onclick="deleteAction(this)">✕</button>';
+  btn.innerHTML = item.label+'<button class="action-del-btn" onclick="deleteAction(this)">✕</button>';
   row.insertBefore(btn, row.lastElementChild);
   closeAddAction();
   if(actionsEditMode) toggleActionsEdit();
