@@ -326,6 +326,19 @@
   .reg-search-input{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:7px;background:var(--white);padding:0 .4rem;gap:.3rem}
   .reg-search-input input{border:none;outline:none;font-family:var(--font);font-size:.78rem;padding:.3rem 0;width:120px;background:transparent}
   .reg-search-input .ic{font-size:.7rem;color:var(--muted)}
+  .reg-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#16a34a;color:var(--white);padding:.6rem 1.2rem;border-radius:12px;font-size:.9rem;font-weight:600;box-shadow:0 4px 20px rgba(22,163,74,.3);opacity:0;transition:opacity .35s;pointer-events:none;display:flex;align-items:center;gap:.5rem}
+  .reg-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .reg-client-list{max-height:200px;overflow-y:auto;margin-bottom:.5rem}
+  .reg-client-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;border:1px solid var(--border);border-radius:8px;margin-bottom:.25rem;cursor:pointer;font-size:.8rem}
+  .reg-client-item:hover{border-color:var(--primary);background:var(--primary-light)}
+  .reg-client-item .ci-name{font-weight:500}
+  .reg-client-item .ci-phone{color:var(--muted);font-size:.75rem;margin-left:auto}
+  .reg-check-row{display:flex;align-items:center;padding:.3rem .4rem;border-bottom:1px solid var(--border);font-size:.78rem}
+  .reg-check-row:hover{background:var(--body-bg)}
+  .reg-check-row .cr-num{color:var(--muted);min-width:24px}
+  .reg-check-row .cr-time{color:var(--muted);min-width:44px}
+  .reg-check-row .cr-total{font-weight:600;margin-left:auto;min-width:50px;text-align:right}
+  .reg-check-empty{text-align:center;padding:1.5rem;color:var(--muted);font-size:.85rem}
   @media(max-width:768px){
     .reg-wrap{flex-direction:column}
     .reg-left{max-width:none;min-width:auto;border-right:none;border-bottom:1px solid var(--border);flex:0 0 auto;max-height:50vh;overflow-y:auto}
@@ -3451,6 +3464,48 @@ function setRegFilter(btn,filter){
     <div style="display:flex;gap:.5rem;margin-top:1rem">
       <button class="shift-btn" style="flex:1;background:#dc2626" onclick="confirmCloseShift()">&#128683; Закрыть смену</button>
       <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('closeShiftModal').classList.remove('open')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ПОДТВЕРЖДЕНИЕ ОПЛАТЫ ===== -->
+<div class="shift-overlay" id="payConfirmModal">
+  <div class="shift-box" style="max-width:440px">
+    <h2>&#128179; Подтверждение оплаты</h2>
+    <div id="payConfirmContent"></div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem">
+      <button class="shift-btn" style="flex:1" onclick="confirmPay()">&#9989; Подтвердить</button>
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('payConfirmModal').classList.remove('open')">&#10060; Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div class="reg-toast" id="regToast"><span id="regToastText">Готово</span></div>
+
+<div class="shift-overlay" id="checksHistoryModal">
+  <div class="shift-box" style="max-width:500px">
+    <h2>&#128203; История чеков за смену</h2>
+    <div id="checksHistoryContent" style="max-height:350px;overflow-y:auto;margin-bottom:.5rem"></div>
+    <button class="shift-btn" style="background:var(--muted)" onclick="document.getElementById('checksHistoryModal').classList.remove('open')">Закрыть</button>
+  </div>
+</div>
+
+<div class="shift-overlay" id="clientSelectModal">
+  <div class="shift-box" style="max-width:420px">
+    <h2>&#128100; Выбор клиента</h2>
+    <div class="shift-field">
+      <input type="text" id="clientSearchInput" placeholder="Поиск по имени или телефону..." style="width:100%;padding:.5rem .7rem;font-size:.85rem;border:2px solid var(--border);border-radius:10px;outline:none;font-family:var(--font)" oninput="renderClientSearch()">
+    </div>
+    <div class="reg-client-list" id="clientSearchResults"></div>
+    <div style="border-top:1px solid var(--border);padding-top:.5rem;margin-top:.3rem">
+      <div style="display:flex;gap:.3rem">
+        <input type="text" id="newClientName" placeholder="Имя" style="flex:1;padding:.4rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:8px;outline:none;font-family:var(--font)">
+        <input type="text" id="newClientPhone" placeholder="Телефон" style="flex:1;padding:.4rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:8px;outline:none;font-family:var(--font)">
+        <button class="shift-btn" style="padding:.4rem .6rem;font-size:.75rem;white-space:nowrap;width:auto" onclick="addNewClient()">+ Добавить</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:.7rem">
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="closeClientModal()">Без клиента</button>
     </div>
   </div>
 </div>
