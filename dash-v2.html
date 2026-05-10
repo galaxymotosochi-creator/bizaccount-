@@ -1954,7 +1954,7 @@ const ACTION_MENU_ITEMS = [
 function toggleActionsEdit(){
   actionsEditMode = !actionsEditMode;
   document.getElementById('actionRow').classList.toggle('actions-editing', actionsEditMode);
-  document.getElementById('actionsEditBtn').textContent = actionsEditMode ? '✅' : 'Ред.';
+  document.getElementById('actionsEditBtn').textContent = actionsEditMode ? '✓' : 'Ред.';
   document.getElementById('actionsEditBtn').title = actionsEditMode ? 'Готово' : 'Настроить';
 }
 
