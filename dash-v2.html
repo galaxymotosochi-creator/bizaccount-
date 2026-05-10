@@ -678,7 +678,7 @@
       <div class="cl-top">
         <div class="cl-title-row">
           <h1>Клиенты</h1>
-          <div class="cl-period">10 апреля - 10 мая</div>
+          <div class="cl-period" id="clPeriodLabel" onclick="toggleClientPeriod()">Весь период</div>
         </div>
         <div class="cl-toolbar">
           <div class="cl-left">
@@ -2389,6 +2389,24 @@ function renderTrashPage(){
 
 
 // === МАРКЕТИНГ: КЛИЕНТЫ ===
+
+function toggleClientPeriod(){
+  var newText = prompt("Выберите период:\n1 - Весь период\n2 - Сегодня\n3 - Вчера\n4 - Эта неделя\n5 - Этот месяц\nИли введите свою дату (ГГГГ-ММ-ДД)");
+  if(!newText) return;
+  if(newText === "1") document.getElementById("clPeriodLabel").textContent = "Весь период";
+  else if(newText === "2") { var d = new Date(); document.getElementById("clPeriodLabel").textContent = d.toLocaleDateString("ru-RU"); }
+  else if(newText === "3") { var d = new Date(); d.setDate(d.getDate()-1); document.getElementById("clPeriodLabel").textContent = d.toLocaleDateString("ru-RU"); }
+  else if(newText === "4") { var d = new Date(); var start = new Date(d); start.setDate(d.getDate()-d.getDay()+1); document.getElementById("clPeriodLabel").textContent = start.toLocaleDateString("ru-RU")+" - "+d.toLocaleDateString("ru-RU"); }
+  else if(newText === "5") { var d = new Date(); document.getElementById("clPeriodLabel").textContent = "01."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear()+" - "+d.toLocaleDateString("ru-RU"); }
+  else {
+    // Check if it's a valid date
+    var parts = newText.split("-");
+    if(parts.length === 3 && parts[0].length === 4) {
+      document.getElementById("clPeriodLabel").textContent = parts[2]+"."+parts[1]+"."+parts[0];
+    }
+  }
+}
+
 function openClientModal(){
   document.getElementById('clientModal').classList.add('active');
 }
