@@ -268,6 +268,19 @@
   .reg-pay .pay-active{background:var(--primary);color:var(--white)}
   .reg-pay-go{display:block;width:calc(100% - 1.3rem);margin:0 .65rem .65rem;padding:.55rem;border:none;background:var(--primary);color:var(--white);font-size:.8rem;cursor:pointer;font-family:var(--font)}
   .reg-pay-go:disabled{opacity:.4;cursor:default}
+
+  /* Emoji dance */
+  .ic, .b-icon, .nav-parent .ic, .modal-box h2, .metric-icon, .cl-empty-icon, .action-icon, .a-icon {
+    animation: emoji-bounce 3s ease-in-out infinite;
+    display: inline-flex;
+  }
+  @keyframes emoji-bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-2px) rotate(3deg); }
+    50% { transform: translateY(0) rotate(0deg); }
+    75% { transform: translateY(-1px) rotate(-2deg); }
+  }
+
 </style>
 </head>
 <body>
