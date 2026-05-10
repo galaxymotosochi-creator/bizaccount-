@@ -87,6 +87,7 @@
   .dash-block-edit:hover{color:var(--body-color)}
   .dash-block-edit.active{color:var(--body-color);font-weight:600}
   .block-row{display:flex;gap:.65rem;flex-wrap:wrap}
+  .block-chart{background:var(--white);border-radius:.65rem;padding:.3rem .5rem;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:.3rem}
   .block-card{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;background:var(--white);border-radius:.65rem;flex:1;min-width:190px;border:1px solid var(--border);transition:all .12s;cursor:default}
   .block-card .b-icon{font-size:1.6rem;width:2.4rem;height:2.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .block-card .b-info{min-width:0}
@@ -615,12 +616,14 @@
       </div>
 
       <!-- БЛОК 1: Деньги -->
-      <div class="dash-block" id="block-money">
-        <div class="dash-block-title"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2" fill="#10b981" opacity=".3"/></svg> Деньги <span class="cnt">|</span></div>
-        <div class="block-row">
-          <div class="block-card"><div class="b-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M8 10c0-1.1 1.79-2 4-2s4 .9 4 2-1.79 2-4 2-4 .9-4 2 1.79 2 4 2 4-.9 4-2"/></svg></div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0₽</div></div></div>
-          <div class="block-card"><div class="b-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.8"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0₽</div></div></div>
-          <div class="block-card"><div class="b-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0₽</div></div></div>
+      <div class="dash-block" id="block-stats">
+        <div class="dash-block-title"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="3" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/></svg> Статистика <span class="cnt">|</span> <span style="font-size:.7rem;color:var(--muted);font-weight:400">за текущий месяц</span></div>
+        <div class="block-chart" id="statsChart"><canvas id="statsCanvas" width="600" height="200" style="width:100%;height:180px"></canvas></div>
+        <div class="block-row" style="margin-top:.5rem">
+          <div class="block-card mini"><div class="b-icon" style="font-size:1.2rem;width:1.8rem;height:1.8rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><polyline points="17 6 12 1 7 6"/></svg></div><div class="b-info"><div class="b-lbl">Общая выручка</div><div class="b-val" id="stats-revenue" style="font-size:.9rem">0₽</div></div></div>
+          <div class="block-card mini"><div class="b-icon" style="font-size:1.2rem;width:1.8rem;height:1.8rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><polyline points="7 18 12 23 17 18"/></svg></div><div class="b-info"><div class="b-lbl">Общий расход</div><div class="b-val" id="stats-cost" style="font-size:.9rem">0₽</div></div></div>
+          <div class="block-card mini"><div class="b-icon" style="font-size:1.2rem;width:1.8rem;height:1.8rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="b-info"><div class="b-lbl">Потенц. прибыль</div><div class="b-val" id="stats-profit" style="font-size:.9rem">0₽</div></div></div>
+          <div class="block-card mini"><div class="b-icon" style="font-size:1.2rem;width:1.8rem;height:1.8rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="b-info"><div class="b-lbl">Прогноз выручки</div><div class="b-val" id="stats-forecast" style="font-size:.9rem">0₽</div></div></div>
         </div>
       </div>
 
@@ -2324,6 +2327,58 @@ function applyBlockConfig(){
 
 function updateStats(){
   applyBlockConfig();
+  drawStatsChart();
+}
+function drawStatsChart(){
+  var canvas=document.getElementById("statsCanvas");
+  if(!canvas) return;
+  var ctx=canvas.getContext("2d");
+  var W=canvas.width=600,H=canvas.height=200;
+  ctx.clearRect(0,0,W,H);
+  var now=new Date();
+  var monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+  var daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  var dayNow=now.getDate();
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var supplies=JSON.parse(localStorage.getItem("supplies88")||"[]");
+  var revenueByDay={},costByDay={};
+  for(var d=1;d<=dayNow;d++){revenueByDay[d]=0;costByDay[d]=0;}
+  sales.forEach(function(s){
+    if(s.date&&s.date>=monthStart.toISOString()){
+      var day=parseInt(s.date.substring(8,10));
+      if(day) revenueByDay[day]=(revenueByDay[day]||0)+s.total;
+    }
+  });
+  supplies.forEach(function(s){
+    if(s.date&&s.date>=monthStart.toISOString()){
+      var day=parseInt(s.date.substring(8,10));
+      if(day) costByDay[day]=(costByDay[day]||0)+(s.qty*s.cost||0);
+    }
+  });
+  var maxVal=1;
+  for(var d=1;d<=dayNow;d++){maxVal=Math.max(maxVal,revenueByDay[d]||0,costByDay[d]||0);}
+  var padL=25,padR=10,padT=15,padB=25;
+  var chartW=W-padL-padR,chartH=H-padT-padB;
+  var barW=Math.min(14,(chartW-10)/Math.max(dayNow,1));
+  ctx.font="10px sans-serif";
+  for(var d=1;d<=dayNow;d++){
+    var x=padL+(d-1)*(barW+2)+2;
+    var revH=(revenueByDay[d]||0)/maxVal*chartH;
+    var costH=(costByDay[d]||0)/maxVal*chartH;
+    ctx.fillStyle="#10b981";ctx.fillRect(x,padT+chartH-revH,barW*.4,revH);
+    ctx.fillStyle="#ef4444";ctx.fillRect(x+barW*.45,padT+chartH-costH,barW*.4,costH);
+  }
+  ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padT+chartH);ctx.lineTo(padL+chartW,padT+chartH);ctx.stroke();
+  var totalRev=0,totalCost=0;
+  for(var d=1;d<=dayNow;d++){totalRev+=revenueByDay[d]||0;totalCost+=costByDay[d]||0;}
+  var profit=totalRev-totalCost;
+  var avgDaily=dayNow>0?totalRev/dayNow:0;
+  var forecast=Math.round(avgDaily*daysInMonth);
+  document.getElementById("stats-revenue").textContent=totalRev.toLocaleString()+"₽";
+  document.getElementById("stats-cost").textContent=totalCost.toLocaleString()+"₽";
+  document.getElementById("stats-profit").textContent=Math.max(0,profit).toLocaleString()+"₽";
+  document.getElementById("stats-forecast").textContent=forecast.toLocaleString()+"₽";
 }
 
 // === ПОСТАВЩИКИ ===
