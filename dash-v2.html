@@ -2528,7 +2528,7 @@ function renderTurnoverPage(){
   }
 
   // Health donut chart
-  var healthData={stars:[],turnover:[],ballast:[]};
+  window._healthData={stars:[],turnover:[],ballast:[]};
   var marginHigh=30,daysFast=30;
   sorted.forEach(function(x){
     if(x.soldQty>0&&x.rev>0){
@@ -2536,19 +2536,19 @@ function renderTurnoverPage(){
       var lastSale=null;
       sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==x.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
       var daysSinceLast=lastSale?(now-new Date(lastSale))/864e5:999;
-      if(margin>=marginHigh&&daysSinceLast<=daysFast) healthData.stars.push(x);
-      else if(daysSinceLast<=daysFast) healthData.turnover.push(x);
-      else healthData.ballast.push(x);
+      if(margin>=marginHigh&&daysSinceLast<=daysFast) window._healthData.stars.push(x);
+      else if(daysSinceLast<=daysFast) window._healthData.turnover.push(x);
+      else window._healthData.ballast.push(x);
     }
   });
-  document.getElementById("health-stars").textContent=healthData.stars.length;
-  document.getElementById("health-turnover").textContent=healthData.turnover.length;
-  document.getElementById("health-ballast").textContent=healthData.ballast.length;
-  var totalHealth=healthData.stars.length+healthData.turnover.length+healthData.ballast.length||1;
+  document.getElementById("health-stars").textContent=window._healthData.stars.length;
+  document.getElementById("health-turnover").textContent=window._healthData.turnover.length;
+  document.getElementById("health-ballast").textContent=window._healthData.ballast.length;
+  var totalHealth=window._healthData.stars.length+window._healthData.turnover.length+window._healthData.ballast.length||1;
   var hd=document.getElementById("healthDonut");
   if(hd){
     var r=50,cx=65,cy=65,circ=2*Math.PI*r;
-    var hParts=[{p:healthData.stars.length/totalHealth,c:"#4CAF50",l:"Звезды"},{p:healthData.turnover.length/totalHealth,c:"#FF9800",l:"Оборот"},{p:healthData.ballast.length/totalHealth,c:"#F44336",l:"Балласт"}];
+    var hParts=[{p:window._healthData.stars.length/totalHealth,c:"#4CAF50",l:"Звезды"},{p:window._healthData.turnover.length/totalHealth,c:"#FF9800",l:"Оборот"},{p:window._healthData.ballast.length/totalHealth,c:"#F44336",l:"Балласт"}];
     var off=0,svg='<svg width="130" height="130" viewBox="0 0 130 130"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#e5e7eb" stroke-width="18"/>';
     hParts.forEach(function(pt,idx){
       if(pt.p>0.01){
@@ -2569,7 +2569,7 @@ function showHealthModal(cat){
   _healthCategory=cat;
   var titles={stars:"\u2B50 \u0417\u0432\u0435\u0437\u0434\u044B",turnover:"\uD83D\uDD01 \u041E\u0431\u043E\u0440\u043E\u0442",ballast:"\u26D4 \u0411\u0430\u043B\u043B\u0430\u0441\u0442"};
   var colors={stars:"#4CAF50",turnover:"#FF9800",ballast:"#F44336"};
-  var items=healthData[cat]||[];
+  var items=window._healthData[cat]||[];
   var products=JSON.parse(localStorage.getItem("products88")||"[]");
   var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
   var now=new Date();
@@ -2593,7 +2593,7 @@ function closeHealthModal(){
   document.getElementById("healthModal").classList.remove("open");
 }
 function downloadHealthCSV(){
-  var items=healthData[_healthCategory]||[];
+  var items=window._healthData[_healthCategory]||[];
   var products=JSON.parse(localStorage.getItem("products88")||"[]");
   var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
   var now=new Date();
