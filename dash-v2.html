@@ -198,25 +198,25 @@
   .filter-tab{padding:.4rem .9rem;font-size:.8rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--font);transition:all .12s}
   .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
   .filter-tab.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
-    .product-table{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow-x:auto}
+      .product-table{overflow-x:auto;margin:0}
   .product-table table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
-  .product-table th{text-align:center;padding:.65rem .5rem;border-bottom:2px solid var(--border);color:var(--muted);font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;background:#f1f3f5;white-space:nowrap}
-  .product-table td{padding:.5rem .5rem;border-bottom:1px solid #e9ecef;vertical-align:middle;text-align:center}
-  .product-table tr:not(.total-row):hover td{background:#f8f9fa}
+  .product-table th{text-align:center;padding:.6rem .5rem;color:var(--muted);font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;background:transparent;white-space:nowrap;border-bottom:1px solid var(--border)}
+  .product-table td{padding:.5rem .5rem;border-bottom:1px solid #e9ecef;vertical-align:middle;text-align:center;background:transparent}
+  .product-table tr:hover td{background:#f8f9fa}
   .product-table .prod-name{font-weight:500;color:var(--body-color);text-align:left;font-size:.85rem}
   .product-table .prod-sku{color:var(--muted);font-size:.7rem;display:block;text-align:left}
   .product-table .prod-cat{font-size:.68rem;padding:.08rem .4rem;border-radius:20px;background:#f1f3f5;color:var(--muted);display:inline-block;white-space:nowrap}
   .product-table .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
   .product-table .editable-price{cursor:pointer;color:var(--primary);font-weight:500;border-bottom:1px dashed var(--primary);padding-bottom:1px}
   .product-table .editable-price:hover{background:var(--primary-light);border-radius:3px}
-  .product-table .markup-badge{display:inline-block;padding:.08rem .35rem;border-radius:4px;font-size:.68rem;font-weight:500}
-  .product-table .markup-badge.pos{background:#f0fdf4;color:#166534}
+  .product-table .markup-badge{display:inline-block;padding:.08rem .35rem;border-radius:4px;font-size:.68rem;font-weight:500;background:#f0fdf4;color:#166534}
   .product-table .markup-badge.neg{background:#fef2f2;color:#991b1b}
-  .product-table .stock-low{color:#dc2626!important;font-weight:700}
-  .product-table .stock-ok{color:var(--body-color)}
-  .product-table .total-row td{font-weight:700;background:#f8f9fa;border-top:2px solid #dee2e6;padding:.6rem .5rem}
+  .product-table .stock-low{color:#dc2626;font-weight:700}
+  .product-table .total-row{background:transparent}
+  .product-table .total-row td{font-weight:700;border-top:2px solid var(--border);padding:.6rem .5rem;background:transparent}
+  .product-table .total-row:hover td{background:transparent}
   .product-table .prod-price{font-weight:500}
-  .product-table .act-btn{background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.3rem .5rem;border-radius:.3rem;font-family:var(--font);transition:all .1s}
+  .product-table .act-btn{background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.3rem .5rem;border-radius:.3rem;font-family:var(--font)}
   .product-table .act-btn:hover{background:var(--body-bg);color:var(--body-color)}
   .product-table .trash-item{color:var(--muted);font-size:.78rem}
   .product-table .trash-item:hover{color:var(--body-color)}
@@ -2612,7 +2612,7 @@ function renderStockPage(){
     var low=qty<=5;
     totalQty+=qty;totalSum+=sumValue;
     var markClass=markup>=0?"pos":"neg";
-    return '<tr'+(low?' style="background:#fff8e6"':'')+'>'+
+    return '<tr>'+
       '<td style="font-size:.72rem;color:var(--muted);font-family:monospace">'+(p.sku||'\u2014')+'</td>'+
       '<td style="text-align:left"><span class="prod-name">'+p.name+'</span>'+(p.sku?'<span class="prod-sku">'+(p.sku||'')+'</span>':'')+(low?' <span style="font-size:.65rem;color:#d97706;font-weight:600">\u26A0 \u043C\u0430\u043B\u043E</span>':'')+'</td>'+
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'\u2014')+'</span></td>'+
