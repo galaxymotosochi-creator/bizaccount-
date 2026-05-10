@@ -617,7 +617,7 @@
 
       <!-- БЛОК 1: Деньги -->
       <div class="dash-block" id="block-stats">
-        <div class="dash-block-title"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="3" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/></svg> Статистика <span class="cnt">|</span> <span style="font-size:.7rem;color:var(--muted);font-weight:400">за текущий месяц</span></div>
+        <div class="dash-block-title"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="3" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="3" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/><rect x="14" y="14" width="7" height="7" rx="1" fill="#6366f1" opacity=".15"/></svg> Статистика <span class="cnt">|</span> <span style="font-size:.7rem;color:var(--muted);font-weight:400" id="statsPeriodLabel">за текущий месяц</span></div>
         <div class="block-chart" id="statsChart"><canvas id="statsCanvas" width="600" height="200" style="width:100%;height:180px"></canvas></div>
         <div class="block-row" style="margin-top:.5rem">
           <div class="block-card mini"><div class="b-icon" style="font-size:1.2rem;width:1.8rem;height:1.8rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><polyline points="17 6 12 1 7 6"/></svg></div><div class="b-info"><div class="b-lbl">Общая выручка</div><div class="b-val" id="stats-revenue" style="font-size:.9rem">0₽</div></div></div>
@@ -2335,52 +2335,58 @@ function drawStatsChart(){
   var ctx=canvas.getContext("2d");
   var W=canvas.width=600,H=canvas.height=200;
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за текущий месяц. Совершите продажи, чтобы увидеть график",W/2,H/2);
   var now=new Date();
-  var monthStart=new Date(now.getFullYear(),now.getMonth(),1);
-  var daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-  var dayNow=now.getDate();
+  var fromDate,toDate,labelDays;
+  var cp=typeof currentPeriod!="undefined"?currentPeriod:"today";
+  if(cp==="today"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());toDate=now;labelDays=now.getDate();}
+  else if(cp==="yesterday"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);toDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());labelDays=1;}
+  else if(cp==="week"){fromDate=new Date(now.getTime()-7*864e5);toDate=now;labelDays=7;}
+  else if(cp==="month"||!cp){fromDate=new Date(now.getFullYear(),now.getMonth(),1);toDate=now;labelDays=now.getDate();}
+  else if(cp==="all"){fromDate=new Date(2020,1,1);toDate=now;labelDays=30;}
+  else if(cp==="custom"){
+    fromDate=window._customFrom?new Date(window._customFrom):new Date(now.getFullYear(),now.getMonth(),1);
+    toDate=window._customTo?new Date(window._customTo+"T23:59:59"):now;
+    labelDays=Math.ceil((toDate-fromDate)/864e5)+1;
+  } else {fromDate=new Date(now.getFullYear(),now.getMonth(),1);toDate=now;labelDays=now.getDate();}
+  var daysInRange=Math.ceil((toDate-fromDate)/864e5)+1;
+  if(daysInRange>90){daysInRange=Math.ceil(daysInRange/7);labelDays="weeks";}
   var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
   var supplies=JSON.parse(localStorage.getItem("supplies88")||"[]");
   var revenueByDay={},costByDay={};
-  for(var d=1;d<=dayNow;d++){revenueByDay[d]=0;costByDay[d]=0;}
-  sales.forEach(function(s){
-    if(s.date&&s.date>=monthStart.toISOString()){
-      var day=parseInt(s.date.substring(8,10));
-      if(day) revenueByDay[day]=(revenueByDay[day]||0)+s.total;
-    }
-  });
-  supplies.forEach(function(s){
-    if(s.date&&s.date>=monthStart.toISOString()){
-      var day=parseInt(s.date.substring(8,10));
-      if(day) costByDay[day]=(costByDay[day]||0)+(s.qty*s.cost||0);
-    }
-  });
   var totalRev=0,totalCost=0;
-  for(var d=1;d<=dayNow;d++){totalRev+=revenueByDay[d]||0;totalCost+=costByDay[d]||0;}
+  sales.forEach(function(s){if(s.date&&s.date>=fromDate.toISOString()&&s.date<=toDate.toISOString()){var day=s.date.substring(0,10);revenueByDay[day]=(revenueByDay[day]||0)+s.total;totalRev+=s.total;}});
+  supplies.forEach(function(s){if(s.date&&s.date>=fromDate.toISOString()&&s.date<=toDate.toISOString()){var day=s.date.substring(0,10);costByDay[day]=(costByDay[day]||0)+(s.qty*s.cost||0);totalCost+=s.qty*s.cost||0;}});
   if(!totalRev&&!totalCost){
-    ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за этот месяц. Начните продавать!",W/2,H/2);
+    ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за выбранный период. Начните продавать!",W/2,H/2);
     document.getElementById("stats-revenue").textContent="0₽";document.getElementById("stats-cost").textContent="0₽";document.getElementById("stats-profit").textContent="0₽";document.getElementById("stats-forecast").textContent="0₽";
     return;
   }
-  var maxVal=1;
-  for(var d=1;d<=dayNow;d++){maxVal=Math.max(maxVal,revenueByDay[d]||0,costByDay[d]||0);}
-  var padL=25,padR=10,padT=15,padB=25;
+  var days=labelDays==="weeks"?daysInRange:daysInRange;
+  var keys=Object.keys(revenueByDay).concat(Object.keys(costByDay));keys=[...new Set(keys)].sort();
+  if(!keys.length){ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за выбранный период",W/2,H/2);return;}
+  if(keys.length===1) keys=[keys[0],keys[0]];
+  var maxVal=1;keys.forEach(function(k){maxVal=Math.max(maxVal,revenueByDay[k]||0,costByDay[k]||0);});
+  var padL=30,padR=10,padT=15,padB=25;
   var chartW=W-padL-padR,chartH=H-padT-padB;
-  var barW=Math.min(14,(chartW-10)/Math.max(dayNow,1));
-  ctx.font="10px sans-serif";
-  for(var d=1;d<=dayNow;d++){
-    var x=padL+(d-1)*(barW+2)+2;
-    var revH=(revenueByDay[d]||0)/maxVal*chartH;
-    var costH=(costByDay[d]||0)/maxVal*chartH;
-    ctx.fillStyle="#10b981";ctx.fillRect(x,padT+chartH-revH,barW*.4,revH);
-    ctx.fillStyle="#ef4444";ctx.fillRect(x+barW*.45,padT+chartH-costH,barW*.4,costH);
-  }
+  var barW=Math.min(16,(chartW-10)/Math.max(keys.length,1));
+  keys.forEach(function(k,i){
+    var x=padL+i*(barW+2)+2;
+    var revH=((revenueByDay[k]||0)/maxVal)*chartH;
+    var costH=((costByDay[k]||0)/maxVal)*chartH;
+    ctx.fillStyle="#10b981";ctx.fillRect(x,padT+chartH-revH,barW*.4,Math.max(revH,1));
+    ctx.fillStyle="#ef4444";ctx.fillRect(x+barW*.45,padT+chartH-costH,barW*.4,Math.max(costH,1));
+    if(i%3==0||i===keys.length-1){ctx.fillStyle="#9ca3af";ctx.font="8px sans-serif";ctx.textAlign="center";ctx.fillText(k.substring(5,10),x+barW/2,padT+chartH+12);}
+  });
   ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padT+chartH);ctx.lineTo(padL+chartW,padT+chartH);ctx.stroke();
+  var labels={today:"сегодня",yesterday:"вчера",week:"за 7 дней",month:"за текущий месяц",all:"за всё время",custom:"за выбранный период"};
+  var spl=document.getElementById("statsPeriodLabel");
+  if(spl) spl.textContent=labels[cp]||"за выбранный период";
   var profit=totalRev-totalCost;
-  var avgDaily=dayNow>0?totalRev/dayNow:0;
-  var forecast=Math.round(avgDaily*daysInMonth);
+  var totalPeriodDays=Math.ceil((toDate-fromDate)/864e5)+1;
+  var avgDaily=totalPeriodDays>0?totalRev/totalPeriodDays:0;
+  var forecastMonth=new Date().getDate();
+  var forecast=Math.round(avgDaily*30);
   document.getElementById("stats-revenue").textContent=totalRev.toLocaleString()+"₽";
   document.getElementById("stats-cost").textContent=totalCost.toLocaleString()+"₽";
   document.getElementById("stats-profit").textContent=Math.max(0,profit).toLocaleString()+"₽";
