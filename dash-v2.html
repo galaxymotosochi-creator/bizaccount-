@@ -85,6 +85,7 @@
   .dash-block-title .cnt{font-weight:400;font-size:.7rem;color:var(--border)}
   .dash-block-edit{background:none;border:none;cursor:pointer;font-size:.85rem;color:var(--muted);margin-left:auto;padding:0 .2rem;font-family:var(--font)}
   .dash-block-edit:hover{color:var(--body-color)}
+  .dash-block-edit.active{color:var(--body-color);font-weight:600}
   .block-row{display:flex;gap:.65rem;flex-wrap:wrap}
   .block-card{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;background:var(--white);border-radius:.65rem;flex:1;min-width:190px;border:1px solid var(--border);transition:all .12s;cursor:default}
   .block-card .b-icon{font-size:1.6rem;width:2.4rem;height:2.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -1954,8 +1955,10 @@ const ACTION_MENU_ITEMS = [
 function toggleActionsEdit(){
   actionsEditMode = !actionsEditMode;
   document.getElementById('actionRow').classList.toggle('actions-editing', actionsEditMode);
-  document.getElementById('actionsEditBtn').textContent = actionsEditMode ? '✓' : 'Ред.';
-  document.getElementById('actionsEditBtn').title = actionsEditMode ? 'Готово' : 'Настроить';
+  var btn = document.getElementById('actionsEditBtn');
+  btn.textContent = actionsEditMode ? '✓' : 'Ред.';
+  btn.title = actionsEditMode ? 'Готово' : 'Настроить';
+  btn.classList.toggle('active', actionsEditMode);
 }
 
 function deleteAction(btn){
