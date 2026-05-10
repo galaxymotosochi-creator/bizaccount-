@@ -2317,9 +2317,7 @@ function applyBlockConfig(){
     const p = products.find(x => x.id === sp.prodId);
     return s + ((p?.price||0) * sp.qty);
   }, 0);
-  document.getElementById('b-revenue').textContent = '0₽';
-  document.getElementById('b-cost').textContent = '0₽';
-  document.getElementById('b-profit').textContent = '0₽';
+  // b-revenue, b-cost, b-profit were in the removed "Деньги" block
   document.getElementById('b-stock-qty').textContent = totalQty;
   document.getElementById('b-stock-sum').textContent = totalCost.toLocaleString()+'₽';
   document.getElementById('b-stock-retail').textContent = totalRetail.toLocaleString()+'₽';
