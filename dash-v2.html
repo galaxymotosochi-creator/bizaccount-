@@ -2338,6 +2338,9 @@ function drawStatsChart(){
   var now=new Date();
   var fromDate,toDate,labelDays;
   var cp=typeof window.currentPeriod!="undefined"?window.currentPeriod:"today";
+  var labels={today:"сегодня",yesterday:"вчера",week:"за 7 дней",month:"за текущий месяц",all:"за всё время",custom:"за выбранный период"};
+  var spl=document.getElementById("statsPeriodLabel");
+  if(spl) spl.textContent=labels[cp]||"за выбранный период";
   if(cp==="today"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());toDate=now;labelDays=now.getDate();}
   else if(cp==="yesterday"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);toDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());labelDays=1;}
   else if(cp==="week"){fromDate=new Date(now.getTime()-7*864e5);toDate=now;labelDays=7;}
@@ -2379,9 +2382,6 @@ function drawStatsChart(){
   });
   ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padT+chartH);ctx.lineTo(padL+chartW,padT+chartH);ctx.stroke();
-  var labels={today:"сегодня",yesterday:"вчера",week:"за 7 дней",month:"за текущий месяц",all:"за всё время",custom:"за выбранный период"};
-  var spl=document.getElementById("statsPeriodLabel");
-  if(spl) spl.textContent=labels[cp]||"за выбранный период";
   var profit=totalRev-totalCost;
   var totalPeriodDays=Math.ceil((toDate-fromDate)/864e5)+1;
   var avgDaily=totalPeriodDays>0?totalRev/totalPeriodDays:0;
