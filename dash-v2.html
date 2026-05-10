@@ -519,6 +519,7 @@
         <a class="nav-child">Категории</a>
         <a class="nav-child">P&amp;L</a>
         <a class="nav-child">Возвраты</a>
+        <a class="nav-child" onclick="navigateTo('transactions')">Транзакции</a>
         <a class="nav-child">Документы</a>
       </div>
     </div>
@@ -1028,6 +1029,37 @@
       </div>
       <div class="product-table">
         <table><thead><tr><th style="width:18%">Дата открытия</th><th style="width:18%">Дата закрытия</th><th style="width:20%">Сотрудник</th><th style="width:14%">Продажи</th><th style="width:14%">Касса</th><th style="width:16%">Статус</th></tr></thead><tbody id="shiftTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ТРАНЗАКЦИИ -->
+    <div class="page-section" id="page-transactions">
+      <div class="page-header">
+        <div>
+          <h1>Транзакции</h1>
+          <div class="sub">Все приходы и расходы в одном месте</div>
+        </div>
+        <div class="page-actions" id="transFilterBar" style="display:flex;gap:.35rem;flex-wrap:wrap">
+          <span class="filter-tab active" data-filter="all" onclick="setTransFilter('all',this)">Все</span>
+          <span class="filter-tab" data-filter="sale" onclick="setTransFilter('sale',this)">+ Продажи</span>
+          <span class="filter-tab" data-filter="supply" onclick="setTransFilter('supply',this)">− Поставки</span>
+          <span class="filter-tab" data-filter="writeoff" onclick="setTransFilter('writeoff',this)">− Списания</span>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Дата</th>
+              <th style="width:12%">Тип</th>
+              <th style="width:34%">Описание</th>
+              <th style="width:14%">Сумма</th>
+              <th style="width:14%">Баланс</th>
+              <th style="width:12%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="transTableBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -1905,6 +1937,7 @@ function navigateTo(page){
   if(page === 'loyalty') renderLoyaltyPage();
   if(page === 'promos') renderPromosPage();
   if(page === 'shifts') renderShiftsPage();
+  if(page === 'transactions') renderTransactionsPage();
   if(page === 'salary') renderSalaryPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
@@ -3131,6 +3164,38 @@ function renderVenuesPage(){
 }
 
 
+var transFilter = 'all';
+function setTransFilter(f, el){
+  transFilter = f;
+  document.querySelectorAll('#transFilterBar .filter-tab').forEach(t => t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderTransactionsPage();
+}
+function renderTransactionsPage(){
+  var tb = document.getElementById("transTableBody");
+  if(!tb) return;
+  var items = [];
+  var sales = JSON.parse(localStorage.getItem("sales88") || "[]");
+  var supplies = JSON.parse(localStorage.getItem("supplies88") || "[]");
+  var writeoffs = JSON.parse(localStorage.getItem("writeoffs88") || "[]");
+  var products = JSON.parse(localStorage.getItem("products88") || "[]");
+  sales.forEach(function(s){items.push({id:s.id,date:s.date,type:"sale",desc:("Продажа #"+s.id).substring(0,20)+(s.clientName?" ("+s.clientName+")":""),amount:s.total||0});});
+  supplies.forEach(function(s){
+    var p=products.find(function(x){return x.id==s.prodId});
+    items.push({id:s.id,date:s.date,type:"supply",desc:"Поставка: "+(p?p.name:"?"),amount:-(s.qty*s.cost||0)});
+  });
+  writeoffs.forEach(function(s){
+    var p=products.find(function(x){return x.id==s.prodId});
+    items.push({id:s.id,date:s.date,type:"writeoff",desc:"Списание: "+(p?p.name:"?"),amount:-(s.qty*(p?p.price||0:0))});
+  });
+  items.sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:0;});
+  if(transFilter!=='all') items=items.filter(function(i){return i.type===transFilter;});
+  if(!items.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📊</div><p>Нет операций за выбранный период</p></div></td></tr>';return;}
+  var typeLabels={sale:"<span style=\"color:#16a34a\">+ Продажа</span>",supply:"<span style=\"color:#dc2626\">− Поставка</span>",writeoff:"<span style=\"color:#dc2626\">− Списание</span>"};
+  var h="";var bal=0;
+  items.forEach(function(it){bal+=it.amount;h+='<tr><td style="font-size:.8rem">'+(it.date?it.date.substring(0,10):"")+'</td><td>'+typeLabels[it.type]+'</td><td>'+it.desc+'</td><td style="font-weight:600;color:'+(it.amount>=0?'#16a34a':'#dc2626')+'">'+(it.amount>=0?'+':'')+it.amount.toLocaleString()+'</td><td style="font-weight:600">'+bal.toLocaleString()+'</td><td><span style="color:#16a34a;font-size:.7rem">✅</span></td></tr>';});
+  tb.innerHTML=h;
+}
 function renderShiftsPage(){
   var tb = document.getElementById("shiftTableBody");
   if(!tb) return;
