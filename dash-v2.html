@@ -231,120 +231,44 @@
     .nav-child{padding-left:2rem!important;font-size:.8rem}
   }
 
-  /* ===== КАССА ===== */
   .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--white);display:none}
   .reg-overlay.open{display:flex}
   .reg-wrap{display:flex;width:100%;height:100vh}
-  .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px}
-  .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa}
-  .reg-header{display:flex;align-items:center;padding:.6rem .8rem;background:var(--white);border-bottom:1px solid var(--border);gap:.5rem}
-  .reg-back{display:flex;align-items:center;gap:.3rem;background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;font-family:var(--font);padding:.3rem .5rem;border-radius:6px;transition:all .15s}
-  .reg-back:hover{background:var(--body-bg);color:var(--body-color)}
-  .reg-emp-name{font-size:.75rem;color:var(--muted);margin-left:.3rem}
-  .reg-header-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
-  .reg-header-btn{background:none;border:none;font-size:.8rem;color:var(--primary);cursor:pointer;font-family:var(--font);padding:.3rem .6rem;border-radius:6px;transition:all .15s;display:flex;align-items:center;gap:.3rem}
-  .reg-header-btn:hover{background:var(--primary-light)}
-  .reg-header-btn.danger{color:#dc2626}
-  .reg-header-btn.danger:hover{background:rgba(220,38,38,0.08)}
-  .reg-header-btn .ic{font-size:.9rem}
-  .reg-filter-bar{display:flex;align-items:center;gap:.4rem;padding:.5rem .8rem;background:var(--white);border-bottom:1px solid var(--border);flex-wrap:wrap}
-  .reg-filter-label{font-size:.75rem;font-weight:600;color:var(--muted);margin-right:.2rem}
-  .reg-filter-btn{padding:.2rem .6rem;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .12s}
-  .reg-filter-btn:hover{border-color:var(--primary);color:var(--primary)}
-  .reg-filter-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
-  .reg-filter-spacer{flex:1}
-  .reg-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:.85rem;transition:all .12s}
-  .reg-icon-btn:hover{border-color:var(--primary);background:var(--primary-light)}
-  .reg-search-input{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:7px;background:var(--white);padding:0 .4rem;gap:.3rem}
-  .reg-search-input input{border:none;outline:none;font-family:var(--font);font-size:.78rem;padding:.3rem 0;width:120px;background:transparent}
-  .reg-search-input .ic{font-size:.7rem;color:var(--muted)}
-  .reg-products{flex:1;overflow-y:auto;padding:.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.5rem;align-content:start}
-  .reg-product-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.6rem .5rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:80px;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .reg-product-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
-  .reg-product-card:active{transform:translateY(0)}
-  .reg-product-card .pc-icon{font-size:1.4rem;margin-bottom:.25rem}
-  .reg-product-card .pc-name{font-size:.72rem;font-weight:500;color:var(--body-color);line-height:1.2}
-  .reg-product-card .pc-price{font-size:.8rem;font-weight:700;color:var(--primary);margin-top:.15rem}
-  .reg-product-card .pc-tag{font-size:.55rem;color:var(--muted);background:var(--body-bg);padding:.05rem .35rem;border-radius:4px;margin-top:.15rem}
-  @media(max-width:768px){
-    .reg-wrap{flex-direction:column}
-    .reg-left{max-width:none;min-width:auto;border-right:none;border-bottom:1px solid var(--border);flex:0 0 auto;max-height:50vh;overflow-y:auto}
-    .reg-header{flex-wrap:wrap}
-    .reg-filter-bar{flex-wrap:wrap}
-    .reg-products{grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:.35rem}
-    .reg-product-card{min-height:65px;padding:.4rem .35rem}
-    .reg-product-card .pc-icon{font-size:1.1rem}
-    .reg-product-card .pc-name{font-size:.65rem}
-  }
-  /* ===== ЧЕК (левая панель) ===== */
-  .reg-receipt{flex:1;display:flex;flex-direction:column;overflow:hidden}
-  .receipt-header{display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem;border-bottom:1px solid var(--border)}
-  .receipt-header h3{font-size:.85rem;font-weight:600}
-  .receipt-client{display:flex;align-items:center;gap:.3rem;font-size:.75rem;color:var(--muted);cursor:pointer;padding:.2rem .5rem;border-radius:6px}
-  .receipt-client:hover{background:var(--body-bg);color:var(--primary)}
-  .receipt-items{flex:1;overflow-y:auto;padding:.3rem .8rem}
-  .receipt-item{display:flex;align-items:center;gap:.4rem;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.78rem}
-  .receipt-item .ri-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .receipt-item .ri-qty{color:var(--muted);font-size:.7rem;min-width:28px;text-align:center}
-  .receipt-item .ri-qty-num{display:inline-flex;align-items:center;gap:2px}
-  .receipt-item .ri-qty-btn{background:none;border:none;cursor:pointer;font-size:.65rem;color:var(--muted);padding:0 2px;line-height:1}
-  .receipt-item .ri-qty-btn:hover{color:var(--primary)}
-  .receipt-item .ri-price{font-weight:600;min-width:55px;text-align:right}
-  .receipt-item .ri-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:.7rem;padding:0 2px}
-  .receipt-item .ri-del:hover{color:#dc2626}
-  .receipt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:.8rem;gap:.3rem}
-  .receipt-empty .big{font-size:2rem}
-  .receipt-total{padding:.5rem .8rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-  .receipt-total .tl{font-size:.75rem;color:var(--muted)}
-  .receipt-total .tv{font-size:1.2rem;font-weight:700}
-  .receipt-pay{display:flex;gap:.35rem;padding:.4rem .8rem}
-  .receipt-pay-btn{flex:1;padding:.35rem;border:1px solid var(--border);border-radius:8px;background:var(--white);cursor:pointer;font-size:.72rem;font-family:var(--font);text-align:center;transition:all .12s}
-  .receipt-pay-btn:hover{border-color:var(--primary)}
-  .receipt-pay-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
-  .receipt-pay-btn .pay-ic{display:block;font-size:.9rem;margin-bottom:2px}
-  .receipt-go{display:block;margin:.2rem .8rem .6rem;padding:.55rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.85rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
-  .receipt-go:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
-  .receipt-go:disabled{opacity:.35;cursor:default}
-  /* ===== PIN ===== */
-  .pin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+  .reg-left{flex:2;display:flex;flex-direction:column;background:#f5f7fa;border-right:1px solid var(--border)}
+  .reg-right{flex:1;display:flex;flex-direction:column;min-width:280px}
+  .reg-top{display:flex;align-items:center;padding:.4rem .65rem;background:var(--white);border-bottom:1px solid var(--border);gap:.4rem}
+  .reg-top .emp-name{font-size:.8rem;font-weight:600}
+  .reg-cats{display:flex;gap:2px;padding:.35rem .65rem;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--border)}
+  .reg-cat-btn{padding:.2rem .55rem;font-size:.7rem;border:1px solid var(--border);border-radius:5px;background:var(--white);cursor:pointer;white-space:nowrap;font-family:var(--font)}
+  .reg-cat-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+  .reg-tiles{padding:.4rem;overflow-y:auto;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.35rem}
+  .reg-tile{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:62px}
+  .reg-tile:hover{border-color:var(--primary)}
+  .reg-tile .t-name{font-size:.65rem;font-weight:500}
+  .reg-tile .t-price{font-size:.7rem;font-weight:700;color:var(--primary)}
+  .pin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center}
   .pin-overlay.open{display:flex}
-  .pin-box{background:var(--white);border-radius:1.2rem;padding:2rem 2rem 1.5rem;max-width:300px;width:90%;text-align:center;box-shadow:0 1rem 3rem rgba(0,0,0,.2);animation:pinIn .25s ease}
-  @keyframes pinIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  .pin-box h2{font-size:1.1rem;font-weight:600;margin-bottom:.1rem}
-  .pin-box .sub{font-size:.8rem;color:var(--muted);margin-bottom:.75rem}
-  .pin-display{display:flex;gap:10px;justify-content:center;margin-bottom:.8rem;min-height:2.2rem;align-items:center}
-  .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
-  .pin-dot.filled{background:var(--primary);border-color:var(--primary)}
-  .pin-dot.shake{animation:pinShake .4s ease}
-  @keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-  .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;max-width:220px;margin:0 auto}
-  .pin-btn{height:50px;border-radius:12px;border:1px solid var(--border);font-size:1.2rem;font-weight:500;cursor:pointer;font-family:var(--font);background:var(--white);transition:all .12s}
-  .pin-btn:hover{background:var(--body-bg);border-color:var(--primary)}
-  .pin-btn:active{transform:scale(.95)}
-  .pin-btn-clear{color:#dc2626;font-size:.9rem;font-weight:600}
-  .pin-btn-ok{background:var(--primary);color:var(--white);border-color:var(--primary);font-size:.9rem}
-  .pin-btn-ok:hover{background:var(--primary-dark)!
+  .pin-box{background:var(--white);border-radius:1rem;padding:2rem;max-width:300px;width:100%;text-align:center;box-shadow:0 1rem 2rem rgba(0,0,0,.2)}
+  .pin-box h2{font-size:1rem;margin-bottom:.25rem}
+  .pin-display{font-size:1.5rem;letter-spacing:8px;margin-bottom:.75rem;min-height:2rem}
+  .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;max-width:210px;margin:0 auto}
+  .pin-btn{height:44px;border-radius:8px;border:1px solid var(--border);font-size:1rem;cursor:pointer;font-family:var(--font)}
   .pin-btn-clear{border-color:#dc3545;color:#dc3545}
   .pin-btn-ok{background:var(--primary);color:var(--white);border-color:var(--primary)}
-  /* ===== SHIFT OPENING ===== */
-  .shift-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:350;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
-  .shift-overlay.open{display:flex}
-  .shift-box{background:var(--white);border-radius:1.2rem;padding:2rem 2.2rem;max-width:420px;width:90%;box-shadow:0 1rem 3rem rgba(0,0,0,.2);animation:shiftIn .3s ease;text-align:center}
-  @keyframes shiftIn{from{opacity:0;transform:scale(.94) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
-  .shift-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
-  .shift-box h2 .ic{font-size:1.4rem}
-  .shift-box .shift-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:1rem}
-  .shift-box .shift-desc strong{color:var(--body-color)}
-  .shift-field{text-align:left;margin-bottom:1rem}
-  .shift-field label{display:block;font-size:.8rem;font-weight:500;margin-bottom:.25rem;color:var(--muted)}
-  .shift-field input{width:100%;padding:.65rem .85rem;font-size:1.1rem;font-weight:600;border:2px solid var(--border);border-radius:10px;outline:none;font-family:var(--font);text-align:center;transition:border-color .15s}
-  .shift-field input:focus{border-color:var(--primary)}
-  .shift-time{font-size:.85rem;color:var(--muted);margin-bottom:1rem;padding:.4rem;background:var(--body-bg);border-radius:8px}
-  .shift-time .st-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:.15rem}
-  .shift-time .st-value{font-size:1rem;font-weight:600;color:var(--body-color)}
-  .shift-btn{width:100%;padding:.65rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.95rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
-  .shift-btn:hover{opacity:.9;transform:translateY(-1px)}
-  .shift-box .sub{font-size:.75rem;color:var(--muted);margin-top:.65rem}
+  .receipt-items{flex:1;overflow-y:auto;padding:.65rem}
+  .receipt-header{font-size:.65rem;color:var(--muted);margin-bottom:.35rem}
+  .receipt-item{display:flex;align-items:center;padding:.3rem 0;font-size:.75rem;gap:.3rem}
+  .receipt-item .ri-name{flex:1;font-weight:500}
+  .receipt-item .ri-qty{color:var(--muted);min-width:30px}
+  .receipt-item .ri-price{min-width:60px;text-align:right;font-weight:600}
+  .receipt-item .ri-del{cursor:pointer;color:#dc3545;border:none;background:none}
+  .receipt-total{margin-top:auto;padding:.65rem;border-top:2px solid var(--body-color)}
+  .receipt-total .total-row{display:flex;justify-content:space-between;font-size:.85rem;font-weight:700}
+  .reg-pay{display:flex;gap:.35rem;padding:.5rem .65rem}
+  .reg-pay button{flex:1;padding:.5rem;border:1px solid var(--border);border-radius:.5rem;font-size:.7rem;cursor:pointer;font-family:var(--font)}
+  .reg-pay .pay-active{background:var(--primary);color:var(--white)}
+  .reg-pay-go{display:block;width:calc(100% - 1.3rem);margin:0 .65rem .65rem;padding:.55rem;border:none;background:var(--primary);color:var(--white);font-size:.8rem;cursor:pointer;font-family:var(--font)}
+  .reg-pay-go:disabled{opacity:.4;cursor:default}
 
   /* Emoji dance */
   .ic, .b-icon, .nav-parent .ic, .modal-box h2, .metric-icon, .cl-empty-icon, .action-icon, .a-icon {
@@ -3114,12 +3038,12 @@ document.addEventListener('DOMContentLoaded', updateStats);
 </script>
 
 
-<!-- ===== ПИН ===== -->
+<!-- ПИН -->
 <div class="pin-overlay" id="pinOverlay">
-  <div class="pin-box">
-    <button onclick="pinClose()" style="position:absolute;top:8px;right:14px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted);line-height:1">&#10005;</button>
-    <h2>&#128272; Вход в кассу</h2>
-    <div class="sub">Введите ПИН-код сотрудника</div>
+  <div class="pin-box" style="position:relative">
+    <button onclick="pinClose()" style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted)">✕</button>
+    <h2>Вход в кассу</h2>
+    <div class="sub">ПИН-код</div>
     <div class="pin-display" id="pinDisplay"></div>
     <div class="pin-grid">
       <button class="pin-btn" onclick="pinP(1)">1</button>
@@ -3131,211 +3055,57 @@ document.addEventListener('DOMContentLoaded', updateStats);
       <button class="pin-btn" onclick="pinP(7)">7</button>
       <button class="pin-btn" onclick="pinP(8)">8</button>
       <button class="pin-btn" onclick="pinP(9)">9</button>
-      <button class="pin-btn pin-btn-clear" onclick="pinC()">&#9003;</button>
+      <button class="pin-btn pin-btn-clear" onclick="pinC()">C</button>
       <button class="pin-btn" onclick="pinP(0)">0</button>
       <button class="pin-btn pin-btn-ok" onclick="pinO()">OK</button>
     </div>
   </div>
 </div>
 
-<div class="shift-overlay" id="shiftOverlay">
-  <div class="shift-box">
-    <h2>&#128176; Открытие кассовой смены</h2>
-    <div class="shift-desc">
-      Чтобы контролировать движение денег в кассе, пересчитайте <strong>наличные в денежном ящике</strong> и откройте новую смену.
-    </div>
-    <div class="shift-field">
-      <label>&#128176; Наличные в кассе (&#8381;)</label>
-      <input type="number" id="shiftAmount" placeholder="0" value="0" min="0">
-    </div>
-    <div class="shift-time">
-      <div class="st-label">&#9201; Время открытия</div>
-      <div class="st-value" id="shiftTimeDisplay">&mdash;</div>
-    </div>
-    <button class="shift-btn" onclick="openShift()">&#128640; Открыть смену</button>
-    <div class="sub" style="margin-top:.5rem;cursor:pointer;color:var(--muted)" onclick="closeShiftModal()">Отмена</div>
-  </div>
-</div>
-
 <div class="reg-overlay" id="regOverlay">
   <div class="reg-wrap">
     <div class="reg-left">
-      <div class="reg-header">
-        <button class="reg-back" onclick="regClose()"><span class="ic">&#9664;</span> Назад</button>
-        <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
-        <div class="reg-header-right">
-          <button class="reg-header-btn"><span class="ic">&#128203;</span> Чек</button>
-          <button class="reg-header-btn"><span class="ic">&#128100;</span> Клиент</button>
-        </div>
-      </div>
-      <div class="reg-receipt">
-        <div class="receipt-header">
-          <h3>&#128726; Чек</h3>
-        </div>
-        <div class="receipt-items" id="receiptItems">
-          <div class="receipt-empty">
-            <div class="big">&#129510;</div>
-            <span>Товары не выбраны</span>
-          </div>
-        </div>
-        <div class="receipt-total">
-          <span class="tl">Итого</span>
-          <span class="tv" id="receiptT">0 &#8381;</span>
-        </div>
-        <div class="receipt-pay" id="payM">
-          <button class="receipt-pay-btn active" onclick="setPM(this,'cash')"><span class="pay-ic">&#128181;</span>Нал</button>
-          <button class="receipt-pay-btn" onclick="setPM(this,'card')"><span class="pay-ic">&#128179;</span>Карта</button>
-          <button class="receipt-pay-btn" onclick="setPM(this,'transfer')"><span class="pay-ic">&#128242;</span>Перевод</button>
-        </div>
-        <button class="receipt-go" id="payB" disabled onclick="payR()">&#128179; Оплатить</button>
-      </div>
+      <div class="reg-top"><span class="emp-name" id="regEmp">Касса</span><button style="margin-left:auto;background:none;border:1px solid var(--border);border-radius:5px;padding:.2rem .5rem;cursor:pointer;font-size:.7rem;font-family:var(--font)" onclick="regClose()">Закрыть</button></div>
+      <div class="reg-cats" id="regCats"></div>
+      <div class="reg-tiles" id="regTiles"></div>
     </div>
     <div class="reg-right">
-      <div class="reg-header">
-        <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-          <span class="reg-filter-label">&#128230;</span>
-          <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
-          <button class="reg-filter-btn" onclick="setRegFilter(this,'products')">&#128230; Товары</button>
-          <button class="reg-filter-btn" onclick="setRegFilter(this,'services')">&#128295; Услуги</button>
-        </div>
-        <div class="reg-header-right">
-          <button class="reg-icon-btn" onclick="alert('Ручной ввод')" title="Ввести штрихкод">&#128290;</button>
-          <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
-          <div class="reg-search-input">
-            <span class="ic">&#128269;</span>
-            <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
-          </div>
-        </div>
+      <div class="reg-top"><b>Чек</b></div>
+      <div class="receipt-items" id="receiptItems"></div>
+      <div class="receipt-total"><div class="total-row"><span style="color:var(--muted);font-weight:400">Итого</span><span id="receiptT">0</span></div></div>
+      <div class="reg-pay" id="payM">
+        <button class="pay-active" onclick="setPM(this,'cash')">Наличные</button>
+        <button onclick="setPM(this,'card')">Карта</button>
+        <button onclick="setPM(this,'transfer')">Перевод</button>
       </div>
-      <div class="reg-products" id="regProducts"></div>
+      <button class="reg-pay-go" id="payB" disabled onclick="payR()">Оплатить</button>
     </div>
   </div>
 </div>
 <script>
-let RI=[],pin="",curEmp=null,regFilter="all",payM="cash",shiftTimer=null;
-
-function openR(){
-  pin="";
-  document.getElementById("pinDisplay").innerHTML='<div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>';
-  document.getElementById("pinOverlay").classList.add("open");
-}
-function pinP(d){
-  if(pin.length>=4) return;
-  pin+=d;
-  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
-  if(dots.length) dots[pin.length-1].classList.add("filled");
-}
-function pinClose(){
-  document.getElementById("pinOverlay").classList.remove("open");
-  pin="";
-  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
-  dots.forEach(function(d){d.className="pin-dot";});
-}
-function pinC(){
-  pin="";
-  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
-  dots.forEach(function(d){d.className="pin-dot";});
-}
-function pinShake(){
-  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
-  dots.forEach(function(d){d.classList.add("shake");});
-  setTimeout(function(){pin="";dots.forEach(function(d){d.className="pin-dot";});},500);
-}
-function pinO(){
-  if(pin.length<4) return;
-  if(pin==="8888"){
-    pinClose();curEmp=null;document.getElementById("regEmp").textContent="&#128100; Касса (мастер)";openShiftNow();return;
-  }
-  var emp=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(e){return e.pin==pin});
-  if(emp){pinClose();curEmp=emp;document.getElementById("regEmp").textContent="&#128100; "+emp.name;openShiftNow();return;}
-  pinShake();
-}
-function openShiftNow(){
-  document.getElementById("shiftOverlay").classList.add("open");
-  document.getElementById("shiftAmount").value=0;
-  updateShiftTime();
-  if(shiftTimer) clearInterval(shiftTimer);
-  shiftTimer=setInterval(updateShiftTime,1000);
-}
-function updateShiftTime(){
-  document.getElementById("shiftTimeDisplay").textContent=new Date().toLocaleString("ru-RU",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
-}
-function closeShiftModal(){
-  if(shiftTimer) clearInterval(shiftTimer);
-  document.getElementById("shiftOverlay").classList.remove("open");
-}
-function openShift(){
-  var amount=parseFloat(document.getElementById("shiftAmount").value)||0;
-  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
-  shifts.unshift({id:Date.now(),openedAt:new Date().toISOString(),startingBalance:amount,status:"open",empId:curEmp?curEmp.id:0});
-  localStorage.setItem("shifts88",JSON.stringify(shifts));
-  closeShiftModal();
-  document.getElementById("regOverlay").classList.add("open");
-  renderRegProducts();upR();
-}
-function regClose(){
-  if(shiftTimer) clearInterval(shiftTimer);
-  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
-  var os=shifts.find(function(s){return s.status==="open"});
-  if(os){var now=new Date();os.status="closed";os.closedAt=now.toLocaleString("ru-RU");var sales=JSON.parse(localStorage.getItem("sales88")||"[]");var ss=sales.filter(function(s){return s.date>=os.openedAt});os.totalSales=ss.reduce(function(sum,s){return sum+s.total},0);os.closingBalance=(os.startingBalance||0)+os.totalSales;localStorage.setItem("shifts88",JSON.stringify(shifts));}
-  if(RI.length&&!confirm("Очистить?")) return;
-  document.getElementById("regOverlay").classList.remove("open");RI=[];
-}
-function setRegFilter(btn,filter){
-  regFilter=filter;
-  document.querySelectorAll(".reg-filter-btn").forEach(function(b){b.classList.remove("active");});
-  btn.classList.add("active");renderRegProducts();
-}
-function renderRegProducts(){
-  var q=(document.getElementById("regSearchInput")?.value||"").toLowerCase().trim();
-  var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});
-  var S=JSON.parse(localStorage.getItem("services88")||"[]");
-  var items=[];
-  if(regFilter==="all"||regFilter==="products") P.forEach(function(x){items.push({id:x.id,sv:0,icon:"&#128230;",name:x.name,price:x.price||0,cat:x.cat});});
-  if(regFilter==="all"||regFilter==="services") S.forEach(function(x){items.push({id:x.id,sv:1,icon:"&#128295;",name:x.name,price:x.price||0,cat:x.cat});});
-  if(q) items=items.filter(function(x){return x.name.toLowerCase().includes(q);});
-  var el=document.getElementById("regProducts");
-  if(!items.length){el.innerHTML='<div class="receipt-empty" style="width:100%;height:100%"><div class="big">&#128237;</div><span>Ничего не найдено</span></div>';return;}
-  var h="";
-  items.forEach(function(x){
-    h+='<div class="reg-product-card" onclick="addRI('+x.id+','+x.sv+')"><div class="pc-icon">'+x.icon+'</div><div class="pc-name">'+x.name+'</div>'+(x.price?'<div class="pc-price">'+x.price.toLocaleString()+'</div>':'')+(x.cat?'<div class="pc-tag">'+x.cat+'</div>':'')+'</div>';
-  });
-  el.innerHTML=h;
-}
-function addRI(id,sv){
-  var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");
-  var x=src.find(function(i){return i.id==id});if(!x)return;
-  var ex=RI.find(function(r){return r.id==id&&r.sv==sv});
-  if(ex) ex.q++; else RI.push({id:id,sv:sv,icon:"&#128230;",name:x.name,price:x.price||0,q:1});
-  upR();
-}
-function upR(){
-  var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});
-  if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#129510;</div><span>Товары не выбраны</span></div>';}
-  else{
-    var h="";RI.forEach(function(i,idx){
-      h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">-</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';
-    });el.innerHTML=h;
-  }
-  document.getElementById("receiptT").textContent=total.toLocaleString()+" &#8381;";
-  var b=document.getElementById("payB");
-  b.textContent=total?"&#128179; Оплатить "+total.toLocaleString()+" &#8381;":"&#128179; Оплатить";
-  b.disabled=total===0;
-}
-function incRI(i){RI[i].q++;upR();}
-function decRI(i){if(RI[i].q>1) RI[i].q--; else RI.splice(i,1);upR();}
+// КАССА
+let RI=[],pin="",curEmp=null,rCat="all",payM="cash";
+function openR(){pin="";document.getElementById("pinOverlay").classList.add("open");}
+function pinP(d){if(pin.length>=4)return;pin+=d;var e=document.getElementById("pinDisplay");e.textContent=e.textContent+"\u2022";}
+function pinClose(){document.getElementById("pinOverlay").classList.remove("open");pin="";document.getElementById("pinDisplay").textContent="";}
+function pinC(){pin="";document.getElementById("pinDisplay").textContent="";}
+function regClose(){var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");var os=shifts.find(function(s){return s.status==="open"});if(os){var now=new Date();os.status="closed";os.closedAt=now.toLocaleString("ru-RU");var sales=JSON.parse(localStorage.getItem("sales88")||"[]");var ss=sales.filter(function(s){return s.date>=os.openedAt});os.totalSales=ss.reduce(function(sum,s){return sum+s.total},0);os.closingBalance=(os.startingBalance||0)+os.totalSales;localStorage.setItem("shifts88",JSON.stringify(shifts));}
+if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
+function pinO(){var masterPin="8888";if(pin===masterPin){document.getElementById("pinOverlay").classList.remove("open");document.getElementById("regOverlay").classList.add("open");curEmp=null;rT();upR();return;}var emp=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(e){return e.pin==pin});if(emp){document.getElementById("pinOverlay").classList.remove("open");document.getElementById("regOverlay").classList.add("open");curEmp=emp;rT();upR();return;}alert("Неверный PIN");pin="";document.getElementById("pinDisplay").textContent="";}
+function rT(){var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var cats=[];P.concat(S).forEach(function(i){if(i.cat&&cats.indexOf(i.cat)<0)cats.push(i.cat)});var h='<button class="reg-cat-btn" onclick="setRC(\'all\')">\u0412\u0441\u0435</button>';cats.forEach(function(c){h+='<button class="reg-cat-btn" onclick="setRC(\''+c+'\')">'+c+'</button>'});document.getElementById("regCats").innerHTML=h;var items=[];P.forEach(function(x){items.push({id:x.id,sv:0,name:x.name,price:x.price||0})});S.forEach(function(x){items.push({id:x.id,sv:1,name:x.name,price:x.price||0})});if(rCat!="all")items=items.filter(function(x){return x.cat==rCat});var el=document.getElementById("regTiles");if(!items.length){el.innerHTML="<div style=\"padding:2rem;text-align:center;color:var(--muted)\">\u041d\u0435\u0442 \u0442\u043e\u0432\u0430\u0440\u043e\u0432</div>";return;}
+var h2="";items.forEach(function(x){h2+='<div class="reg-tile" onclick="addRI('+x.id+','+x.sv+')"><div class="t-name">'+x.name+'</div>'+(x.price?'<div class="t-price">'+x.price.toLocaleString()+'</div>':'')+'</div>'});el.innerHTML=h2;}
+function setRC(c){rCat=c;rT();}
+function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
+function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML="<div class=\"receipt-header\">\u0422\u043e\u0432\u0430\u0440\u044b \u043d\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u044b</div>";}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty">x'+i.q+'</span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">x</button></div>'});el.innerHTML=h;}
+document.getElementById("receiptT").textContent=total.toLocaleString();var b=document.getElementById("payB");b.textContent="\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c "+total.toLocaleString();b.disabled=total===0;}
 function remRI(i){RI.splice(i,1);upR();}
-function setPM(b,m){
-  payM=m;document.querySelectorAll(".receipt-pay-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");
-}
-function payR(){
-  var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!total)return;
-  if(!confirm("Оплатить "+total.toLocaleString()+"?"))return;
-  var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,date:new Date().toISOString()});localStorage.setItem("sales88",JSON.stringify(Sa));
-  var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
-  alert("Оплачено "+total.toLocaleString());RI=[];upR();renderRegProducts();
-}
-</script><!-- ===== СКАНЕР ШТРИХКОДОВ ===== -->
+function setPM(b,m){payM=m;document.querySelectorAll("#payM button").forEach(function(x){x.classList.remove("pay-active")});b.classList.add("pay-active");}
+function payR(){var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!total)return;if(!confirm("\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c "+total.toLocaleString()+"?"))return;var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,date:new Date().toISOString()});localStorage.setItem("sales88",JSON.stringify(Sa));
+var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
+alert("\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e "+total.toLocaleString());RI=[];upR();rT();}
+</script>
+
+<!-- ===== СКАНЕР ШТРИХКОДОВ ===== -->
 <div class="scanner-overlay" id="scannerOverlay">
   <div class="scanner-header">
     <h3>📷 Сканер штрихкода</h3>
