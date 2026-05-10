@@ -1337,11 +1337,6 @@
         <label>Имя *</label>
         <input type="text" id="clName" placeholder="Иван Иванов" required>
       </div>
-      <div class="form-group">
-        <label>Аватар</label>
-        <input type="text" id="clEmoji" placeholder="Вставьте смайлик из галереи..." style="font-size:1.5rem;padding:.3rem"
-          oninput="document.getElementById('clEmoji').style.fontSize=this.value.length>1?'1rem':'1.5rem'">
-      </div>
       <div class="form-row">
         <div class="form-group">
           <label>Телефон</label>
@@ -2436,7 +2431,7 @@ function closeClientModal(){
 function saveClient(e){
   e.preventDefault();
   const editId = document.getElementById('editClientId').value;
-  const c = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('clName').value.trim(), phone: document.getElementById('clPhone').value.trim(), email: document.getElementById('clEmail').value.trim(), comment: document.getElementById('clComment').value.trim(), emoji: document.getElementById('clEmoji').value};
+  const c = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('clName').value.trim(), phone: document.getElementById('clPhone').value.trim(), email: document.getElementById('clEmail').value.trim(), comment: document.getElementById('clComment').value.trim(),};
   if(!c.name) return alert('Введите имя');
   let list = JSON.parse(localStorage.getItem('clients88') || '[]');
   const idx = list.findIndex(x => x.id === c.id);
