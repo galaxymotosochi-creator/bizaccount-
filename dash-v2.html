@@ -331,6 +331,8 @@
   .pay-total-value{font-size:2rem;font-weight:700}
   .pay-given-label{font-size:.8rem;color:var(--muted);margin-top:.3rem}
   .pay-given-value{font-size:1.5rem;font-weight:600;color:var(--primary)}
+  .pay-change-label{font-size:.8rem;color:var(--muted);margin-top:.2rem}
+  .pay-change-value{font-size:1.5rem;font-weight:700;color:#16a34a}
   .pay-section{margin-top:.2rem}
   .pay-section-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:.3rem}
   .pay-methods{display:flex;gap:.35rem;flex-wrap:wrap}
@@ -3404,7 +3406,9 @@ function openPayModal(){
   if(!total) return;
   curPayTotal=total;
   document.getElementById("payTotalDisplay").textContent=total.toLocaleString()+"\u20bd";
-  document.getElementById("payGivenDisplay").textContent="0 \u20bd";
+  document.getElementById("payGivenDisplay").textContent="0\u20bd";
+  document.getElementById("payGivenDisplay").setAttribute("data-val","0");
+  document.getElementById("payChangeRow").style.display="none";
   document.getElementById("payClientName").textContent="";
   document.getElementById("payClientToggle").checked=false;
   document.getElementById("payModal").classList.add("open");
@@ -3414,6 +3418,20 @@ function openPayModal(){
 function closePayModal(){
   document.getElementById("payModal").classList.remove("open");
 }
+function calcChange(){
+  var total=curPayTotal||0;
+  var el=document.getElementById("payGivenDisplay");
+  var given=parseInt(el.getAttribute("data-val")||"0")||0;
+  var change=given-total;
+  var cr=document.getElementById("payChangeRow");
+  var cd=document.getElementById("payChangeDisplay");
+  if(change>0&&payM==="cash"){
+    cr.style.display="block";
+    cd.textContent=change.toLocaleString()+"\u20bd";
+  } else {
+    cr.style.display="none";
+  }
+}
 function payKey(d){
   var el=document.getElementById("payGivenDisplay");
   var cur=el.getAttribute("data-val")||"0";
@@ -3422,6 +3440,7 @@ function payKey(d){
   var val=parseInt(cur)||0;
   el.setAttribute("data-val",cur);
   el.textContent=val.toLocaleString()+"\u20bd";
+  calcChange();
 }
 function payKeyBack(){
   var el=document.getElementById("payGivenDisplay");
@@ -3430,11 +3449,13 @@ function payKeyBack(){
   el.setAttribute("data-val",cur);
   var val=parseInt(cur)||0;
   el.textContent=val.toLocaleString()+"\u20bd";
+  calcChange();
 }
 function selectPayMethod(el,m){
   payM=m;
   document.querySelectorAll(".pay-method").forEach(function(b){b.classList.remove("active");});
   el.classList.add("active");
+  calcChange();
 }
 function openClientSelectorPay(){
   document.getElementById("payModal").classList.remove("open");
@@ -3631,6 +3652,8 @@ function setRegFilter(btn,filter){
           <div class="pay-total-value" id="payTotalDisplay">0&#8381;</div>
           <div class="pay-given-label">Внесено:</div>
           <div class="pay-given-value" id="payGivenDisplay">0&#8381;</div>
+          <div class="pay-change-label" id="payChangeRow" style="display:none">Сдача:</div>
+          <div class="pay-change-value" id="payChangeDisplay"></div>
         </div>
         <div class="pay-section">
           <div class="pay-section-title">Способ оплаты</div>
