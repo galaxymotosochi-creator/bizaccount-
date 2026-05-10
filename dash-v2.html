@@ -616,9 +616,9 @@
       <div class="dash-block" id="block-money">
         <div class="dash-block-title">💵 Деньги <span class="cnt">|</span></div>
         <div class="block-row">
-          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0 ₽</div></div></div>
-          <div class="block-card"><div class="b-icon">💸</div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0 ₽</div></div></div>
-          <div class="block-card"><div class="b-icon">📈</div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Выручка</div><div class="b-val" id="b-revenue">0₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💸</div><div class="b-info"><div class="b-lbl">Расходы</div><div class="b-val" id="b-cost">0₽</div></div></div>
+          <div class="block-card"><div class="b-icon">📈</div><div class="b-info"><div class="b-lbl">Прибыль</div><div class="b-val" id="b-profit">0₽</div></div></div>
         </div>
       </div>
 
@@ -627,8 +627,8 @@
         <div class="dash-block-title">📦 Склад <span class="cnt">|</span></div>
         <div class="block-row">
           <div class="block-card"><div class="b-icon">📦</div><div class="b-info"><div class="b-lbl">Товаров</div><div class="b-val" id="b-stock-qty">0</div></div></div>
-          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Себес.</div><div class="b-val" id="b-stock-sum">0 ₽</div></div></div>
-          <div class="block-card"><div class="b-icon">💵</div><div class="b-info"><div class="b-lbl">Продажа</div><div class="b-val" id="b-stock-retail">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💰</div><div class="b-info"><div class="b-lbl">Себес.</div><div class="b-val" id="b-stock-sum">0₽</div></div></div>
+          <div class="block-card"><div class="b-icon">💵</div><div class="b-info"><div class="b-lbl">Продажа</div><div class="b-val" id="b-stock-retail">0₽</div></div></div>
         </div>
       </div>
 
@@ -637,7 +637,7 @@
         <div class="dash-block-title">🛒 Продажи <span class="cnt">|</span></div>
         <div class="block-row">
           <div class="block-card"><div class="b-icon">🧾</div><div class="b-info"><div class="b-lbl">Продаж сегодня</div><div class="b-val">0</div></div></div>
-          <div class="block-card"><div class="b-icon">🎯</div><div class="b-info"><div class="b-lbl">Средний чек</div><div class="b-val">0 ₽</div></div></div>
+          <div class="block-card"><div class="b-icon">🎯</div><div class="b-info"><div class="b-lbl">Средний чек</div><div class="b-val">0₽</div></div></div>
           <div class="block-card"><div class="b-icon">👥</div><div class="b-info"><div class="b-lbl">Клиенты</div><div class="b-val">0</div></div></div>
         </div>
       </div>
@@ -1594,13 +1594,13 @@
           <input type="number" id="loyDiscount" placeholder="5" min="0" max="100">
         </div>
         <div class="form-group">
-          <label>Условие (сумма покупок ₽)</label>
+          <label>Условие (сумма покупок₽)</label>
           <input type="number" id="loyCondition" placeholder="10000" min="0">
         </div>
       </div>
       <div class="form-group">
         <label>Описание</label>
-        <textarea id="loyDesc" placeholder="Скидка 5% при покупках от 10 000 ₽"></textarea>
+        <textarea id="loyDesc" placeholder="Скидка 5% при покупках от 10 000₽"></textarea>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeLoyaltyModal()">Отмена</button>
@@ -1812,7 +1812,7 @@ function renderProductsPage(){
     return '<tr'+(isHidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' +
       '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span>'+(isHidden?' <span class="prod-hidden-badge">Скрыто</span>':'')+'</td>' +
-      '<td><span class="prod-price">'+p.price.toLocaleString()+' &#8381;</span></td>' +
+      '<td><span class="prod-price">'+p.price.toLocaleString()+'&#8381;</span></td>' +
       '<td>'+p.unit+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
         '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
@@ -1985,7 +1985,7 @@ function renderServicesPage(){
     '<tr>' +
       '<td><span class="prod-name">'+s.name+'</span>'+(s.desc?'<br><span class="prod-sku">'+s.desc.substring(0,40)+(s.desc.length>40?'...':'')+'</span>':'')+'</td>' +
       '<td><span class="prod-cat">'+(SVC_CAT[s.cat]||s.cat)+'</span></td>' +
-      '<td><span class="prod-price">'+s.price.toLocaleString()+' &#8381;</span></td>' +
+      '<td><span class="prod-price">'+s.price.toLocaleString()+'&#8381;</span></td>' +
       '<td>'+s.duration+' '+s.unit+'</td>' +
       '<td class="product-table-actions" style="text-align:right"><button class="act-btn" onclick="editService('+s.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteService('+s.id+')">&#10005;</button></td>' +
     '</tr>'
@@ -2253,17 +2253,17 @@ function renderStockPage(){
       '<td><span class="prod-name">'+p.name+'</span>'+(p.sku?'<br><span class="prod-sku">'+p.sku+'</span>':'')+(low?' <span style="font-size:.6rem;color:#d97706;font-weight:600">⚠ мало</span>':'')+'</td>' +
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td>' +
       '<td style="text-align:center;font-weight:600">'+qty+'</td>' +
-      '<td>'+cost.toLocaleString()+' ₽</td>' +
-      '<td>'+retail.toLocaleString()+' ₽</td>' +
-      '<td><span'+(mark>0?' style="color:var(--success,green)"':'')+'>'+mark.toLocaleString()+' ₽</span>'+(markPct>0?' <span style="font-size:.7rem;color:var(--muted)">('+markPct+'%)</span>':'')+'</td>' +
+      '<td>'+cost.toLocaleString()+'₽</td>' +
+      '<td>'+retail.toLocaleString()+'₽</td>' +
+      '<td><span'+(mark>0?' style="color:var(--success,green)"':'')+'>'+mark.toLocaleString()+'₽</span>'+(markPct>0?' <span style="font-size:.7rem;color:var(--muted)">('+markPct+'%)</span>':'')+'</td>' +
     '</tr>';
   }).join('') +
   '<tr style="font-weight:700;background:var(--body-bg)">' +
     '<td>Итого</td><td></td>' +
     '<td style="text-align:center">'+totalQty+'</td>' +
-    '<td>'+totalCost.toLocaleString()+' ₽</td>' +
-    '<td>'+totalRetail.toLocaleString()+' ₽</td>' +
-    '<td>'+(totalRetail-totalCost).toLocaleString()+' ₽</td>' +
+    '<td>'+totalCost.toLocaleString()+'₽</td>' +
+    '<td>'+totalRetail.toLocaleString()+'₽</td>' +
+    '<td>'+(totalRetail-totalCost).toLocaleString()+'₽</td>' +
   '</tr>';
 }
 
@@ -2312,12 +2312,12 @@ function applyBlockConfig(){
     const p = products.find(x => x.id === sp.prodId);
     return s + ((p?.price||0) * sp.qty);
   }, 0);
-  document.getElementById('b-revenue').textContent = '0 ₽';
-  document.getElementById('b-cost').textContent = '0 ₽';
-  document.getElementById('b-profit').textContent = '0 ₽';
+  document.getElementById('b-revenue').textContent = '0₽';
+  document.getElementById('b-cost').textContent = '0₽';
+  document.getElementById('b-profit').textContent = '0₽';
   document.getElementById('b-stock-qty').textContent = totalQty;
-  document.getElementById('b-stock-sum').textContent = totalCost.toLocaleString()+' ₽';
-  document.getElementById('b-stock-retail').textContent = totalRetail.toLocaleString()+' ₽';
+  document.getElementById('b-stock-sum').textContent = totalCost.toLocaleString()+'₽';
+  document.getElementById('b-stock-retail').textContent = totalRetail.toLocaleString()+'₽';
 }
 
 function updateStats(){
@@ -2438,8 +2438,8 @@ function renderSuppliesPage(){
       '<td><span class="prod-name">'+(prod?prod.name:'Удалён')+'</span></td>' +
       '<td style="color:var(--muted)">'+(supp?supp.name:'—')+'</td>' +
       '<td style="text-align:center;font-weight:600">'+s.qty+'</td>' +
-      '<td>'+s.cost.toLocaleString()+' &#8381;</td>' +
-      '<td>'+(s.qty * s.cost).toLocaleString()+' &#8381;</td>' +
+      '<td>'+s.cost.toLocaleString()+'&#8381;</td>' +
+      '<td>'+(s.qty * s.cost).toLocaleString()+'&#8381;</td>' +
     '</tr>';
   }).join('');
 }
@@ -2493,7 +2493,7 @@ function renderWriteoffsPage(){
   }
   tbody.innerHTML = list.map(w => {
     const p = products.find(x => x.id === w.prodId);
-    return '<tr><td><span class="prod-name">'+(p?p.name:'Удалён')+'</span></td><td style="text-align:center;font-weight:600;color:#dc3545">'+w.qty+'</td><td>'+(w.qty*(p?p.price||0:0)).toLocaleString()+' ₽</td><td style="color:var(--muted)">'+(reasons[w.reason]||w.reason)+'</td><td style="color:var(--muted);font-size:.8rem">'+w.date+'</td></tr>';
+    return '<tr><td><span class="prod-name">'+(p?p.name:'Удалён')+'</span></td><td style="text-align:center;font-weight:600;color:#dc3545">'+w.qty+'</td><td>'+(w.qty*(p?p.price||0:0)).toLocaleString()+'₽</td><td style="color:var(--muted)">'+(reasons[w.reason]||w.reason)+'</td><td style="color:var(--muted);font-size:.8rem">'+w.date+'</td></tr>';
   }).join('');
 }
 
@@ -2773,7 +2773,7 @@ function renderLoyaltyPage(){
     tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">⭐</div><p>Программ лояльности пока нет</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = list.map(l => '<tr><td><span class="prod-name">'+l.name+'</span></td><td><span style="font-size:.85rem;font-weight:600;color:#16a34a">'+l.discount+'%</span></td><td style="color:var(--muted)">'+(l.desc||'от '+(l.condition||0).toLocaleString()+' ₽')+'</td><td style="text-align:right"><button class="act-btn" onclick="editLoyalty('+l.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteLoyalty('+l.id+')">&#10005;</button></td></tr>').join('');
+  tbody.innerHTML = list.map(l => '<tr><td><span class="prod-name">'+l.name+'</span></td><td><span style="font-size:.85rem;font-weight:600;color:#16a34a">'+l.discount+'%</span></td><td style="color:var(--muted)">'+(l.desc||'от '+(l.condition||0).toLocaleString()+'₽')+'</td><td style="text-align:right"><button class="act-btn" onclick="editLoyalty('+l.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteLoyalty('+l.id+')">&#10005;</button></td></tr>').join('');
 }
 
 // === МАРКЕТИНГ: АКЦИИ ===
@@ -3010,7 +3010,7 @@ function renderRegistersPage(){
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">🖥️</div><p>Касс пока нет</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = list.map(r => '<tr><td><span class="prod-name">'+r.name+'</span></td><td style="color:var(--muted)">'+(r.code?'<span style="font-family:monospace">••••</span>':'—')+'</td><td>'+ (r.balance||0).toLocaleString()+' ₽</td><td style="color:var(--muted);font-size:.8rem">'+(venMap[r.venId]||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editRegister('+r.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteRegister('+r.id+')">&#10005;</button></td></tr>').join('');
+  tbody.innerHTML = list.map(r => '<tr><td><span class="prod-name">'+r.name+'</span></td><td style="color:var(--muted)">'+(r.code?'<span style="font-family:monospace">••••</span>':'—')+'</td><td>'+ (r.balance||0).toLocaleString()+'₽</td><td style="color:var(--muted);font-size:.8rem">'+(venMap[r.venId]||'—')+'</td><td style="text-align:right"><button class="act-btn" onclick="editRegister('+r.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteRegister('+r.id+')">&#10005;</button></td></tr>').join('');
 }
 
 // === ДОСТУП: ЗАВЕДЕНИЯ ===
@@ -3078,8 +3078,8 @@ function renderShiftsPage(){
     h += "<td style=\'font-size:.8rem\'>" + (s.openedAt||"\u2014") + "</td>";
     h += "<td style=\'font-size:.8rem\'>" + (s.closedAt||"\u2014") + "</td>";
     h += "<td>" + (s.employeeName||"\u2014") + "</td>";
-    h += "<td>" + (s.totalSales||0) + " ₽</td>";
-    h += "<td>" + (s.closingBalance||0) + " ₽</td>";
+    h += "<td>" + (s.totalSales||0) + "₽</td>";
+    h += "<td>" + (s.closingBalance||0) + "₽</td>";
     h += "<td><span style=\'color:" + (s.status==="open"?"#16a34a":"var(--muted)") + ";font-weight:600\'>" + (s.status==="open"?"✅ Открыта":"❌ Закрыта") + "</span></td>";
     h += "</tr>";
   }
@@ -3259,7 +3259,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
         </div>
         <div class="receipt-total">
           <span class="tl">К оплате:</span>
-          <span class="tv" id="receiptT">0 &#8381;</span>
+          <span class="tv" id="receiptT">0&#8381;</span>
         </div>
         <div class="receipt-bottom-bar">
           <div class="receipt-bottom-left">
@@ -3382,7 +3382,7 @@ function showShiftCloseModal(){
   var ss=sales.filter(function(s){return s.date>=os.openedAt});
   var tc=0,tk=0,tt=0,ta=0;
   ss.forEach(function(s){ta+=s.total;if(s.payM==="cash")tc+=s.total;else if(s.payM==="card")tk+=s.total;else tt+=s.total;});
-  var h='<div style="text-align:center;margin-bottom:.8rem"><div style="font-size:2rem;font-weight:700;color:var(--primary)">'+ta.toLocaleString()+'<span style="font-size:1rem"> &#8381;</span></div><div style="font-size:.8rem;color:var(--muted)">продано за смену</div></div>';
+  var h='<div style="text-align:center;margin-bottom:.8rem"><div style="font-size:2rem;font-weight:700;color:var(--primary)">'+ta.toLocaleString()+'<span style="font-size:1rem">&#8381;</span></div><div style="font-size:.8rem;color:var(--muted)">продано за смену</div></div>';
   h+='<div style="display:flex;gap:.5rem;margin-bottom:.8rem">';
   h+='<div style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:8px;text-align:center"><div style="font-size:.65rem;color:var(--muted)">&#128181; Наличные</div><div style="font-weight:700;font-size:.9rem">'+tc.toLocaleString()+'</div></div>';
   h+='<div style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:8px;text-align:center"><div style="font-size:.65rem;color:var(--muted)">&#128179; Карта</div><div style="font-weight:700;font-size:.9rem">'+tk.toLocaleString()+'</div></div>';
@@ -3403,7 +3403,7 @@ function openPayModal(){
   var total=0;RI.forEach(function(i){total+=i.price*i.q});
   if(!total) return;
   curPayTotal=total;
-  document.getElementById("payTotalDisplay").textContent=total.toLocaleString()+" \u20bd";
+  document.getElementById("payTotalDisplay").textContent=total.toLocaleString()+"\u20bd";
   document.getElementById("payGivenDisplay").textContent="0 \u20bd";
   document.getElementById("payClientName").textContent="";
   document.getElementById("payClientToggle").checked=false;
@@ -3421,7 +3421,7 @@ function payKey(d){
   cur+=d;
   var val=parseInt(cur)||0;
   el.setAttribute("data-val",cur);
-  el.textContent=val.toLocaleString()+" \u20bd";
+  el.textContent=val.toLocaleString()+"\u20bd";
 }
 function payKeyBack(){
   var el=document.getElementById("payGivenDisplay");
@@ -3429,7 +3429,7 @@ function payKeyBack(){
   if(cur.length>1) cur=cur.slice(0,-1); else cur="0";
   el.setAttribute("data-val",cur);
   var val=parseInt(cur)||0;
-  el.textContent=val.toLocaleString()+" \u20bd";
+  el.textContent=val.toLocaleString()+"\u20bd";
 }
 function selectPayMethod(el,m){
   payM=m;
@@ -3514,7 +3514,7 @@ function addRI(id,sv){
   } else {
     RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});
   }upR();
-}function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#128230;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+' &#8381;</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").innerHTML=total.toLocaleString()+" ₽";var b=document.getElementById("payB");b.innerHTML=total?"Оплатить "+total.toLocaleString()+" ₽":"Оплатить";b.disabled=total===0;}
+}function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#128230;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'&#8381;</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").innerHTML=total.toLocaleString()+"₽";var b=document.getElementById("payB");b.innerHTML=total?"Оплатить "+total.toLocaleString()+"₽":"Оплатить";b.disabled=total===0;}
 function incRI(i){
   var stk=RI[i].sv?999:getStock(RI[i].id);
   if(RI[i].q+1>stk){
@@ -3548,7 +3548,7 @@ function renderRegProducts(){
     if(!x.sv&&stk<1) cls+=" out-of-stock";
     h+='<div class="'+cls+'" onclick="addRI('+x.id+','+x.sv+')">';
     h+='<div class="pc-name">'+x.name+'</div>';
-    if(x.price) h+='<div class="pc-price">'+x.price.toLocaleString()+' &#8381;</div>';
+    if(x.price) h+='<div class="pc-price">'+x.price.toLocaleString()+'&#8381;</div>';
     if(!x.sv) h+='<div class="pc-stock '+(stk<1?"zero":"")+'">&#128230; '+stk+'</div>';
     if(x.cat) h+='<div class="pc-tag">'+x.cat+'</div>';
     h+='</div>';
@@ -3628,9 +3628,9 @@ function setRegFilter(btn,filter){
       <div class="pay-info">
         <div id="payInfoDisplay">
           <div class="pay-total-label">К оплате:</div>
-          <div class="pay-total-value" id="payTotalDisplay">0 &#8381;</div>
+          <div class="pay-total-value" id="payTotalDisplay">0&#8381;</div>
           <div class="pay-given-label">Внесено:</div>
-          <div class="pay-given-value" id="payGivenDisplay">0 &#8381;</div>
+          <div class="pay-given-value" id="payGivenDisplay">0&#8381;</div>
         </div>
         <div class="pay-section">
           <div class="pay-section-title">Способ оплаты</div>
