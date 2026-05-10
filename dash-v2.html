@@ -273,11 +273,9 @@
   .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px}
   .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa}
   /* ===== TOPBAR ===== */
-  .reg-topbar{display:flex;align-items:stretch;background:var(--white);border-bottom:1px solid var(--border)}
-  .reg-topbar-left{flex:1;min-width:340px;max-width:400px;padding:.3rem .6rem;display:flex;align-items:center}
-  .reg-topbar-left .pill{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.1rem .35rem;border:1px solid var(--border)}
-  .reg-topbar-right{flex:2;padding:.3rem .6rem .3rem .5rem;display:flex;align-items:center}
-  .reg-topbar-right .pill{display:flex;align-items:center;gap:.2rem}
+  .reg-topbar{display:flex;align-items:center;padding:.4rem .6rem;background:var(--white);border-bottom:1px solid var(--border);gap:.4rem}
+  .reg-topbar-left{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.15rem .35rem;border:1px solid var(--border);flex-shrink:0}
+  .reg-topbar-right{display:flex;align-items:center;gap:.2rem;background:var(--body-bg);border-radius:8px;padding:.15rem .35rem;border:1px solid var(--border);min-width:0;flex-wrap:nowrap}
   .reg-back{display:flex;align-items:center;justify-content:center;width:24px;height:24px;background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;border-radius:5px;padding:0;flex-shrink:0}
   .reg-back:hover{background:var(--white);color:var(--body-color)}
   .reg-emp-name{font-size:.75rem;font-weight:600;color:var(--body-color);white-space:nowrap;margin-right:.1rem}
@@ -3152,32 +3150,28 @@ document.addEventListener('DOMContentLoaded', updateStats);
 <div class="reg-overlay" id="regOverlay">
   <div class="reg-topbar">
     <div class="reg-topbar-left">
-      <div class="pill">
-        <button class="reg-back" onclick="regClose()">&#9664;</button>
-        <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
-        <span class="reg-sep">|</span>
-        <button class="reg-header-btn">Чек</button>
-        <button class="reg-header-btn">Клиент</button>
-      </div>
+      <button class="reg-back" onclick="regClose()">&#9664;</button>
+      <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
+      <span class="reg-sep">|</span>
+      <button class="reg-header-btn">Чек</button>
+      <button class="reg-header-btn">Клиент</button>
     </div>
     <div class="reg-topbar-right">
-      <div class="pill">
-        <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
-        <button class="reg-filter-btn" onclick="setRegFilter(this,'products')">Товары</button>
-        <button class="reg-filter-btn" onclick="setRegFilter(this,'services')">Услуги</button>
-        <span class="reg-sep" style="opacity:.3">|</span>
-        <button class="reg-icon-btn" onclick="alert('Ручной ввод')" title="Ввести штрихкод">&#128290;</button>
-        <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
-        <div class="reg-search-input">
-          <span style="font-size:.7rem;color:var(--muted)">&#128269;</span>
-          <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
-        </div>
-        <div style="position:relative;display:inline-block">
-          <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
-          <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
-            <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
-            <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
-          </div>
+      <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
+      <button class="reg-filter-btn" onclick="setRegFilter(this,'products')">Товары</button>
+      <button class="reg-filter-btn" onclick="setRegFilter(this,'services')">Услуги</button>
+      <span class="reg-sep" style="opacity:.3">|</span>
+      <button class="reg-icon-btn" onclick="alert('Ручной ввод')" title="Ввести штрихкод">&#128290;</button>
+      <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
+      <div class="reg-search-input">
+        <span style="font-size:.7rem;color:var(--muted)">&#128269;</span>
+        <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
+      </div>
+      <div style="position:relative;display:inline-block">
+        <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
+        <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
+          <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
+          <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
         </div>
       </div>
     </div>
@@ -3213,7 +3207,8 @@ document.addEventListener('DOMContentLoaded', updateStats);
 </div>
 <script>
 // === КАССА ===
-let RI=[],pin="",curEmp=null,regFilter="all",payM="cash",shiftTimer=null;
+let RI=[],pin="",curEmp=null,regFilter="all",payM="cash",shiftTimer=null,curPayTotal=0;
+let curClient=null;
 
 function openR(){
   pin="";
@@ -3313,6 +3308,111 @@ function showShiftCloseModal(){
   document.getElementById("closeShiftContent").innerHTML=h;
   document.getElementById("closeShiftModal").classList.add("open");
 }
+function payR(){
+  var total=0;RI.forEach(function(i){total+=i.price*i.q});
+  if(!total) return;
+  var h='<div style="margin-bottom:.5rem">';
+  RI.forEach(function(i){
+    h+='<div style="display:flex;justify-content:space-between;padding:.2rem 0;font-size:.82rem;border-bottom:1px solid var(--border)"><span>'+i.name+' x'+i.q+'</span><span style="font-weight:600">'+(i.price*i.q).toLocaleString()+'</span></div>';
+  });
+  h+='</div>';
+  h+='<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;padding:.3rem 0"><span>Итого</span><span>'+total.toLocaleString()+'</span></div>';
+  var pm={cash:"Наличные",card:"Карта",transfer:"Перевод"};
+  h+='<div style="font-size:.82rem;color:var(--muted);margin-top:.3rem">Способ: '+ (pm[payM]||payM) +'</div>';
+  var sc = curClient ? (curClient.name||curClient.phone) : "не выбран";
+  h+='<div style="font-size:.82rem;margin-top:.2rem"><span style="color:var(--muted)">Клиент:</span> <a onclick="openClientSelector()" style="color:var(--primary);cursor:pointer">'+sc+'</a></div>';
+  document.getElementById("payConfirmContent").innerHTML=h;
+  document.getElementById("payConfirmModal").classList.add("open");
+  curPayTotal = total;
+}
+function openClientSelector(){
+  document.getElementById("payConfirmModal").classList.remove("open");
+  document.getElementById("clientSearchInput").value="";
+  document.getElementById("newClientName").value="";
+  document.getElementById("newClientPhone").value="";
+  renderClientSearch();
+  document.getElementById("clientSelectModal").classList.add("open");
+}
+function renderClientSearch(){
+  var q=(document.getElementById("clientSearchInput")||{}).value||"";q=q.toLowerCase().trim();
+  var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
+  if(q) cl=cl.filter(function(c){return (c.name||"").toLowerCase().indexOf(q)>=0||(c.phone||"").indexOf(q)>=0;});
+  var el=document.getElementById("clientSearchResults");
+  if(!cl.length){el.innerHTML='<div class="reg-check-empty">Ничего не найдено. Добавьте нового клиента ниже.</div>';return;}
+  el.innerHTML=cl.map(function(c){return '<div class="reg-client-item" onclick="selectClient('+c.id+')"><span class="ci-name">'+(c.name||"")+'</span><span class="ci-phone">'+(c.phone||"")+'</span></div>';}).join("");
+}
+function selectClient(id){
+  var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
+  var c=cl.find(function(x){return x.id==id});
+  if(c){curClient=c;}
+  document.getElementById("clientSelectModal").classList.remove("open");
+  document.getElementById("payConfirmModal").classList.add("open");
+}
+function addNewClient(){
+  var name=(document.getElementById("newClientName")||{}).value||"";name=name.trim();
+  var phone=(document.getElementById("newClientPhone")||{}).value||"";phone=phone.trim();
+  if(!name&&!phone){alert("Введите имя или телефон");return;}
+  var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
+  cl.unshift({id:Date.now(),name:name,phone:phone,createdAt:new Date().toISOString()});
+  localStorage.setItem("clients88",JSON.stringify(cl));
+  curClient=cl[0];
+  document.getElementById("clientSelectModal").classList.remove("open");
+  document.getElementById("payConfirmModal").classList.add("open");
+}
+function closeClientModal(){
+  document.getElementById("clientSelectModal").classList.remove("open");
+  document.getElementById("payConfirmModal").classList.add("open");
+}
+function confirmPay(){
+  var total=curPayTotal||0;
+  if(!total)return;
+  if(!confirm("Подтвердить оплату "+total.toLocaleString()+"?")) return;
+  var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");
+  Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,empName:curEmp?curEmp.name:"Мастер",clientId:curClient?curClient.id:0,clientName:curClient?(curClient.name||curClient.phone):"",date:new Date().toISOString()});
+  localStorage.setItem("sales88",JSON.stringify(Sa));
+  var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
+  document.getElementById("payConfirmModal").classList.remove("open");
+  showToast("Чек успешно добавлен!");
+  RI=[];curClient=null;upR();renderRegProducts();
+}
+function showToast(msg){
+  var t=document.getElementById("regToast");
+  var ts=document.getElementById("regToastText");
+  if(ts)ts.textContent=msg;
+  t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},1800);
+}
+function showChecksHistory(){
+  var gm=document.getElementById("gearMenu");if(gm)gm.style.display="none";
+  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
+  var os=shifts.find(function(s){return s.status==="open"&&s.empId==(curEmp?curEmp.id:0)});
+  if(curEmp===null) os=shifts.find(function(s){return s.status==="open"&&s.empId===0});
+  if(!os){alert("Нет открытой смены");return;}
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var ss=sales.filter(function(s){return s.date>=os.openedAt});
+  var el=document.getElementById("checksHistoryContent");
+  if(!ss.length){el.innerHTML='<div class="reg-check-empty">За смену ещё не было продаж</div>';}
+  else {
+    var h="";
+    ss.forEach(function(s,i){
+      h+='<div class="reg-check-row">';
+      h+='<span class="cr-num">#'+(i+1)+'</span>';
+      h+='<span class="cr-time">'+ (s.date?s.date.substring(11,16):"") +'</span>';
+      if(s.clientName) h+='<span style="font-size:.65rem;color:var(--muted)">'+s.clientName+'</span>';
+      h+='<span class="cr-total">'+s.total.toLocaleString()+'</span>';
+      h+='</div>';
+    });el.innerHTML=h;
+  }
+  document.getElementById("checksHistoryModal").classList.add("open");
+}
+function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
+function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#129510;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").textContent=total.toLocaleString()+" ";var b=document.getElementById("payB");b.textContent=total?"Оплатить "+total.toLocaleString():"Оплатить";b.disabled=total===0;}
+function incRI(i){RI[i].q++;upR();}
+function decRI(i){if(RI[i].q>1)RI[i].q--;else RI.splice(i,1);upR();}
+function remRI(i){RI.splice(i,1);upR();}
+function setPM(b,m){payM=m;document.querySelectorAll(".receipt-pay-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");}
+function renderRegProducts(){var q=(document.getElementById("regSearchInput")||{}).value||"";q=q.toLowerCase().trim();var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var items=[];if(regFilter==="all"||regFilter==="products")P.forEach(function(x){items.push({id:x.id,sv:0,icon:"",name:x.name,price:x.price||0,cat:x.cat});});if(regFilter==="all"||regFilter==="services")S.forEach(function(x){items.push({id:x.id,sv:1,icon:"",name:x.name,price:x.price||0,cat:x.cat});});if(q)items=items.filter(function(x){return x.name.toLowerCase().indexOf(q)>=0;});var el=document.getElementById("regProducts");if(!items.length){el.innerHTML='';return;}var h="";items.forEach(function(x){h+='<div class="reg-product-card" onclick="addRI('+x.id+','+x.sv+')"><div class="pc-name">'+x.name+'</div>'+(x.price?'<div class="pc-price">'+x.price.toLocaleString()+'</div>':'')+(x.cat?'<div class="pc-tag">'+x.cat+'</div>':'')+'</div>';});el.innerHTML=h;}
+
 function confirmCloseShift(){
   if(!confirm("Закрываем смену?")) return;
   var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
