@@ -198,15 +198,28 @@
   .filter-tab{padding:.4rem .9rem;font-size:.8rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--font);transition:all .12s}
   .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
   .filter-tab.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
-  .product-table{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow-x:auto}
-    .cl-top{margin-bottom:1rem}
-  .cl-title-row{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.5rem;flex-wrap:wrap}
-  .cl-title-row h1{font-size:1.3rem;font-weight:600;margin:0}
-  .cl-period{font-size:.8rem;color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary)}
-  .cl-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
-  .cl-left,.cl-right{display:flex;gap:.35rem}
-  .cl-filter-btn{background:var(--white);border:1px solid var(--border);border-radius:.4rem;padding:.3rem .55rem;font-size:.78rem;cursor:pointer;font-family:var(--font);color:var(--body-color)}
-  .cl-filter-btn:hover{border-color:var(--primary)}  .cl-stats-empty{text-align:center;padding:3rem 1rem;background:var(--white);border-radius:var(--radius);border:1px solid var(--border)}
+    .product-table{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow-x:auto}
+  .product-table table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
+  .product-table th{text-align:center;padding:.65rem .5rem;border-bottom:2px solid var(--border);color:var(--muted);font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;background:#f1f3f5;white-space:nowrap}
+  .product-table td{padding:.5rem .5rem;border-bottom:1px solid #e9ecef;vertical-align:middle;text-align:center}
+  .product-table tr:not(.total-row):hover td{background:#f8f9fa}
+  .product-table .prod-name{font-weight:500;color:var(--body-color);text-align:left;font-size:.85rem}
+  .product-table .prod-sku{color:var(--muted);font-size:.7rem;display:block;text-align:left}
+  .product-table .prod-cat{font-size:.68rem;padding:.08rem .4rem;border-radius:20px;background:#f1f3f5;color:var(--muted);display:inline-block;white-space:nowrap}
+  .product-table .num{text-align:right;font-variant-numeric:tabular-nums;font-weight:500}
+  .product-table .editable-price{cursor:pointer;color:var(--primary);font-weight:500;border-bottom:1px dashed var(--primary);padding-bottom:1px}
+  .product-table .editable-price:hover{background:var(--primary-light);border-radius:3px}
+  .product-table .markup-badge{display:inline-block;padding:.08rem .35rem;border-radius:4px;font-size:.68rem;font-weight:500}
+  .product-table .markup-badge.pos{background:#f0fdf4;color:#166534}
+  .product-table .markup-badge.neg{background:#fef2f2;color:#991b1b}
+  .product-table .stock-low{color:#dc2626!important;font-weight:700}
+  .product-table .stock-ok{color:var(--body-color)}
+  .product-table .total-row td{font-weight:700;background:#f8f9fa;border-top:2px solid #dee2e6;padding:.6rem .5rem}
+  .product-table .prod-price{font-weight:500}
+  .product-table .act-btn{background:none;border:none;cursor:pointer;font-size:.8rem;color:var(--muted);padding:.3rem .5rem;border-radius:.3rem;font-family:var(--font);transition:all .1s}
+  .product-table .act-btn:hover{background:var(--body-bg);color:var(--body-color)}
+  .product-table .trash-item{color:var(--muted);font-size:.78rem}
+  .product-table .trash-item:hover{color:var(--body-color)}
   .cl-empty-icon{font-size:2.5rem;margin-bottom:.5rem;opacity:.3}
   .cl-empty-title{font-size:.9rem;font-weight:500;color:var(--body-color);margin-bottom:.25rem}
   .cl-empty-sub{font-size:.8rem;color:var(--muted);max-width:400px;margin:0 auto}.product-table table{width:100%;border-collapse:collapse;font-size:.8rem}
@@ -2598,28 +2611,19 @@ function renderStockPage(){
     var markupPct=costPrice>0?Math.round((markup/costPrice)*100):0;
     var low=qty<=5;
     totalQty+=qty;totalSum+=sumValue;
+    var markClass=markup>=0?"pos":"neg";
     return '<tr'+(low?' style="background:#fff8e6"':'')+'>'+
-      '<td style="font-size:.75rem;color:var(--muted)">'+(p.sku||'\u2014')+'</td>'+
-      '<td><span class="prod-name">'+p.name+'</span>'+(low?' <span style="font-size:.6rem;color:#d97706;font-weight:600">\u26A0</span>':'')+'</td>'+
+      '<td style="font-size:.72rem;color:var(--muted);font-family:monospace">'+(p.sku||'\u2014')+'</td>'+
+      '<td style="text-align:left"><span class="prod-name">'+p.name+'</span>'+(p.sku?'<span class="prod-sku">'+(p.sku||'')+'</span>':'')+(low?' <span style="font-size:.65rem;color:#d97706;font-weight:600">\u26A0 \u043C\u0430\u043B\u043E</span>':'')+'</td>'+
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'\u2014')+'</span></td>'+
-      '<td style="text-align:center;font-weight:600;'+(low?'color:#dc2626':'')+'">'+qty+'</td>'+
-      '<td>'+costPrice.toLocaleString()+'\u20bd</td>'+
-      '<td><span class="editable-price" onclick="editStockPrice('+p.id+')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted;color:var(--primary)">'+retailPrice.toLocaleString()+'\u20bd</span></td>'+
-      '<td><span style="color:'+(markup>=0?'#16a34a':'#dc2626')+';font-weight:600">'+markup.toLocaleString()+'\u20bd</span>'+(markupPct?' <span style="font-size:.7rem;color:var(--muted)">('+markupPct+'%)</span>':'')+'</td>'+
-      '<td>'+sumValue.toLocaleString()+'\u20bd</td>'+
+      '<td class="num '+(low?'stock-low':'stock-ok')+'">'+qty+'</td>'+
+      '<td class="num">'+costPrice.toLocaleString()+'</td>'+
+      '<td class="num"><span class="editable-price" onclick="editStockPrice('+p.id+')">'+retailPrice.toLocaleString()+'</span></td>'+
+      '<td><span class="markup-badge '+markClass+'">'+(markup>=0?'+':'')+markup.toLocaleString()+(markupPct?' ('+markupPct+'%)':'')+'</span></td>'+
+      '<td class="num">'+sumValue.toLocaleString()+'</td>'+
     '</tr>';
   }).join('')+
-  '<tr style="font-weight:700;background:var(--body-bg)"><td></td><td>\u0418\u0442\u043E\u0433\u043E</td><td></td><td style="text-align:center">'+totalQty+'</td><td></td><td></td><td></td><td>'+totalSum.toLocaleString()+'\u20bd</td></tr>';
-}
-function editStockPrice(id){
-  var newPrice=prompt("\u041D\u043E\u0432\u0430\u044F \u0446\u0435\u043D\u0430 \u043F\u0440\u043E\u0434\u0430\u0436\u0438 (\u20bd):");
-  if(newPrice===null||newPrice==="") return;
-  var price=parseFloat(newPrice);
-  if(isNaN(price)||price<0) return alert("\u041D\u0435\u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u0430\u044F \u0446\u0435\u043D\u0430");
-  var list=JSON.parse(localStorage.getItem("products88")||"[]");
-  list=list.map(function(p){if(p.id==id)p.price=price;return p;});
-  localStorage.setItem("products88",JSON.stringify(list));
-  renderStockPage();
+  '<tr class="total-row"><td></td><td style="text-align:left">\u0418\u0442\u043E\u0433\u043E</td><td></td><td class="num">'+totalQty+'</td><td></td><td></td><td></td><td class="num">'+totalSum.toLocaleString()+'</td></tr>';
 }
 function renderShiftsPage(){
   var tb = document.getElementById("shiftTableBody");
