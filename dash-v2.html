@@ -1334,6 +1334,13 @@
           <input type="email" id="clEmail" placeholder="ivan@example.com">
         </div>
       </div>
+      <div class="form-group">
+        <label>Комментарий</label>
+        <textarea id="clComment" placeholder="Заметки о клиенте..."></textarea>
+      </div>
+      <div id="clientDelSection" style="display:none;margin-bottom:.5rem">
+        <button type="button" class="btn btn-outline" onclick="deleteClientFromEdit()" style="color:#dc3545;border-color:#dc3545;width:100%">Удалить клиента</button>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeClientModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -2393,7 +2400,7 @@ function closeClientModal(){
 function saveClient(e){
   e.preventDefault();
   const editId = document.getElementById('editClientId').value;
-  const c = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('clName').value.trim(), phone: document.getElementById('clPhone').value.trim(), email: document.getElementById('clEmail').value.trim()};
+  const c = {id: editId?parseInt(editId):Date.now(), name: document.getElementById('clName').value.trim(), phone: document.getElementById('clPhone').value.trim(), email: document.getElementById('clEmail').value.trim(), comment: document.getElementById('clComment').value.trim()};
   if(!c.name) return alert('Введите имя');
   let list = JSON.parse(localStorage.getItem('clients88') || '[]');
   const idx = list.findIndex(x => x.id === c.id);
@@ -2410,7 +2417,24 @@ function editClient(id){
   document.getElementById('clName').value = c.name;
   document.getElementById('clPhone').value = c.phone||'';
   document.getElementById('clEmail').value = c.email||'';
+  document.getElementById('clComment').value = c.comment||'';
   document.getElementById('clientModalTitle').textContent = 'Редактировать клиента';
+  document.getElementById('clientDelSection').style.display = 'block';
+  document.getElementById('clientModal').classList.add('active');
+}
+function deleteClientFromEdit(){
+  var id = parseInt(document.getElementById('editClientId').value);
+  if(!id || !confirm('Удалить клиента?')) return;
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  list = list.filter(function(x){return x.id!==id});
+  localStorage.setItem('clients88', JSON.stringify(list));
+  closeClientModal();
+  renderClientsPage();
+}
+function openClientModal(){
+  document.getElementById('editClientId').value = '';
+  document.getElementById('clientDelSection').style.display = 'none';
+  document.getElementById('clientModalTitle').textContent = 'Добавить клиента';
   document.getElementById('clientModal').classList.add('active');
 }
 function deleteClient(id){
@@ -2440,7 +2464,7 @@ function renderClientsPage(){
     var revenue = c.revenue || 0;
     var avg = sales > 0 ? Math.round(revenue/sales) : 0;
     h += '<tr>';
-    h += '<td><span class="prod-name">'+c.name+'</span></td>';
+    h += '<td><span class="prod-name" style="cursor:pointer;color:var(--primary)" onclick="editClient('+c.id+')">'+c.name+'</span></td>';
     h += '<td style="color:var(--muted)">'+(c.phone||'-')+'</td>';
     h += '<td style="text-align:center">'+sales+'</td>';
     h += '<td>'+(c.cash||0).toLocaleString()+'</td>';
@@ -2448,7 +2472,6 @@ function renderClientsPage(){
     h += '<td>'+(c.profit||0).toLocaleString()+'</td>';
     h += '<td style="text-align:center">'+sales+'</td>';
     h += '<td>'+avg.toLocaleString()+'</td>';
-    h += '<td style="text-align:right"><button class="act-btn" onclick="editClient('+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteClient('+c.id+')">&#10005;</button></td>';
     h += '</tr>';
   }
   tbody.innerHTML = h;
@@ -2891,7 +2914,7 @@ function renderCatPage(type){
   }
   tbody.innerHTML = lists.map(c =>
     '<tr>' +
-      '<td><span class="prod-name">'+c.name+'</span></td>' +
+      '<td><span class="prod-name" style="cursor:pointer;color:var(--primary)" onclick="editClient('+c.id+')">'+c.name+'</span></td>' +
       '<td style="color:var(--muted)">—</td>' +
       '<td style="text-align:right"><button class="act-btn" onclick="editCategory(\''+type+'\','+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteCategory(\''+type+'\','+c.id+')">&#10005;</button></td>' +
     '</tr>'
