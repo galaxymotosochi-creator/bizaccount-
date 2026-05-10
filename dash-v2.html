@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>8:8 — Панель управления</title>
-<script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--primary:#1983dd;--primary-light:#eaf5ff;--body-bg:#f8f9fa;--body-color:#212529;--font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;--radius:.75rem;--shadow:0 .5rem 1rem rgba(0,0,0,.08);--border:#dee2e6;--white:#fff;--muted:#6c757d;--sidebar-width:270px}
@@ -3144,6 +3143,21 @@ function startQuagga() {
   scannerRunning = true;
   const vp = document.getElementById('scannerViewport');
   vp.innerHTML = '';
+
+  if(typeof Quagga === 'undefined') {
+    const status = document.getElementById('scannerStatus');
+    status.className = 'scanner-status notfound';
+    status.textContent = 'Загрузка библиотеки сканирования...';
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/quagga@0.12.1/dist/quagga.min.js';
+    s.onload = function() { startQuagga(); };
+    s.onerror = function() {
+      status.textContent = 'Не удалось загрузить сканер. Попробуйте другой браузер.';
+      scannerRunning = false;
+    };
+    document.head.appendChild(s);
+    return;
+  }
 
   Quagga.init({
     inputStream: {
