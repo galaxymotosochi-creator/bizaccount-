@@ -437,21 +437,6 @@
   .reg-search-input .ic{font-size:.7rem;color:var(--muted)}
   .reg-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:9999;background:#16a34a;color:var(--white);padding:.6rem 1.2rem;border-radius:12px;font-size:.9rem;font-weight:600;box-shadow:0 4px 20px rgba(22,163,74,.3);opacity:0;transition:opacity .35s;pointer-events:none;display:flex;align-items:center;gap:.5rem}
   .reg-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  /* ===== HEALTH MODAL ===== */
-  .health-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
-  .health-modal.open{display:flex}
-  .health-modal-box{background:var(--white);border-radius:20px;width:90%;max-width:600px;max-height:85vh;box-shadow:0 1rem 3rem rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;animation:regIn .25s ease}
-  .health-modal-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.2rem;border-bottom:1px solid var(--border)}
-  .health-modal-header h2{font-size:1rem;font-weight:600}
-  .health-modal-close{background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer;padding:.2rem .4rem;border-radius:6px}
-  .health-modal-close:hover{background:var(--body-bg)}
-  .health-modal-body{flex:1;overflow-y:auto;padding:.8rem 1.2rem}
-  .health-table{width:100%;border-collapse:collapse;font-size:.78rem}
-  .health-table th{text-align:left;padding:.4rem .3rem;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase}
-  .health-table td{padding:.35rem .3rem;border-bottom:1px solid var(--border)}
-  .health-table tr:last-child td{border-bottom:none}
-  .health-modal-footer{display:flex;gap:.5rem;padding:.6rem 1.2rem;border-top:1px solid var(--border)}
-  .health-modal-footer .btn{flex:1;padding:.45rem;border-radius:10px;font-size:.8rem;font-weight:600;cursor:pointer;text-align:center;font-family:var(--font);border:none}
   .reg-client-list{max-height:200px;overflow-y:auto;margin-bottom:.5rem}
   .reg-client-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;border:1px solid var(--border);border-radius:8px;margin-bottom:.25rem;cursor:pointer;font-size:.8rem}
   .reg-client-item:hover{border-color:var(--primary);background:var(--primary-light)}
@@ -1162,16 +1147,9 @@
           </div>
         </div>
         <div class="ac-card">
-          <div class="ac-title">Здоровье товаров</div>
-          <div class="ac-desc">Нажмите на сектор, чтобы увидеть список товаров</div>
-          <div class="donut-wrap">
-            <div id="healthDonut" style="width:130px;height:130px;flex-shrink:0"></div>
-            <div class="donut-legend">
-              <div class="dl-row" onclick="showHealthModal('stars')" style="cursor:pointer"><span class="dl-dot" style="background:#4CAF50"></span> Звезды — <span id="health-stars">0</span></div>
-              <div class="dl-row" onclick="showHealthModal('turnover')" style="cursor:pointer"><span class="dl-dot" style="background:#FF9800"></span> Оборот — <span id="health-turnover">0</span></div>
-              <div class="dl-row" onclick="showHealthModal('ballast')" style="cursor:pointer"><span class="dl-dot" style="background:#F44336"></span> Балласт — <span id="health-ballast">0</span></div>
-            </div>
-          </div>
+          <div class="ac-title">Скорость vs Маржа</div>
+          <div class="ac-desc">Каждый товар — точка. X: скорость продажи, Y: маржинальность</div>
+          <div class="scatter-wrap"><canvas id="scatterCanvas" width="400" height="200"></canvas></div>
         </div>
       </div>
 
@@ -2527,89 +2505,32 @@ function renderTurnoverPage(){
     dw.innerHTML=svg;
   }
 
-  // Health donut chart
-  var healthData={stars:[],turnover:[],ballast:[]};
-  var marginHigh=30,daysFast=30;
-  sorted.forEach(function(x){
-    if(x.soldQty>0&&x.rev>0){
-      var margin=x.cost>0?((x.rev/x.soldQty-x.cost)/x.cost*100):0;
-      var lastSale=null;
-      sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==x.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
-      var daysSinceLast=lastSale?(now-new Date(lastSale))/864e5:999;
-      if(margin>=marginHigh&&daysSinceLast<=daysFast) healthData.stars.push(x);
-      else if(daysSinceLast<=daysFast) healthData.turnover.push(x);
-      else healthData.ballast.push(x);
-    }
-  });
-  document.getElementById("health-stars").textContent=healthData.stars.length;
-  document.getElementById("health-turnover").textContent=healthData.turnover.length;
-  document.getElementById("health-ballast").textContent=healthData.ballast.length;
-  var totalHealth=healthData.stars.length+healthData.turnover.length+healthData.ballast.length||1;
-  var hd=document.getElementById("healthDonut");
-  if(hd){
-    var r=50,cx=65,cy=65,circ=2*Math.PI*r;
-    var hParts=[{p:healthData.stars.length/totalHealth,c:"#4CAF50",l:"Звезды"},{p:healthData.turnover.length/totalHealth,c:"#FF9800",l:"Оборот"},{p:healthData.ballast.length/totalHealth,c:"#F44336",l:"Балласт"}];
-    var off=0,svg='<svg width="130" height="130" viewBox="0 0 130 130"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#e5e7eb" stroke-width="18"/>';
-    hParts.forEach(function(pt,idx){
-      if(pt.p>0.01){
-        var len=pt.p*circ;
-        var cat=["stars","turnover","ballast"][idx];
-        svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+pt.c+'" stroke-width="18" stroke-dasharray="'+len+' '+circ+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 '+cx+' '+cy+')" style="cursor:pointer;transition:stroke-dasharray .3s" onclick="showHealthModal(\''+cat+'\')"/>';
-        off+=len;
+  // Scatter plot: Speed vs Margin
+  var sc=document.getElementById("scatterCanvas");
+  if(sc){
+    var ctx=sc.getContext("2d");var W=400,H=200;sc.width=W;sc.height=H;
+    ctx.clearRect(0,0,W,H);
+    // Draw dots for each product with sales
+    var dots=[];
+    sorted.forEach(function(x){
+      if(x.rev>0&&x.soldQty>0){
+        var margin=x.cost>0?((x.rev/x.soldQty-x.cost)/x.cost*100):0;
+        var daysSinceSupply=x.lastSupplyDate?(now-new Date(x.lastSupplyDate))/864e5:90;
+        dots.push({name:x.name,days:Math.min(daysSinceSupply,90),margin:Math.min(margin,200)});
       }
     });
-    svg+='<circle cx="'+cx+'" cy="'+cy+'" r="25" fill="var(--white)"/></svg>';
-    hd.innerHTML=svg;
+    ctx.fillStyle="#9ca3af";ctx.font="8px sans-serif";ctx.textAlign="center";
+    ctx.fillText("Скорость продажи (дни)",W/2,H-2);
+    ctx.save();ctx.translate(8,H/2);ctx.rotate(-Math.PI/2);ctx.fillText("Маржа (%)",0,0);ctx.restore();
+    var padL=25,padB=18,padT=10,padR=5;
+    var cw=W-padL-padR,ch=H-padT-padB;
+    dots.forEach(function(d){
+      var x=padL+(1-d.days/90)*cw;
+      var y=padT+(1-d.margin/200)*ch;
+      ctx.beginPath();ctx.arc(x,y,4,0,2*Math.PI);ctx.fillStyle="#1983dd";ctx.fill();
+      ctx.strokeStyle="rgba(25,131,221,0.4)";ctx.lineWidth=1;ctx.stroke();
+    });
   }
-
-// Health modal data
-var _healthCategory = '';
-
-function showHealthModal(cat){
-  _healthCategory=cat;
-  var titles={stars:"\u2B50 \u0417\u0432\u0435\u0437\u0434\u044B",turnover:"\uD83D\uDD01 \u041E\u0431\u043E\u0440\u043E\u0442",ballast:"\u26D4 \u0411\u0430\u043B\u043B\u0430\u0441\u0442"};
-  var colors={stars:"#4CAF50",turnover:"#FF9800",ballast:"#F44336"};
-  var items=healthData[cat]||[];
-  var products=JSON.parse(localStorage.getItem("products88")||"[]");
-  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
-  var now=new Date();
-  document.getElementById("healthModalTitle").innerHTML='<span style="color:'+colors[cat]+'">'+titles[cat]+'</span>';
-  var h='<table class="health-table"><thead><tr><th>\uD83D\uDCE6 \u0422\u043E\u0432\u0430\u0440</th><th>\uD83D\uDCC5 \u0414\u043D\u0435\u0439 \u0431\u0435\u0437 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F</th><th>\uD83D\uDCE6 \u041E\u0441\u0442\u0430\u0442\u043E\u043A</th><th>\uD83D\uDCB0 \u0421\u0443\u043C\u043C\u0430 \u0437\u0430\u043A\u0443\u043F\u0430</th></tr></thead><tbody>';
-  items.forEach(function(x){
-    var p=products.find(function(p){return p.id==x.id;});
-    var lastSale=null;
-    sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==x.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
-    var daysSince=lastSale?Math.round((now-new Date(lastSale))/864e5):"\u221E";
-    var stock=x.stock||0;
-    var costSum=stock*(x.cost||0);
-    h+='<tr><td><span class="'+(cat==="ballast"?"neg":"pos")+'">'+(p?p.name:x.name)+'</span></td><td>'+daysSince+'</td><td>'+stock+'</td><td>'+costSum.toLocaleString()+'</td></tr>';
-  });
-  if(!items.length) h+='<tr><td colspan="4"><div class="reg-check-empty">\u041D\u0435\u0442 \u0442\u043E\u0432\u0430\u0440\u043E\u0432 \u0432 \u044D\u0442\u043E\u0439 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438</div></td></tr>';
-  h+='</tbody></table>';
-  document.getElementById("healthModalBody").innerHTML=h;
-  document.getElementById("healthModal").classList.add("open");
-}
-function closeHealthModal(){
-  document.getElementById("healthModal").classList.remove("open");
-}
-function downloadHealthCSV(){
-  var items=healthData[_healthCategory]||[];
-  var products=JSON.parse(localStorage.getItem("products88")||"[]");
-  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
-  var now=new Date();
-  var csv="\u0422\u043E\u0432\u0430\u0440,\u0414\u043D\u0435\u0439 \u0431\u0435\u0437 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F,\u041E\u0441\u0442\u0430\u0442\u043E\u043A,\u0421\u0443\u043C\u043C\u0430 \u0437\u0430\u043A\u0443\u043F\u0430\n";
-  items.forEach(function(x){
-    var p=products.find(function(p){return p.id==x.id;});
-    var lastSale=null;
-    sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==x.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
-    var daysSince=lastSale?Math.round((now-new Date(lastSale))/864e5):"-";
-    var stock=x.stock||0;
-    var costSum=stock*(x.cost||0);
-    csv+='"+(p?p.name:x.name)+","+daysSince+","+stock+","+costSum+"\n";
-  });
-  var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
-  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="health_"+_healthCategory+".csv";a.click();
-}
 
   // Tables: Top rockets & Dead stock
   // Rockets - fastest selling (high soldQty/low days)
@@ -4166,21 +4087,6 @@ function setRegFilter(btn,filter){
     <div style="display:flex;gap:.5rem;margin-top:1rem">
       <button class="shift-btn" style="flex:1;background:#dc2626" onclick="confirmCloseShift()">&#128683; Закрыть смену</button>
       <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('closeShiftModal').classList.remove('open')">Отмена</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== МОДАЛКА ЗДОРОВЬЯ ТОВАРОВ ===== -->
-<div class="health-modal" id="healthModal">
-  <div class="health-modal-box">
-    <div class="health-modal-header">
-      <h2 id="healthModalTitle">Список товаров</h2>
-      <button class="health-modal-close" onclick="closeHealthModal()">&times;</button>
-    </div>
-    <div class="health-modal-body" id="healthModalBody"></div>
-    <div class="health-modal-footer">
-      <button class="btn btn-outline" onclick="closeHealthModal()" style="flex:1">Закрыть</button>
-      <button class="btn btn-primary" onclick="downloadHealthCSV()" style="flex:1">Скачать список (CSV)</button>
     </div>
   </div>
 </div>
