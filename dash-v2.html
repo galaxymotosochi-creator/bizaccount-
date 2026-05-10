@@ -3494,7 +3494,8 @@ function addNewClient(){
   document.getElementById("payModal").classList.add("open");
 }
 function addRI(id,sv){
-  if(!sv&&getStock(id)<1){
+  var stk=sv?999:getStock(id);
+  if(stk<1){
     var cards=document.querySelectorAll(".reg-product-card");
     cards.forEach(function(c){c.style.animation="regCardShake .4s ease";});
     setTimeout(function(){cards.forEach(function(c){c.style.animation="";});},500);
@@ -3504,9 +3505,24 @@ function addRI(id,sv){
   var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");
   var x=src.find(function(i){return i.id==id});if(!x)return;
   var ex=RI.find(function(r){return r.id==id&&r.sv==sv});
-  if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();
+  if(ex){
+    if(ex.q+1>stk){
+      showToast("Добавлено максимальное количество товара со склада!");
+      return;
+    }
+    ex.q++;
+  } else {
+    RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});
+  }upR();
 }function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#128230;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+' &#8381;</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").innerHTML=total.toLocaleString()+" ₽";var b=document.getElementById("payB");b.innerHTML=total?"Оплатить "+total.toLocaleString()+" ₽":"Оплатить";b.disabled=total===0;}
-function incRI(i){RI[i].q++;upR();}
+function incRI(i){
+  var stk=RI[i].sv?999:getStock(RI[i].id);
+  if(RI[i].q+1>stk){
+    showToast("Добавлено максимальное количество товара со склада!");
+    return;
+  }
+  RI[i].q++;upR();
+}
 function decRI(i){if(RI[i].q>1)RI[i].q--;else RI.splice(i,1);upR();}
 function remRI(i){RI.splice(i,1);upR();}
 function setPM(b,m){payM=m;document.querySelectorAll(".receipt-pay-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");}
