@@ -149,7 +149,17 @@
   .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
   .filter-tab.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
   .product-table{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow-x:auto}
-  .product-table table{width:100%;border-collapse:collapse;font-size:.8rem}
+    .cl-top{margin-bottom:1rem}
+  .cl-title-row{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.5rem;flex-wrap:wrap}
+  .cl-title-row h1{font-size:1.3rem;font-weight:600;margin:0}
+  .cl-period{font-size:.8rem;color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary)}
+  .cl-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+  .cl-left,.cl-right{display:flex;gap:.35rem}
+  .cl-filter-btn{background:var(--white);border:1px solid var(--border);border-radius:.4rem;padding:.3rem .55rem;font-size:.78rem;cursor:pointer;font-family:var(--font);color:var(--body-color)}
+  .cl-filter-btn:hover{border-color:var(--primary)}  .cl-stats-empty{text-align:center;padding:3rem 1rem;background:var(--white);border-radius:var(--radius);border:1px solid var(--border)}
+  .cl-empty-icon{font-size:2.5rem;margin-bottom:.5rem;opacity:.3}
+  .cl-empty-title{font-size:.9rem;font-weight:500;color:var(--body-color);margin-bottom:.25rem}
+  .cl-empty-sub{font-size:.8rem;color:var(--muted);max-width:400px;margin:0 auto}.product-table table{width:100%;border-collapse:collapse;font-size:.8rem}
   .product-table th{text-align:left;padding:.75rem .8rem;border-bottom:2px solid var(--border);color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;background:var(--body-bg)}
   .product-table td{padding:.65rem .8rem;border-bottom:1px solid var(--border);vertical-align:middle}
   .product-table tr:hover td{background:var(--primary-light)}
@@ -665,17 +675,25 @@
 
     <!-- КЛИЕНТЫ -->
     <div class="page-section" id="page-clients">
-      <div class="page-header">
-        <div>
+      <div class="cl-top">
+        <div class="cl-title-row">
           <h1>Клиенты</h1>
-          <div class="sub">База клиентов и контактов</div>
+          <div class="cl-period">10 апреля - 10 мая</div>
         </div>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="openClientModal()">+ Добавить клиента</button>
+        <div class="cl-toolbar">
+          <div class="cl-left">
+            <button class="cl-filter-btn">Группа</button>
+            <button class="cl-filter-btn">Фильтр</button>
+          </div>
+          <div class="cl-right">
+            <button class="btn btn-primary" style="padding:.35rem .7rem;font-size:.8rem" onclick="openClientModal()">+ Добавить клиента</button>
+          </div>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:30%">Имя</th><th style="width:25%">Телефон</th><th style="width:30%">Email</th><th style="width:15%"></th></tr></thead><tbody id="clientTableBody"></tbody></table>
+      <div id="clStats" class="cl-stats-empty">
+        <div class="cl-empty-icon">&#128202;</div>
+        <div class="cl-empty-title">Здесь будет статистика покупок клиентов</div>
+        <div class="cl-empty-sub">Добавьте ваших гостей, чтобы контролировать выручку, средний чек и количество продаж по каждому из них</div>
       </div>
     </div>
 
