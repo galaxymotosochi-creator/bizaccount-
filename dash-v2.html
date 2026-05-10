@@ -1339,18 +1339,8 @@
       </div>
       <div class="form-group">
         <label>Аватар</label>
-        <div id="emojiPicker" style="display:flex;gap:4px;flex-wrap:wrap;padding:.3rem 0">
-          <span class="eo" onclick="pickEm(this,'')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1rem">&#10060;</span>
-          <span class="eo" onclick="pickEm(this,'&#128100;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128100;</span>
-          <span class="eo" onclick="pickEm(this,'&#128104;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128104;</span>
-          <span class="eo" onclick="pickEm(this,'&#128105;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128105;</span>
-          <span class="eo" onclick="pickEm(this,'&#128119;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128119;</span>
-          <span class="eo" onclick="pickEm(this,'&#128166;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128166;</span>
-          <span class="eo" onclick="pickEm(this,'&#127912;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#127912;</span>
-          <span class="eo" onclick="pickEm(this,'&#128081;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128081;</span>
-          <span class="eo" onclick="pickEm(this,'&#128187;')" style="cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:1.1rem">&#128187;</span>
-        </div>
-        <input type="hidden" id="clEmoji" value="">
+        <input type="text" id="clEmoji" placeholder="Вставьте смайлик из галереи..." style="font-size:1.5rem;padding:.3rem"
+          oninput="document.getElementById('clEmoji').style.fontSize=this.value.length>1?'1rem':'1.5rem'">
       </div>
       <div class="form-row">
         <div class="form-group">
