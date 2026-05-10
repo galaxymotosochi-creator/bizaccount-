@@ -318,6 +318,10 @@
   .reg-product-card .pc-name{font-size:.82rem;font-weight:500;line-height:1.3}
   .reg-product-card .pc-price{font-size:.9rem;font-weight:700;color:var(--primary);margin-top:.2rem}
   .reg-product-card .pc-tag{font-size:.65rem;color:var(--muted);background:var(--body-bg);padding:.05rem .4rem;border-radius:4px;margin-top:.15rem}
+  .reg-product-card .pc-stock{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+  .reg-product-card .pc-stock.zero{color:#dc2626;font-weight:600}
+  .reg-product-card.out-of-stock{border-color:#fecaca;background:#fef2f2}
+  @keyframes regCardShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
   .reg-filter-label{font-size:.75rem;font-weight:600;color:var(--muted)}
   .reg-filter-btn{padding:.2rem .6rem;font-size:.75rem;border:1px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .12s}
   .reg-filter-btn:hover{border-color:var(--primary);color:var(--primary)}
@@ -3440,14 +3444,53 @@ function showCheckDetail(id){
   document.getElementById("checksHistoryModal").classList.remove("open");
   document.getElementById("checkDetailModal").classList.add("open");
 }
-function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
-function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#128230;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").textContent=total.toLocaleString()+" ";var b=document.getElementById("payB");b.textContent=total?"Оплатить "+total.toLocaleString():"Оплатить";b.disabled=total===0;}
+function addRI(id,sv){
+  if(!sv&&getStock(id)<1){
+    var cards=document.querySelectorAll(".reg-product-card");
+    cards.forEach(function(c){c.style.animation="regCardShake .4s ease";});
+    setTimeout(function(){cards.forEach(function(c){c.style.animation="";});},500);
+    showToast("Товара на складе: 0! Пополните Ваш склад");
+    return;
+  }
+  var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");
+  var x=src.find(function(i){return i.id==id});if(!x)return;
+  var ex=RI.find(function(r){return r.id==id&&r.sv==sv});
+  if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();
+}function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">&#128230;</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">&#8722;</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">&#10005;</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").textContent=total.toLocaleString()+" ";var b=document.getElementById("payB");b.textContent=total?"Оплатить "+total.toLocaleString():"Оплатить";b.disabled=total===0;}
 function incRI(i){RI[i].q++;upR();}
 function decRI(i){if(RI[i].q>1)RI[i].q--;else RI.splice(i,1);upR();}
 function remRI(i){RI.splice(i,1);upR();}
 function setPM(b,m){payM=m;document.querySelectorAll(".receipt-pay-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");}
-function renderRegProducts(){var q=(document.getElementById("regSearchInput")||{}).value||"";q=q.toLowerCase().trim();var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var items=[];if(regFilter==="all"||regFilter==="products")P.forEach(function(x){items.push({id:x.id,sv:0,icon:"",name:x.name,price:x.price||0,cat:x.cat});});if(regFilter==="all"||regFilter==="services")S.forEach(function(x){items.push({id:x.id,sv:1,icon:"",name:x.name,price:x.price||0,cat:x.cat});});if(q)items=items.filter(function(x){return x.name.toLowerCase().indexOf(q)>=0;});var el=document.getElementById("regProducts");if(!items.length){el.innerHTML='';return;}var h="";items.forEach(function(x){h+='<div class="reg-product-card" onclick="addRI('+x.id+','+x.sv+')"><div class="pc-name">'+x.name+'</div>'+(x.price?'<div class="pc-price">'+x.price.toLocaleString()+'</div>':'')+(x.cat?'<div class="pc-tag">'+x.cat+'</div>':'')+'</div>';});el.innerHTML=h;}
 
+function getStock(id){
+  var su=JSON.parse(localStorage.getItem("supplies88")||"[]");
+  var sa=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var tin=0;su.forEach(function(s){if(s.prodId==id)tin+=s.qty||0;});
+  var tout=0;sa.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==id&&!it.sv)tout+=it.q||0;});});
+  return Math.max(0,tin-tout);
+}
+function renderRegProducts(){
+  var q=(document.getElementById("regSearchInput")||{}).value||"";q=q.toLowerCase().trim();
+  var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});
+  var S=JSON.parse(localStorage.getItem("services88")||"[]");var items=[];
+  if(regFilter==="all"||regFilter==="products")P.forEach(function(x){items.push({id:x.id,sv:0,name:x.name,price:x.price||0,cat:x.cat});});
+  if(regFilter==="all"||regFilter==="services")S.forEach(function(x){items.push({id:x.id,sv:1,name:x.name,price:x.price||0,cat:x.cat});});
+  if(q)items=items.filter(function(x){return x.name.toLowerCase().indexOf(q)>=0;});
+  var el=document.getElementById("regProducts");
+  if(!items.length){el.innerHTML="";return;}
+  var h="";
+  items.forEach(function(x){
+    var stk=x.sv?999:getStock(x.id);
+    var cls="reg-product-card";
+    if(!x.sv&&stk<1) cls+=" out-of-stock";
+    h+='<div class="'+cls+'" onclick="addRI('+x.id+','+x.sv+')">';
+    h+='<div class="pc-name">'+x.name+'</div>';
+    if(x.price) h+='<div class="pc-price">'+x.price.toLocaleString()+'</div>';
+    if(!x.sv) h+='<div class="pc-stock '+(stk<1?"zero":"")+'">&#128230; '+stk+'</div>';
+    if(x.cat) h+='<div class="pc-tag">'+x.cat+'</div>';
+    h+='</div>';
+  });el.innerHTML=h;
+}
 function confirmCloseShift(){
   if(!confirm("Закрываем смену?")) return;
   var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
