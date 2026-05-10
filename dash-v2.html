@@ -310,9 +310,50 @@
   .receipt-pay-btn:hover{border-color:var(--primary)}
   .receipt-pay-btn.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
   .receipt-pay-btn .pay-ic{display:block;font-size:1.1rem;margin-bottom:2px}
-  .receipt-go{display:block;margin:.25rem .9rem .7rem;padding:.65rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.9rem;font-weight:600;cursor:pointer;font-family:var(--font)}
+  .receipt-bottom-bar{display:flex;align-items:center;gap:.4rem;padding:.35rem .7rem .5rem}
+  .receipt-bottom-left{display:flex;align-items:center;gap:.35rem}
+  .rec-action{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--border);border-radius:8px;background:var(--white);cursor:pointer;font-size:1rem;transition:all .12s}
+  .rec-action:hover{border-color:var(--primary);background:var(--primary-light)}
+  .receipt-go{flex:1;padding:.6rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.85rem;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .12s}
   .receipt-go:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
   .receipt-go:disabled{opacity:.35;cursor:default}
+  /* ===== PAY MODAL ===== */
+  .pay-modal-box{background:var(--white);border-radius:1.2rem;width:92vw;max-width:720px;max-height:92vh;box-shadow:0 1rem 3rem rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;position:relative;animation:regIn .25s ease}
+  .pay-modal-inner{display:flex;flex:1;min-height:0}
+  .pay-keypad{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem}
+  .pay-kp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;max-width:260px;width:100%}
+  .pay-kp-btn{height:58px;border-radius:10px;border:1px solid var(--border);background:var(--white);font-size:1.3rem;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .1s}
+  .pay-kp-btn:hover{background:var(--body-bg);border-color:var(--primary)}
+  .pay-kp-btn:active{transform:scale(.95)}
+  .pay-kp-clear{color:#dc2626;font-size:1rem}
+  .pay-info{flex:1;display:flex;flex-direction:column;gap:.5rem;padding:1rem 1rem 1rem 0;overflow-y:auto}
+  .pay-total-label{font-size:.8rem;color:var(--muted)}
+  .pay-total-value{font-size:2rem;font-weight:700}
+  .pay-given-label{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+  .pay-given-value{font-size:1.5rem;font-weight:600;color:var(--primary)}
+  .pay-section{margin-top:.2rem}
+  .pay-section-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:.3rem}
+  .pay-methods{display:flex;gap:.35rem;flex-wrap:wrap}
+  .pay-method{padding:.35rem .6rem;border:1px solid var(--border);border-radius:8px;font-size:.8rem;cursor:pointer;background:var(--white);transition:all .12s;white-space:nowrap}
+  .pay-method:hover{border-color:var(--primary)}
+  .pay-method.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
+  .pay-client{display:flex;align-items:center;gap:.3rem;font-size:.85rem}
+  .pay-client-edit{cursor:pointer;color:var(--primary);font-size:.9rem;padding:2px 4px;border-radius:4px}
+  .pay-client-edit:hover{background:var(--primary-light)}
+  .pay-checkbox{display:flex;align-items:center;gap:.3rem;font-size:.82rem;cursor:pointer}
+  .pay-checkbox input{width:16px;height:16px}
+  .pay-actions{display:flex;gap:.5rem;margin-top:auto}
+  .pay-btn{flex:1;padding:.6rem;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;transition:all .12s}
+  .pay-btn-danger{background:var(--white);color:#dc2626;border:1px solid #fecaca}
+  .pay-btn-danger:hover{background:#fef2f2}
+  .pay-btn-primary{background:var(--primary);color:var(--white)}
+  .pay-btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+  @media(max-width:600px){
+    .pay-modal-inner{flex-direction:column}
+    .pay-kp-grid{max-width:200px}
+    .pay-kp-btn{height:50px;font-size:1.1rem}
+    .pay-info{padding:.8rem}
+  }
   .reg-products{flex:1;overflow-y:auto;padding:.6rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem;align-content:start}
   .reg-product-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:.7rem .6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:95px;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   .reg-product-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
@@ -3207,17 +3248,21 @@ document.addEventListener('DOMContentLoaded', updateStats);
             <span>Товары не выбраны</span>
           </div>
         </div>
-        <div class="receipt-clear" onclick="clearReceipt()">&#128465; Очистить чек</div>
         <div class="receipt-total">
-          <span class="tl">Итого</span>
+          <span class="tl">К оплате:</span>
           <span class="tv" id="receiptT">0 &#8381;</span>
         </div>
-        <div class="receipt-pay" id="payM">
-          <button class="receipt-pay-btn active" onclick="setPM(this,'cash')"><span class="pay-ic">&#128181;</span>Нал</button>
-          <button class="receipt-pay-btn" onclick="setPM(this,'card')"><span class="pay-ic">&#128179;</span>Карта</button>
-          <button class="receipt-pay-btn" onclick="setPM(this,'transfer')"><span class="pay-ic">&#128242;</span>Перевод</button>
+        <div class="receipt-bottom-bar">
+          <div class="receipt-bottom-left">
+            <div class="rec-action" onclick="toggleRecMenu()" title="Меню">&#8942;</div>
+            <div class="rec-action" onclick="alert('Печать')" title="Напечатать чек">&#128424;</div>
+          </div>
+          <button class="receipt-go" id="payB" disabled onclick="openPayModal()">&#128179; Оплатить</button>
         </div>
-        <button class="receipt-go" id="payB" disabled onclick="payR()">&#128179; Оплатить</button>
+        <div id="recMenu" style="display:none;padding:.3rem .9rem;border-top:1px solid var(--border)">
+          <input type="text" id="receiptComment" placeholder="Комментарий к чеку..." style="width:100%;padding:.35rem .5rem;font-size:.78rem;border:1px solid var(--border);border-radius:6px;outline:none;font-family:var(--font);margin-bottom:.25rem" oninput="saveReceiptComment()">
+          <div onclick="clearReceipt()" style="display:flex;align-items:center;gap:.3rem;padding:.25rem .4rem;font-size:.78rem;color:#dc2626;cursor:pointer;border-radius:4px">&#128465; Очистить чек</div>
+        </div>
       </div>
     </div>
     <div class="reg-right">
@@ -3337,124 +3382,98 @@ function showShiftCloseModal(){
   document.getElementById("closeShiftContent").innerHTML=h;
   document.getElementById("closeShiftModal").classList.add("open");
 }
-function payR(){
+
+function openPayModal(){
   var total=0;RI.forEach(function(i){total+=i.price*i.q});
   if(!total) return;
-  var h='<div style="margin-bottom:.5rem">';
-  RI.forEach(function(i){
-    h+='<div style="display:flex;justify-content:space-between;padding:.2rem 0;font-size:.82rem;border-bottom:1px solid var(--border)"><span>'+i.name+' x'+i.q+'</span><span style="font-weight:600">'+(i.price*i.q).toLocaleString()+'</span></div>';
-  });
-  h+='</div>';
-  h+='<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;padding:.3rem 0"><span>Итого</span><span>'+total.toLocaleString()+'</span></div>';
-  var pm={cash:"Наличные",card:"Карта",transfer:"Перевод"};
-  h+='<div style="font-size:.82rem;color:var(--muted);margin-top:.3rem">Способ: '+ (pm[payM]||payM) +'</div>';
-  var sc = curClient ? (curClient.name||curClient.phone) : "не выбран";
-  h+='<div style="font-size:.82rem;margin-top:.2rem"><span style="color:var(--muted)">Клиент:</span> <a onclick="openClientSelector()" style="color:var(--primary);cursor:pointer">'+sc+'</a></div>';
-  document.getElementById("payConfirmContent").innerHTML=h;
-  document.getElementById("payConfirmModal").classList.add("open");
-  curPayTotal = total;
+  curPayTotal=total;
+  document.getElementById("payTotalDisplay").textContent=total.toLocaleString()+" \u20bd";
+  document.getElementById("payGivenDisplay").textContent="0 \u20bd";
+  document.getElementById("payClientName").textContent="\uD83D\uDC64 \u041D\u0435 \u0432\u044B\u0431\u0440\u0430\u043D";
+  document.getElementById("payModal").classList.add("open");
+  document.getElementById("payPrintCheck").checked=true;
 }
-function openClientSelector(){
-  document.getElementById("payConfirmModal").classList.remove("open");
+function closePayModal(){
+  document.getElementById("payModal").classList.remove("open");
+}
+function payKey(d){
+  var el=document.getElementById("payGivenDisplay");
+  var cur=el.getAttribute("data-val")||"0";
+  if(cur==="0"&&d!=="00") cur="";
+  cur+=d;
+  var val=parseInt(cur)||0;
+  el.setAttribute("data-val",cur);
+  el.textContent=val.toLocaleString()+" \u20bd";
+}
+function payKeyBack(){
+  var el=document.getElementById("payGivenDisplay");
+  var cur=el.getAttribute("data-val")||"0";
+  if(cur.length>1) cur=cur.slice(0,-1); else cur="0";
+  el.setAttribute("data-val",cur);
+  var val=parseInt(cur)||0;
+  el.textContent=val.toLocaleString()+" \u20bd";
+}
+function selectPayMethod(el,m){
+  payM=m;
+  document.querySelectorAll(".pay-method").forEach(function(b){b.classList.remove("active");});
+  el.classList.add("active");
+}
+function openClientSelectorPay(){
+  document.getElementById("payModal").classList.remove("open");
   document.getElementById("clientSearchInput").value="";
   document.getElementById("newClientName").value="";
   document.getElementById("newClientPhone").value="";
   var cc=document.getElementById("newClientComment");if(cc)cc.value="";
   renderClientSearch();
   document.getElementById("clientSelectModal").classList.add("open");
+  window._returnToPay=true;
 }
+function confirmPayModal(){
+  var total=curPayTotal||0;
+  if(!total)return;
+  if(!confirm("\u041F\u043E\u0434\u0442\u0432\u0435\u0440\u0434\u0438\u0442\u044C \u043E\u043F\u043B\u0430\u0442\u0443 "+total.toLocaleString()+"?")) return;
+  var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var comment=document.getElementById("receiptComment")?document.getElementById("receiptComment").value:"";
+  Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,empName:curEmp?curEmp.name:"\u041C\u0430\u0441\u0442\u0435\u0440",clientId:curClient?curClient.id:0,clientName:curClient?(curClient.name||curClient.phone):"",comment:comment,date:new Date().toISOString()});
+  localStorage.setItem("sales88",JSON.stringify(Sa));
+  var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
+  closePayModal();
+  showToast("\u0427\u0435\u043A \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D!");
+  RI=[];curClient=null;upR();renderRegProducts();
+}
+function toggleRecMenu(){
+  var m=document.getElementById("recMenu");
+  if(m) m.style.display=m.style.display==="block"?"none":"block";
+}
+function saveReceiptComment(){}
+
 function renderClientSearch(){
   var q=(document.getElementById("clientSearchInput")||{}).value||"";q=q.toLowerCase().trim();
   var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
   if(q) cl=cl.filter(function(c){return (c.name||"").toLowerCase().indexOf(q)>=0||(c.phone||"").indexOf(q)>=0;});
   var el=document.getElementById("clientSearchResults");
-  if(!cl.length){el.innerHTML='<div class="reg-check-empty">Ничего не найдено. Добавьте нового клиента ниже.</div>';return;}
+  if(!cl.length){el.innerHTML='<div class="reg-check-empty">\u041D\u0438\u0447\u0435\u0433\u043E \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E. \u0414\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u043D\u043E\u0432\u043E\u0433\u043E \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u043D\u0438\u0436\u0435.</div>';return;}
   el.innerHTML=cl.map(function(c){return '<div class="reg-client-item" onclick="selectClient('+c.id+')"><span class="ci-name">'+(c.name||"")+'</span><span class="ci-phone">'+(c.phone||"")+'</span></div>';}).join("");
 }
 function selectClient(id){
   var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
   var c=cl.find(function(x){return x.id==id});
-  if(c){curClient=c;}
+  if(c){curClient=c;document.getElementById("payClientName").textContent="\uD83D\uDC64 "+(c.name||c.phone);}
   document.getElementById("clientSelectModal").classList.remove("open");
-  payR();
+  document.getElementById("payModal").classList.add("open");
 }
 function addNewClient(){
   var name=(document.getElementById("newClientName")||{}).value||"";name=name.trim();
   var phone=(document.getElementById("newClientPhone")||{}).value||"";phone=phone.trim();
   var comment=(document.getElementById("newClientComment")||{}).value||"";comment=comment.trim();
-  if(!name&&!phone){alert("Введите имя или телефон");return;}
+  if(!name&&!phone){alert("\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043C\u044F \u0438\u043B\u0438 \u0442\u0435\u043B\u0435\u0444\u043E\u043D");return;}
   var cl=JSON.parse(localStorage.getItem("clients88")||"[]");
   cl.unshift({id:Date.now(),name:name,phone:phone,comment:comment,createdAt:new Date().toISOString()});
   localStorage.setItem("clients88",JSON.stringify(cl));
   curClient=cl[0];
+  document.getElementById("payClientName").textContent="\uD83D\uDC64 "+(name||phone);
   document.getElementById("clientSelectModal").classList.remove("open");
-  payR();
-}
-function closeClientModal(){
-  document.getElementById("clientSelectModal").classList.remove("open");
-  payR();
-}
-function confirmPay(){
-  var total=curPayTotal||0;
-  if(!total)return;
-  if(!confirm("Подтвердить оплату "+total.toLocaleString()+"?")) return;
-  var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");
-  Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,empName:curEmp?curEmp.name:"Мастер",clientId:curClient?curClient.id:0,clientName:curClient?(curClient.name||curClient.phone):"",date:new Date().toISOString()});
-  localStorage.setItem("sales88",JSON.stringify(Sa));
-  var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
-  document.getElementById("payConfirmModal").classList.remove("open");
-  showToast("Чек успешно добавлен!");
-  RI=[];curClient=null;upR();renderRegProducts();
-}
-function showToast(msg){
-  var t=document.getElementById("regToast");
-  var ts=document.getElementById("regToastText");
-  if(ts)ts.textContent=msg;
-  t.classList.add("show");
-  setTimeout(function(){t.classList.remove("show");},1800);
-}
-function showChecksHistory(){
-  var gm=document.getElementById("gearMenu");if(gm)gm.style.display="none";
-  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
-  var os=shifts.find(function(s){return s.status==="open"&&s.empId==(curEmp?curEmp.id:0)});
-  if(curEmp===null) os=shifts.find(function(s){return s.status==="open"&&s.empId===0});
-  if(!os){alert("Нет открытой смены");return;}
-  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
-  var ss=sales.filter(function(s){return s.date>=os.openedAt});
-  var el=document.getElementById("checksHistoryContent");
-  if(!ss.length){el.innerHTML='<div class="reg-check-empty">За смену ещё не было продаж</div>';}
-  else {
-    var h="";var pm={cash:"&#128181;",card:"&#128179;",transfer:"&#128242;"};
-    ss.forEach(function(s,i){
-      h+='<div class="reg-check-row" onclick="showCheckDetail('+s.id+')" style="cursor:pointer">';
-      h+='<span class="cr-num">#'+(i+1)+'</span>';
-      h+='<span class="cr-pay">'+(pm[s.payM]||'')+'</span>';
-      h+='<span class="cr-time">'+ (s.date?s.date.substring(11,16):"") +'</span>';
-      if(s.clientName) h+='<span style="font-size:.65rem;color:var(--muted)">'+s.clientName+'</span>';
-      h+='<span class="cr-total">'+s.total.toLocaleString()+'</span>';
-      h+='</div>';
-    });el.innerHTML=h;
-  }
-  document.getElementById("checksHistoryModal").classList.add("open");
-}
-function showCheckDetail(id){
-  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
-  var s=sales.find(function(x){return x.id==id});
-  if(!s){alert("Чек не найден");return;}
-  var items=s.items||[];var pm={cash:"&#128181; Наличные",card:"&#128179; Карта",transfer:"&#128242; Перевод"};
-  var h='<div style="margin-bottom:.5rem">';
-  items.forEach(function(it){
-    h+='<div style="display:flex;justify-content:space-between;padding:.25rem 0;font-size:.82rem;border-bottom:1px solid var(--border)"><span>'+it.name+' x'+it.q+'</span><span style="font-weight:600">'+(it.price*it.q).toLocaleString()+'</span></div>';
-  });
-  h+='</div>';
-  h+='<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;padding:.3rem 0"><span>Итого</span><span>'+s.total.toLocaleString()+'</span></div>';
-  h+='<div style="font-size:.82rem;color:var(--muted);margin-top:.2rem">Способ: '+(pm[s.payM]||s.payM)+'</div>';
-  if(s.clientName) h+='<div style="font-size:.82rem;color:var(--muted)">Клиент: '+s.clientName+'</div>';
-  if(s.empName) h+='<div style="font-size:.82rem;color:var(--muted)">Кассир: '+s.empName+'</div>';
-  h+='<div style="font-size:.82rem;color:var(--muted)">Время: '+(s.date?s.date.substring(0,19):"")+'</div>';
-  document.getElementById("checkDetailContent").innerHTML=h;
-  document.getElementById("checksHistoryModal").classList.remove("open");
-  document.getElementById("checkDetailModal").classList.add("open");
+  document.getElementById("payModal").classList.add("open");
 }
 function addRI(id,sv){
   if(!sv&&getStock(id)<1){
@@ -3551,19 +3570,64 @@ function setRegFilter(btn,filter){
   </div>
 </div>
 
-<!-- ===== ПОДТВЕРЖДЕНИЕ ОПЛАТЫ ===== -->
-<div class="shift-overlay" id="payConfirmModal">
-  <div class="shift-box" style="max-width:440px">
-    <h2>&#128179; Подтверждение оплаты</h2>
-    <div id="payConfirmContent"></div>
-    <div style="display:flex;gap:.5rem;margin-top:1rem">
-      <button class="shift-btn" style="flex:1" onclick="confirmPay()">&#9989; Подтвердить</button>
-      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('payConfirmModal').classList.remove('open')">&#10060; Отмена</button>
+<div class="reg-toast" id="regToast"><span id="regToastText">Готово</span></div>
+
+<!-- ===== МОДАЛКА ОПЛАТЫ ===== -->
+<div class="shift-overlay" id="payModal">
+  <div class="pay-modal-box">
+    <button onclick="closePayModal()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer">&#10005;</button>
+    <div class="pay-modal-inner">
+      <div class="pay-keypad">
+        <div class="pay-kp-grid">
+          <button class="pay-kp-btn" onclick="payKey(7)">7</button>
+          <button class="pay-kp-btn" onclick="payKey(8)">8</button>
+          <button class="pay-kp-btn" onclick="payKey(9)">9</button>
+          <button class="pay-kp-btn" onclick="payKey(4)">4</button>
+          <button class="pay-kp-btn" onclick="payKey(5)">5</button>
+          <button class="pay-kp-btn" onclick="payKey(6)">6</button>
+          <button class="pay-kp-btn" onclick="payKey(1)">1</button>
+          <button class="pay-kp-btn" onclick="payKey(2)">2</button>
+          <button class="pay-kp-btn" onclick="payKey(3)">3</button>
+          <button class="pay-kp-btn" onclick="payKey('00')">00</button>
+          <button class="pay-kp-btn" onclick="payKey(0)">0</button>
+          <button class="pay-kp-btn pay-kp-clear" onclick="payKeyBack()">&#9003;</button>
+        </div>
+      </div>
+      <div class="pay-info">
+        <div id="payInfoDisplay">
+          <div class="pay-total-label">К оплате:</div>
+          <div class="pay-total-value" id="payTotalDisplay">0 &#8381;</div>
+          <div class="pay-given-label">Внесено:</div>
+          <div class="pay-given-value" id="payGivenDisplay">0 &#8381;</div>
+        </div>
+        <div class="pay-section">
+          <div class="pay-section-title">Способ оплаты</div>
+          <div class="pay-methods" id="payMethods">
+            <span class="pay-method active" onclick="selectPayMethod(this,'cash')">&#128181; Наличные</span>
+            <span class="pay-method" onclick="selectPayMethod(this,'card')">&#128179; Карта</span>
+            <span class="pay-method" onclick="selectPayMethod(this,'transfer')">&#128242; Перевод</span>
+          </div>
+        </div>
+        <div class="pay-section">
+          <div class="pay-section-title">Клиент</div>
+          <div class="pay-client">
+            <span id="payClientName">&#128100; Не выбран</span>
+            <span class="pay-client-edit" onclick="openClientSelectorPay()">&#9998;</span>
+          </div>
+        </div>
+        <div class="pay-section">
+          <label class="pay-checkbox">
+            <input type="checkbox" id="payPrintCheck" checked> &#128424; Напечатать чек
+          </label>
+        </div>
+        <div class="pay-section pay-actions">
+          <div class="pay-btn pay-btn-danger" onclick="closePayModal()">&#128308; Закрыть без оплаты</div>
+          <div class="pay-btn pay-btn-primary" id="payConfirmBtn" onclick="confirmPayModal()">&#128179; Оплатить</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
-<div class="reg-toast" id="regToast"><span id="regToastText">Готово</span></div>
 
 <div class="shift-overlay" id="checksHistoryModal">
   <div class="shift-box" style="max-width:500px">
@@ -3600,7 +3664,7 @@ function setRegFilter(btn,filter){
       <button class="shift-btn" style="width:100%;padding:.4rem;font-size:.85rem" onclick="addNewClient()">Добавить +</button>
     </div>
     <div style="display:flex;gap:.5rem;margin-top:.7rem">
-      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="closeClientModal()">Без клиента</button>
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('clientSelectModal').classList.remove('open');document.getElementById('payModal').classList.add('open')">Без клиента</button>
     </div>
   </div>
 </div>
