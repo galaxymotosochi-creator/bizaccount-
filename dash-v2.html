@@ -1139,7 +1139,7 @@
       </div>
 
       <div class="am-grid" id="turnoverMetrics">
-        <div class="am-card" onclick="window._showCycleModal()" style="cursor:pointer"><div class="am-icon">&#128337;</div><div class="am-label">Средний цикл оборота</div><div class="am-value" id="tm-cycle">—</div><div class="am-sub">дней от закупки до продажи</div></div>
+        <div class="am-card" onclick="showCycleModal()" style="cursor:pointer"><div class="am-icon">&#128337;</div><div class="am-label">Средний цикл оборота</div><div class="am-value" id="tm-cycle">—</div><div class="am-sub">дней от закупки до продажи</div></div>
         <div class="am-card"><div class="am-icon">&#128257;</div><div class="am-label">Коэфф. оборачиваемости</div><div class="am-value" id="tm-ratio">—</div><div class="am-sub">раз за период</div></div>
         <div class="am-card"><div class="am-icon">&#10060;</div><div class="am-label">Замороженный капитал</div><div class="am-value" id="tm-frozen">0₽</div><div class="am-sub">товары без движения >30 дней</div></div>
         <div class="am-card"><div class="am-icon">&#128200;</div><div class="am-label">Индекс здоровья склада</div><div class="am-value" id="tm-health">—</div><div class="am-sub" id="tm-health-sub">активных товаров</div></div>
@@ -4209,7 +4209,7 @@ window._downloadHealthCSV = function(){
     <div class="health-modal-body" id="cycleModalBody"></div>
     <div class="health-modal-footer">
       <button class="btn btn-outline" onclick="document.getElementById('cycleModal').classList.remove('open')" style="flex:1">Закрыть</button>
-      <button class="btn btn-primary" onclick="window._deepDiveStock()" style="flex:1">&#128270; Анализ всего склада</button>
+      <button class="btn btn-primary" onclick="deepDiveStock()" style="flex:1">&#128270; Анализ всего склада</button>
     </div>
   </div>
 </div>
