@@ -267,10 +267,8 @@
   .shift-btn{width:100%;padding:.65rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.95rem;font-weight:600;cursor:pointer;font-family:var(--font)}
   .shift-btn:hover{opacity:.9;transform:translateY(-1px)}
   /* ===== REGISTER (CASH) ===== */
-  .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+  .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--white);display:none;flex-direction:column}
   .reg-overlay.open{display:flex}
-  .reg-modal{background:var(--white);border-radius:1rem;width:98vw;height:96vh;max-width:1400px;max-height:98vh;display:flex;flex-direction:column;box-shadow:0 1rem 3rem rgba(0,0,0,.25);animation:regIn .3s ease;overflow:hidden}
-  @keyframes regIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
   .reg-wrap{display:flex;width:100%;flex:1;min-height:0}
   .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px}
   .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa}
@@ -3166,7 +3164,6 @@ document.addEventListener('DOMContentLoaded', updateStats);
 </div>
 
 <div class="reg-overlay" id="regOverlay">
-  <div class="reg-modal">
   <div class="reg-topbar">
     <div class="reg-topbar-left">
       <button class="reg-back" onclick="regClose()">&#9664;</button>
@@ -3223,7 +3220,6 @@ document.addEventListener('DOMContentLoaded', updateStats);
     <div class="reg-right">
       <div class="reg-products" id="regProducts"></div>
     </div>
-  </div>
   </div>
 </div>
 <script>
