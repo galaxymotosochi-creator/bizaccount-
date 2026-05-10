@@ -3149,6 +3149,13 @@ document.addEventListener('DOMContentLoaded', updateStats);
         <div class="reg-header-right">
           <button class="reg-header-btn"><span class="ic">&#128203;</span> Чек</button>
           <button class="reg-header-btn"><span class="ic">&#128100;</span> Клиент</button>
+          <div style="position:relative;display:inline-block">
+            <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
+            <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
+              <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
+              <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="reg-receipt">
@@ -3198,29 +3205,145 @@ document.addEventListener('DOMContentLoaded', updateStats);
 // === КАССА ===
 let RI=[],pin="",curEmp=null,regFilter="all",payM="cash",shiftTimer=null;
 
-function openR(){pin="";document.getElementById("pinDisplay").innerHTML='<div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>';document.getElementById("pinOverlay").classList.add("open");}
-function pinP(d){if(pin.length>=4)return;pin+=d;var dots=document.querySelectorAll("#pinDisplay .pin-dot");if(dots.length)dots[pin.length-1].classList.add("filled");}
-function pinClose(){document.getElementById("pinOverlay").classList.remove("open");pin="";document.querySelectorAll("#pinDisplay .pin-dot").forEach(function(d){d.className="pin-dot";});}
-function pinC(){pin="";document.querySelectorAll("#pinDisplay .pin-dot").forEach(function(d){d.className="pin-dot";});}
-function pinShake(){var dots=document.querySelectorAll("#pinDisplay .pin-dot");dots.forEach(function(d){d.classList.add("shake");});setTimeout(function(){pin="";dots.forEach(function(d){d.className="pin-dot";});},500);}
-function pinO(){if(pin.length<4)return;if(pin==="8888"){pinClose();curEmp=null;document.getElementById("regEmp").textContent="Касса (мастер)";openShiftNow();return;}var emp=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(e){return e.pin==pin});if(emp){pinClose();curEmp=emp;document.getElementById("regEmp").textContent=emp.name;openShiftNow();return;}pinShake();}
-function openShiftNow(){document.getElementById("shiftOverlay").classList.add("open");document.getElementById("shiftAmount").value=0;updateShiftTime();if(shiftTimer)clearInterval(shiftTimer);shiftTimer=setInterval(updateShiftTime,1000);}
-function updateShiftTime(){document.getElementById("shiftTimeDisplay").textContent=new Date().toLocaleString("ru-RU",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});}
-function closeShiftModal(){if(shiftTimer)clearInterval(shiftTimer);document.getElementById("shiftOverlay").classList.remove("open");}
-function openShift(){var amount=parseFloat(document.getElementById("shiftAmount").value)||0;var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");shifts.unshift({id:Date.now(),openedAt:new Date().toISOString(),startingBalance:amount,status:"open",empId:curEmp?curEmp.id:0});localStorage.setItem("shifts88",JSON.stringify(shifts));closeShiftModal();document.getElementById("regOverlay").classList.add("open");renderRegProducts();upR();}
-function regClose(){if(shiftTimer)clearInterval(shiftTimer);var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");var os=shifts.find(function(s){return s.status==="open"});if(os){var now=new Date();os.status="closed";os.closedAt=now.toLocaleString("ru-RU");var sales=JSON.parse(localStorage.getItem("sales88")||"[]");var ss=sales.filter(function(s){return s.date>=os.openedAt});os.totalSales=ss.reduce(function(sum,s){return sum+s.total},0);os.closingBalance=(os.startingBalance||0)+os.totalSales;localStorage.setItem("shifts88",JSON.stringify(shifts));}if(RI.length&&!confirm("Очистить?"))return;document.getElementById("regOverlay").classList.remove("open");RI=[];}
-function setRegFilter(btn,filter){regFilter=filter;document.querySelectorAll(".reg-filter-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");renderRegProducts();}
-function renderRegProducts(){var q=(document.getElementById("regSearchInput")?.value||"").toLowerCase().trim();var P=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden});var S=JSON.parse(localStorage.getItem("services88")||"[]");var items=[];if(regFilter==="all"||regFilter==="products")P.forEach(function(x){items.push({id:x.id,sv:0,icon:"📦",name:x.name,price:x.price||0,cat:x.cat});});if(regFilter==="all"||regFilter==="services")S.forEach(function(x){items.push({id:x.id,sv:1,icon:"🛠",name:x.name,price:x.price||0,cat:x.cat});});if(q)items=items.filter(function(x){return x.name.toLowerCase().includes(q);});var el=document.getElementById("regProducts");if(!items.length){el.innerHTML='<div class="receipt-empty" style="width:100%;height:100%"><div class="big">📭</div><span>Ничего не найдено</span></div>';return;}var h="";items.forEach(function(x){h+='<div class="reg-product-card" onclick="addRI('+x.id+','+x.sv+')"><div class="pc-icon">'+x.icon+'</div><div class="pc-name">'+x.name+'</div>'+(x.price?'<div class="pc-price">'+x.price.toLocaleString()+'</div>':'')+(x.cat?'<div class="pc-tag">'+x.cat+'</div>':'')+'</div>';});el.innerHTML=h;}
-function addRI(id,sv){var src=sv?JSON.parse(localStorage.getItem("services88")||"[]"):JSON.parse(localStorage.getItem("products88")||"[]");var x=src.find(function(i){return i.id==id});if(!x)return;var ex=RI.find(function(r){return r.id==id&&r.sv==sv});if(ex)ex.q++;else RI.push({id:id,sv:sv,name:x.name,price:x.price||0,q:1});upR();}
-function upR(){var el=document.getElementById("receiptItems");var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!RI.length){el.innerHTML='<div class="receipt-empty"><div class="big">🧾</div><span>Товары не выбраны</span></div>';}else{var h="";RI.forEach(function(i,idx){h+='<div class="receipt-item"><span class="ri-name">'+i.name+'</span><span class="ri-qty"><button class="ri-qty-btn" onclick="decRI('+idx+')">−</button><span class="ri-qty-num">'+i.q+'</span><button class="ri-qty-btn" onclick="incRI('+idx+')">+</button></span><span class="ri-price">'+(i.price*i.q).toLocaleString()+'</span><button class="ri-del" onclick="remRI('+idx+')">✕</button></div>';});el.innerHTML=h;}document.getElementById("receiptT").textContent=total.toLocaleString()+" ₽";var b=document.getElementById("payB");b.textContent=total?"💳 Оплатить "+total.toLocaleString()+" ₽":"💳 Оплатить";b.disabled=total===0;}
-function incRI(i){RI[i].q++;upR();}
-function decRI(i){if(RI[i].q>1)RI[i].q--;else RI.splice(i,1);upR();}
-function remRI(i){RI.splice(i,1);upR();}
-function setPM(b,m){payM=m;document.querySelectorAll(".receipt-pay-btn").forEach(function(x){x.classList.remove("active");});b.classList.add("active");}
-function payR(){var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!total)return;if(!confirm("Оплатить "+total.toLocaleString()+"?"))return;var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,date:new Date().toISOString()});localStorage.setItem("sales88",JSON.stringify(Sa));
-var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
-alert("Оплачено "+total.toLocaleString());RI=[];upR();renderRegProducts();}
-</script>
+function openR(){
+  pin="";
+  document.getElementById("pinDisplay").innerHTML='<div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>';
+  document.getElementById("pinOverlay").classList.add("open");
+}
+function pinP(d){
+  if(pin.length>=4) return;
+  pin+=d;
+  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
+  if(dots.length) dots[pin.length-1].classList.add("filled");
+}
+function pinClose(){
+  document.getElementById("pinOverlay").classList.remove("open");
+  pin="";
+  document.querySelectorAll("#pinDisplay .pin-dot").forEach(function(d){d.className="pin-dot";});
+}
+function pinC(){
+  pin="";
+  document.querySelectorAll("#pinDisplay .pin-dot").forEach(function(d){d.className="pin-dot";});
+}
+function pinShake(){
+  var dots=document.querySelectorAll("#pinDisplay .pin-dot");
+  dots.forEach(function(d){d.classList.add("shake");});
+  setTimeout(function(){pin="";dots.forEach(function(d){d.className="pin-dot";});},500);
+}
+function pinO(){
+  if(pin.length<4) return;
+  if(pin==="8888"){
+    pinClose(); curEmp=null;
+    document.getElementById("regEmp").textContent="Касса (мастер)";
+    checkOpenShift(); return;
+  }
+  var emp=JSON.parse(localStorage.getItem("employees88")||"[]").find(function(e){return e.pin==pin});
+  if(emp){
+    pinClose(); curEmp=emp;
+    document.getElementById("regEmp").textContent=emp.name;
+    checkOpenShift(); return;
+  }
+  pinShake();
+}
+function checkOpenShift(){
+  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
+  var open=shifts.find(function(s){return s.status==="open"&&s.empId==(curEmp?curEmp.id:0)});
+  if(curEmp===null) open=shifts.find(function(s){return s.status==="open"&&s.empId===0});
+  if(open){
+    document.getElementById("regOverlay").classList.add("open");
+    renderRegProducts(); upR();
+  } else {
+    openShiftNow();
+  }
+}
+function openShiftNow(){
+  document.getElementById("shiftOverlay").classList.add("open");
+  document.getElementById("shiftAmount").value=0;
+  updateShiftTime();
+  if(shiftTimer) clearInterval(shiftTimer);
+  shiftTimer=setInterval(updateShiftTime,1000);
+}
+function updateShiftTime(){
+  document.getElementById("shiftTimeDisplay").textContent=new Date().toLocaleString("ru-RU",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+function closeShiftModal(){
+  if(shiftTimer) clearInterval(shiftTimer);
+  document.getElementById("shiftOverlay").classList.remove("open");
+}
+function openShift(){
+  var amount=parseFloat(document.getElementById("shiftAmount").value)||0;
+  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
+  shifts.unshift({id:Date.now(),openedAt:new Date().toISOString(),startingBalance:amount,status:"open",empId:curEmp?curEmp.id:0,empName:curEmp?curEmp.name:"Мастер"});
+  localStorage.setItem("shifts88",JSON.stringify(shifts));
+  closeShiftModal();
+  document.getElementById("regOverlay").classList.add("open");
+  renderRegProducts(); upR();
+}
+function toggleGearMenu(){
+  var m=document.getElementById("gearMenu");
+  if(m) m.style.display=m.style.display==="block"?"none":"block";
+}
+function showShiftCloseModal(){
+  var m=document.getElementById("gearMenu");
+  if(m) m.style.display="none";
+  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
+  var os=shifts.find(function(s){return s.status==="open"&&s.empId==(curEmp?curEmp.id:0)});
+  if(curEmp===null) os=shifts.find(function(s){return s.status==="open"&&s.empId===0});
+  if(!os){alert("Нет открытой смены");return;}
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var ss=sales.filter(function(s){return s.date>=os.openedAt});
+  var tc=0,tk=0,tt=0,ta=0;
+  ss.forEach(function(s){ta+=s.total;if(s.payM==="cash")tc+=s.total;else if(s.payM==="card")tk+=s.total;else tt+=s.total;});
+  var h='<div style="text-align:center;margin-bottom:.8rem"><div style="font-size:2rem;font-weight:700;color:var(--primary)">'+ta.toLocaleString()+'<span style="font-size:1rem"> &#8381;</span></div><div style="font-size:.8rem;color:var(--muted)">продано за смену</div></div>';
+  h+='<div style="display:flex;gap:.5rem;margin-bottom:.8rem">';
+  h+='<div style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:8px;text-align:center"><div style="font-size:.65rem;color:var(--muted)">&#128181; Наличные</div><div style="font-weight:700;font-size:.9rem">'+tc.toLocaleString()+'</div></div>';
+  h+='<div style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:8px;text-align:center"><div style="font-size:.65rem;color:var(--muted)">&#128179; Карта</div><div style="font-weight:700;font-size:.9rem">'+tk.toLocaleString()+'</div></div>';
+  h+='<div style="flex:1;padding:.4rem;border:1px solid var(--border);border-radius:8px;text-align:center"><div style="font-size:.65rem;color:var(--muted)">&#128242; Перевод</div><div style="font-weight:700;font-size:.9rem">'+tt.toLocaleString()+'</div></div>';
+  h+='</div><div style="font-size:.8rem;color:var(--muted);text-align:center">Продаж: '+ss.length+'</div>';
+  document.getElementById("closeShiftContent").innerHTML=h;
+  document.getElementById("closeShiftModal").classList.add("open");
+}
+function confirmCloseShift(){
+  if(!confirm("Закрываем смену?")) return;
+  var shifts=JSON.parse(localStorage.getItem("shifts88")||"[]");
+  var osi=-1;
+  for(var i=0;i<shifts.length;i++){if(shifts[i].status==="open"&&shifts[i].empId==(curEmp?curEmp.id:0)){osi=i;break;}}
+  if(curEmp===null){for(var i=0;i<shifts.length;i++){if(shifts[i].status==="open"&&shifts[i].empId===0){osi=i;break;}}}
+  if(osi===-1){alert("Смена не найдена");return;}
+  var os=shifts[osi];var now=new Date();os.status="closed";os.closedAt=now.toLocaleString("ru-RU");
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");var ss=sales.filter(function(s){return s.date>=os.openedAt});
+  var tc=0,tk=0,tt=0,ta=0;
+  ss.forEach(function(s){ta+=s.total;if(s.payM==="cash")tc+=s.total;else if(s.payM==="card")tk+=s.total;else tt+=s.total;});
+  os.totalSales=ta;os.totalCash=tc;os.totalCard=tk;os.totalTransfer=tt;os.salesCount=ss.length;os.closingBalance=(os.startingBalance||0)+ta;
+  localStorage.setItem("shifts88",JSON.stringify(shifts));
+  document.getElementById("closeShiftModal").classList.remove("open");
+  document.getElementById("regOverlay").classList.remove("open");
+  RI=[];
+  alert("Смена закрыта!\nПродано: "+ta.toLocaleString()+" руб");
+}
+function regClose(){
+  if(shiftTimer) clearInterval(shiftTimer);
+  document.getElementById("regOverlay").classList.remove("open");
+}
+function setRegFilter(btn,filter){
+  regFilter=filter;
+  document.querySelectorAll(".reg-filter-btn").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");renderRegProducts();
+}</script>
+
+<!-- ===== ЗАКРЫТИЕ СМЕНЫ ===== -->
+<div class="shift-overlay" id="closeShiftModal">
+  <div class="shift-box" style="max-width:500px">
+    <h2>&#128683; Закрытие смены</h2>
+    <div id="closeShiftContent">
+      <div style="text-align:center;padding:1rem;color:var(--muted)">Загрузка...</div>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem">
+      <button class="shift-btn" style="flex:1;background:#dc2626" onclick="confirmCloseShift()">&#128683; Закрыть смену</button>
+      <button class="shift-btn" style="flex:1;background:var(--muted)" onclick="document.getElementById('closeShiftModal').classList.remove('open')">Отмена</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== СКАНЕР ШТРИХКОДОВ ===== -->
 <div class="scanner-overlay" id="scannerOverlay">
