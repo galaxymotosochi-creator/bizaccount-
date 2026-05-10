@@ -93,6 +93,54 @@
   .block-card .b-info{min-width:0}
   .block-card .b-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .block-card .b-val{font-size:1.15rem;font-weight:700;color:var(--body-color)}
+
+  /* ===== ОБОРАЧИВАЕМОСТЬ (ANALYTICS) ===== */
+  .analytics-header{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+  .analytics-header h1{font-size:1.5rem;font-weight:600;margin:0}
+  .analytics-period{display:flex;gap:.25rem;background:var(--white);border:1px solid var(--border);border-radius:.5rem;overflow:hidden}
+  .analytics-period .ap-btn{padding:.35rem .7rem;font-size:.78rem;cursor:pointer;border:none;background:var(--white);font-family:var(--font);transition:all .1s;color:var(--muted)}
+  .analytics-period .ap-btn:hover{color:var(--body-color)}
+  .analytics-period .ap-btn.active{background:var(--primary);color:var(--white)}
+  /* Header metrics */
+  .am-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin-bottom:1rem}
+  .am-card{background:var(--white);border-radius:.65rem;padding:1rem 1.1rem;box-shadow:var(--shadow);border:1px solid var(--border)}
+  .am-card .am-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.15rem}
+  .am-card .am-value{font-size:1.3rem;font-weight:700;color:var(--body-color)}
+  .am-card .am-sub{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+  .am-card .am-icon{font-size:1.3rem;margin-bottom:.3rem}
+  /* Charts row */
+  .ac-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+  .ac-card{background:var(--white);border-radius:.65rem;padding:1rem;box-shadow:var(--shadow);border:1px solid var(--border)}
+  .ac-card .ac-title{font-size:.82rem;font-weight:600;margin-bottom:.5rem}
+  .ac-card .ac-desc{font-size:.7rem;color:var(--muted);margin-bottom:.5rem}
+  .ac-card canvas{width:100%!important}
+  /* Donut chart container */
+  .donut-wrap{display:flex;align-items:center;gap:1rem}
+  .donut-legend{display:flex;flex-direction:column;gap:.25rem;font-size:.75rem}
+  .donut-legend .dl-row{display:flex;align-items:center;gap:.35rem}
+  .dl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+  /* Scatter container */
+  .scatter-wrap{width:100%;height:200px;position:relative}
+  /* Tables */
+  .at-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+  .at-card{background:var(--white);border-radius:.65rem;padding:1rem;box-shadow:var(--shadow);border:1px solid var(--border)}
+  .at-card .at-title{font-size:.82rem;font-weight:600;margin-bottom:.5rem}
+  .at-table{width:100%;border-collapse:collapse;font-size:.78rem}
+  .at-table th{text-align:left;padding:.4rem .3rem;color:var(--muted);font-weight:500;border-bottom:1px solid var(--border);font-size:.65rem;text-transform:uppercase}
+  .at-table td{padding:.35rem .3rem;border-bottom:1px solid var(--border)}
+  .at-table tr:last-child td{border-bottom:none}
+  .at-table .rank{font-weight:700;color:var(--muted);min-width:18px}
+  .at-table .pos{color:#16a34a;font-weight:600}
+  .at-table .neg{color:#dc2626;font-weight:600}
+  .tag-a{display:inline-block;background:#dcfce7;color:#166534;padding:.1rem .35rem;border-radius:4px;font-size:.6rem;font-weight:600}
+  .tag-b{display:inline-block;background:#fef3c7;color:#92400e;padding:.1rem .35rem;border-radius:4px;font-size:.6rem;font-weight:600}
+  .tag-c{display:inline-block;background:#fee2e2;color:#991b1b;padding:.1rem .35rem;border-radius:4px;font-size:.6rem;font-weight:600}
+  @media(max-width:768px){
+    .ac-grid{grid-template-columns:1fr}
+    .at-grid{grid-template-columns:1fr}
+    .am-grid{grid-template-columns:1fr}
+  }
+
   .action-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
   .action-btn{background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.45rem .7rem;display:flex;align-items:center;gap:.35rem;cursor:pointer;transition:all .12s;font-family:var(--font);font-size:.8rem}
   .action-btn:hover{border-color:var(--primary)}
@@ -537,6 +585,7 @@
     <div class="nav-group">
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5" fill="#8b5cf6"/><circle cx="18.5" cy="18.5" r="2.5" fill="#8b5cf6"/></svg></span> Склад<span class="arrow">▶</span></a>
       <div class="nav-children">
+        <a class="nav-child" onclick="navigateTo('turnover')">Оборачиваемость</a>
         <a class="nav-child" onclick="navigateTo('stock')">Остатки</a>
         <a class="nav-child" onclick="navigateTo('supplies')">Поставки</a>
         <a class="nav-child" onclick="navigateTo('writeoffs')">Списания</a>
@@ -1060,6 +1109,67 @@
           </thead>
           <tbody id="transTableBody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- ОБОРАЧИВАЕМОСТЬ -->
+    <div class="page-section" id="page-turnover">
+      <div class="page-header">
+        <div>
+          <h1>Оборачиваемость</h1>
+          <div class="sub">Анализ эффективности склада</div>
+        </div>
+        <div class="analytics-period" id="turnoverPeriod">
+          <button class="ap-btn active" onclick="setTurnoverPeriod(7,this)">7 дней</button>
+          <button class="ap-btn" onclick="setTurnoverPeriod(30,this)">30 дней</button>
+          <button class="ap-btn" onclick="setTurnoverPeriod(90,this)">90 дней</button>
+        </div>
+      </div>
+
+      <div class="am-grid" id="turnoverMetrics">
+        <div class="am-card"><div class="am-icon">&#128337;</div><div class="am-label">Средний цикл оборота</div><div class="am-value" id="tm-cycle">—</div><div class="am-sub">дней от закупки до продажи</div></div>
+        <div class="am-card"><div class="am-icon">&#128257;</div><div class="am-label">Коэфф. оборачиваемости</div><div class="am-value" id="tm-ratio">—</div><div class="am-sub">раз за период</div></div>
+        <div class="am-card"><div class="am-icon">&#10060;</div><div class="am-label">Замороженный капитал</div><div class="am-value" id="tm-frozen">0₽</div><div class="am-sub">товары без движения >30 дней</div></div>
+        <div class="am-card"><div class="am-icon">&#128200;</div><div class="am-label">Индекс здоровья склада</div><div class="am-value" id="tm-health">—</div><div class="am-sub" id="tm-health-sub">активных товаров</div></div>
+      </div>
+
+      <div class="ac-grid">
+        <div class="ac-card">
+          <div class="ac-title">ABC-анализ</div>
+          <div class="ac-desc">Распределение товаров по вкладу в выручку</div>
+          <div class="donut-wrap">
+            <div id="abcDonut" style="width:130px;height:130px;flex-shrink:0"></div>
+            <div class="donut-legend">
+              <div class="dl-row"><span class="dl-dot" style="background:#4CAF50"></span> A (80% выручки) — <span id="abc-a-pct">0%</span></div>
+              <div class="dl-row"><span class="dl-dot" style="background:#FF9800"></span> B (15% выручки) — <span id="abc-b-pct">0%</span></div>
+              <div class="dl-row"><span class="dl-dot" style="background:#F44336"></span> C (5% выручки) — <span id="abc-c-pct">0%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ac-card">
+          <div class="ac-title">Скорость vs Маржа</div>
+          <div class="ac-desc">Каждый товар — точка. X: скорость продажи, Y: маржинальность</div>
+          <div class="scatter-wrap"><canvas id="scatterCanvas" width="400" height="200"></canvas></div>
+        </div>
+      </div>
+
+      <div class="at-grid">
+        <div class="at-card">
+          <div class="at-title">&#128640; Топ-ракеты</div>
+          <div class="ac-desc">Самые быстро продаваемые товары</div>
+          <table class="at-table" id="topRocketsTable">
+            <thead><tr><th>#</th><th>Товар</th><th>Продано</th><th>Дней на складе</th><th>Выручка</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="at-card">
+          <div class="at-title">&#9875; Якоря (неликвиды)</div>
+          <div class="ac-desc">Товары без движения более 45 дней</div>
+          <table class="at-table" id="deadStockTable">
+            <thead><tr><th>#</th><th>Товар</th><th>Дней на складе</th><th>Себестоимость</th><th>Убыток от хранения</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1938,6 +2048,7 @@ function navigateTo(page){
   if(page === 'promos') renderPromosPage();
   if(page === 'shifts') renderShiftsPage();
   if(page === 'transactions') renderTransactionsPage();
+  if(page === 'turnover') renderTurnoverPage();
   if(page === 'salary') renderSalaryPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
@@ -2253,6 +2364,220 @@ function saveActions(){
 }
 
 // === СТРАНИЦА ОСТАТКИ ===
+
+var DEAD_STOCK_THRESHOLD = 45;
+var turnoverPeriod = 7;
+
+function setTurnoverPeriod(days, btn){
+  turnoverPeriod = days;
+  document.querySelectorAll('.ap-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  renderTurnoverPage();
+}
+
+function getSalesInRange(fromDate, toDate){
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  return sales.filter(function(s){return s.date>=fromDate.toISOString()&&s.date<=toDate.toISOString();});
+}
+
+function getSuppliesBefore(date){
+  var supplies=JSON.parse(localStorage.getItem("supplies88")||"[]");
+  return supplies.filter(function(s){return s.date&&s.date<=date.toISOString();});
+}
+
+function calcProductStats(){
+  var products=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden;});
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var supplies=JSON.parse(localStorage.getItem("supplies88")||"[]");
+  var now=new Date();
+  var periodStart=new Date(now.getTime()-turnoverPeriod*864e5);
+  var periodSales=[];sales.forEach(function(s){if(s.date>=periodStart.toISOString())periodSales.push(s);});
+  var stats={};
+  products.forEach(function(p){
+    var soldQty=0,rev=0;
+    periodSales.forEach(function(s){
+      if(s.items)s.items.forEach(function(it){if(it.id==p.id&&!it.sv){soldQty+=it.q||0;rev+=it.price*it.q||0;}});
+    });
+    var totalSupplied=0,lastSupplyDate=null;
+    supplies.forEach(function(sp){
+      if(sp.prodId==p.id){totalSupplied+=sp.qty||0;if(!lastSupplyDate||sp.date>lastSupplyDate)lastSupplyDate=sp.date;}
+    });
+    var stock=totalSupplied-soldQty;
+    stats[p.id]={name:p.name,price:p.price||0,cost:p.cost||0,cat:p.cat,soldQty:soldQty,rev:rev,stock:Math.max(0,stock),totalSupplied:totalSupplied,lastSupplyDate:lastSupplyDate};
+  });
+  return stats;
+}
+
+function renderTurnoverPage(){
+  var metrics=document.getElementById("tm-cycle");
+  if(!metrics) return;
+  var stats=calcProductStats();
+  var products=JSON.parse(localStorage.getItem("products88")||"[]").filter(function(x){return !x.hidden;});
+  var supplies=JSON.parse(localStorage.getItem("supplies88")||"[]");
+  var sales=JSON.parse(localStorage.getItem("sales88")||"[]");
+  var now=new Date();
+  var periodStart=new Date(now.getTime()-turnoverPeriod*864e5);
+  var DEAD=DEAD_STOCK_THRESHOLD;
+
+  // Calculate metrics
+  var totalRev=0,totalCogs=0,totalSoldQty=0;
+  Object.keys(stats).forEach(function(id){
+    var s=stats[id];
+    totalRev+=s.rev;
+    totalCogs+=s.soldQty*(s.cost||0);
+    totalSoldQty+=s.soldQty;
+  });
+
+  // Average stock = total stock value / period days * turnover days
+  var avgStockVal=0;
+  products.forEach(function(p){
+    var st=stats[p.id];
+    if(st) avgStockVal+=st.stock*(st.cost||0);
+  });
+
+  // Card 1: Cycle = (AvgStock / COGS) * Period
+  var cycleDays=totalCogs>0?(avgStockVal/totalCogs)*turnoverPeriod:0;
+  document.getElementById("tm-cycle").textContent=cycleDays.toFixed(1);
+
+  // Card 2: Turnover ratio = COGS / AvgStock
+  var turnRatio=avgStockVal>0?totalCogs/avgStockVal:0;
+  document.getElementById("tm-ratio").textContent=turnRatio.toFixed(2);
+
+  // Card 3: Frozen capital - stock not sold >30 days
+  var frozenVal=0;
+  products.forEach(function(p){
+    var st=stats[p.id];
+    if(st&&st.stock>0){
+      var lastSale=null;
+      sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==p.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
+      if(!lastSale||(new Date()-new Date(lastSale))/864e5>DEAD){
+        frozenVal+=st.stock*(st.cost||0);
+      }
+    }
+  });
+  document.getElementById("tm-frozen").textContent=frozenVal.toLocaleString()+"\u20bd";
+
+  // Card 4: Health index = % of goods that sell within DEAD days
+  var activeVal=0,totalStockVal=0;
+  products.forEach(function(p){
+    var st=stats[p.id];
+    if(st&&st.stock>0){
+      totalStockVal+=st.stock*(st.cost||0);
+      var lastSale=null;
+      sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==p.id&&!it.sv&&s.date>lastSale)lastSale=s.date;});});
+      if(lastSale&&(new Date()-new Date(lastSale))/864e5<=DEAD) activeVal+=st.stock*(st.cost||0);
+    }
+  });
+  var healthPct=totalStockVal>0?(activeVal/totalStockVal*100):0;
+  document.getElementById("tm-health").textContent=healthPct.toFixed(0)+"%";
+  document.getElementById("tm-health-sub").textContent=healthPct>70?"\u2705 отличное состояние":"\u26a0 требуется внимание";
+
+  // ABC Analysis - Donut (SVG)
+  var sorted=Object.keys(stats).map(function(id){return stats[id];}).sort(function(a,b){return b.rev-a.rev;});
+  var totalABC=sorted.reduce(function(s,x){return s+x.rev;},0)||1;
+  var cum=0,catA=[],catB=[],catC=[];
+  sorted.forEach(function(x){
+    cum+=x.rev/totalABC*100;
+    if(cum<=80) catA.push(x);
+    else if(cum<=95) catB.push(x);
+    else catC.push(x);
+  });
+  var pctA=catA.reduce(function(s,x){return s+x.rev;},0)/totalABC*100;
+  var pctB=catB.reduce(function(s,x){return s+x.rev;},0)/totalABC*100;
+  var pctC=catC.reduce(function(s,x){return s+x.rev;},0)/totalABC*100;
+  document.getElementById("abc-a-pct").textContent=pctA.toFixed(0)+"%";
+  document.getElementById("abc-b-pct").textContent=pctB.toFixed(0)+"%";
+  document.getElementById("abc-c-pct").textContent=pctC.toFixed(0)+"%";
+  // Draw SVG donut
+  var dw=document.getElementById("abcDonut");
+  if(dw){
+    var r=50,cx=65,cy=65,circ=2*Math.PI*r;
+    var parts=[{p:pctA/100,c:"#4CAF50"},{p:pctB/100,c:"#FF9800"},{p:pctC/100,c:"#F44336"}];
+    var offset=0,svg='<svg width="130" height="130" viewBox="0 0 130 130"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#e5e7eb" stroke-width="18"/>';
+    parts.forEach(function(pt){
+      if(pt.p>0.01){
+        var len=pt.p*circ;
+        svg+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+pt.c+'" stroke-width="18" stroke-dasharray="'+len+' '+circ+'" stroke-dashoffset="'+(-offset)+'" transform="rotate(-90 '+cx+' '+cy+')" style="transition:stroke-dasharray .3s"/>';
+        offset+=len;
+      }
+    });
+    svg+='<circle cx="'+cx+'" cy="'+cy+'" r="25" fill="var(--white)"/></svg>';
+    dw.innerHTML=svg;
+  }
+
+  // Scatter plot: Speed vs Margin
+  var sc=document.getElementById("scatterCanvas");
+  if(sc){
+    var ctx=sc.getContext("2d");var W=400,H=200;sc.width=W;sc.height=H;
+    ctx.clearRect(0,0,W,H);
+    // Draw dots for each product with sales
+    var dots=[];
+    sorted.forEach(function(x){
+      if(x.rev>0&&x.soldQty>0){
+        var margin=x.cost>0?((x.rev/x.soldQty-x.cost)/x.cost*100):0;
+        var daysSinceSupply=x.lastSupplyDate?(now-new Date(x.lastSupplyDate))/864e5:90;
+        dots.push({name:x.name,days:Math.min(daysSinceSupply,90),margin:Math.min(margin,200)});
+      }
+    });
+    ctx.fillStyle="#9ca3af";ctx.font="8px sans-serif";ctx.textAlign="center";
+    ctx.fillText("Скорость продажи (дни)",W/2,H-2);
+    ctx.save();ctx.translate(8,H/2);ctx.rotate(-Math.PI/2);ctx.fillText("Маржа (%)",0,0);ctx.restore();
+    var padL=25,padB=18,padT=10,padR=5;
+    var cw=W-padL-padR,ch=H-padT-padB;
+    dots.forEach(function(d){
+      var x=padL+(1-d.days/90)*cw;
+      var y=padT+(1-d.margin/200)*ch;
+      ctx.beginPath();ctx.arc(x,y,4,0,2*Math.PI);ctx.fillStyle="#1983dd";ctx.fill();
+      ctx.strokeStyle="rgba(25,131,221,0.4)";ctx.lineWidth=1;ctx.stroke();
+    });
+  }
+
+  // Tables: Top rockets & Dead stock
+  // Rockets - fastest selling (high soldQty/low days)
+  var rockets=Object.keys(stats).map(function(id){return stats[id];}).filter(function(x){return x.soldQty>0;});
+  rockets.sort(function(a,b){
+    var da=isFinite(a.soldQty)?1/(a.soldQty||1):0;
+    var db=isFinite(b.soldQty)?1/(b.soldQty||1):0;
+    return db-da;
+  });
+  var rtb=document.getElementById("topRocketsTable").querySelector("tbody");
+  if(rtb){
+    var rh="";
+    for(var i=0;i<Math.min(5,rockets.length);i++){
+      var r=rockets[i];
+      rh+='<tr><td class="rank">'+(i+1)+'</td><td><span class="pos">'+r.name+'</span></td><td>'+r.soldQty+'</td><td>'+(turnoverPeriod||"7")+'</td><td>'+r.rev.toLocaleString()+'</td></tr>';
+    }
+    if(!rh) rh='<tr><td colspan="5"><div class="reg-check-empty">Нет данных</div></td></tr>';
+    rtb.innerHTML=rh;
+  }
+
+  // Dead stock
+  var deadItems=[];
+  products.forEach(function(p){
+    var st=stats[p.id];
+    if(st&&st.stock>0){
+      var lastSaleDate=null;
+      sales.forEach(function(s){if(s.items)s.items.forEach(function(it){if(it.id==p.id&&!it.sv&&s.date>lastSaleDate)lastSaleDate=s.date;});});
+      var daysSinceLastSale=lastSaleDate?(now-new Date(lastSaleDate))/864e5:999;
+      if(daysSinceLastSale>DEAD){
+        deadItems.push({name:p.name,days:Math.round(daysSinceLastSale),cost:(st.stock*(st.cost||0)),stock:st.stock});
+      }
+    }
+  });
+  deadItems.sort(function(a,b){return b.days-a.days;});
+  var dtb=document.getElementById("deadStockTable").querySelector("tbody");
+  if(dtb){
+    var dh="";
+    for(var i=0;i<Math.min(10,deadItems.length);i++){
+      var d=deadItems[i];
+      var loss=Math.round(d.cost*0.1);
+      dh+='<tr><td class="rank">'+(i+1)+'</td><td><span class="neg">'+d.name+'</span></td><td>'+d.days+'</td><td>'+d.cost.toLocaleString()+'</td><td class="neg">'+loss.toLocaleString()+'</td></tr>';
+    }
+    if(!dh) dh='<tr><td colspan="5"><div class="reg-check-empty">Неликвидов нет</div></td></tr>';
+    dtb.innerHTML=dh;
+  }
+}
+
 function renderStockPage(){
   const products = JSON.parse(localStorage.getItem('products88') || '[]');
   const supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
