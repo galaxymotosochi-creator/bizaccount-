@@ -2335,6 +2335,7 @@ function drawStatsChart(){
   var ctx=canvas.getContext("2d");
   var W=canvas.width=600,H=canvas.height=200;
   ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за текущий месяц. Совершите продажи, чтобы увидеть график",W/2,H/2);
   var now=new Date();
   var monthStart=new Date(now.getFullYear(),now.getMonth(),1);
   var daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
@@ -2355,6 +2356,13 @@ function drawStatsChart(){
       if(day) costByDay[day]=(costByDay[day]||0)+(s.qty*s.cost||0);
     }
   });
+  var totalRev=0,totalCost=0;
+  for(var d=1;d<=dayNow;d++){totalRev+=revenueByDay[d]||0;totalCost+=costByDay[d]||0;}
+  if(!totalRev&&!totalCost){
+    ctx.fillStyle="#9ca3af";ctx.font="13px sans-serif";ctx.textAlign="center";ctx.fillText("Нет данных за этот месяц. Начните продавать!",W/2,H/2);
+    document.getElementById("stats-revenue").textContent="0₽";document.getElementById("stats-cost").textContent="0₽";document.getElementById("stats-profit").textContent="0₽";document.getElementById("stats-forecast").textContent="0₽";
+    return;
+  }
   var maxVal=1;
   for(var d=1;d<=dayNow;d++){maxVal=Math.max(maxVal,revenueByDay[d]||0,costByDay[d]||0);}
   var padL=25,padR=10,padT=15,padB=25;
@@ -2370,8 +2378,6 @@ function drawStatsChart(){
   }
   ctx.strokeStyle="#e5e7eb";ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(padL,padT);ctx.lineTo(padL,padT+chartH);ctx.lineTo(padL+chartW,padT+chartH);ctx.stroke();
-  var totalRev=0,totalCost=0;
-  for(var d=1;d<=dayNow;d++){totalRev+=revenueByDay[d]||0;totalCost+=costByDay[d]||0;}
   var profit=totalRev-totalCost;
   var avgDaily=dayNow>0?totalRev/dayNow:0;
   var forecast=Math.round(avgDaily*daysInMonth);
