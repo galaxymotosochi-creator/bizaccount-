@@ -283,7 +283,7 @@
       <div class="nav-children open">
         <a class="nav-child">Транзакции</a>
         <a class="nav-child" onclick="navigateTo('shifts')">Кассовые смены</a>
-        <a class="nav-child">Зарплата</a>
+        <a class="nav-child" onclick="navigateTo('salary')">Зарплата</a>
         <a class="nav-child">Счета</a>
         <a class="nav-child">Категории</a>
         <a class="nav-child">P&amp;L</a>
@@ -786,6 +786,36 @@
       </div>
       <div class="product-table">
         <table><thead><tr><th style="width:18%">Дата открытия</th><th style="width:18%">Дата закрытия</th><th style="width:20%">Сотрудник</th><th style="width:14%">Продажи</th><th style="width:14%">Касса</th><th style="width:16%">Статус</th></tr></thead><tbody id="shiftTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ЗАРПЛАТА -->
+    <div class="page-section" id="page-salary">
+      <div class="page-header">
+        <div>
+          <h1>Зарплата</h1>
+          <div class="sub">Расчёт и выплата заработной платы</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="openSalaryModal()">+ Начислить</button>
+        </div>
+      </div>
+      <div class="product-table">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%">Сотрудник</th>
+              <th style="width:10%">Период</th>
+              <th style="width:12%">Оклад</th>
+              <th style="width:12%">% продаж</th>
+              <th style="width:10%">Премия</th>
+              <th style="width:10%">Вычеты</th>
+              <th style="width:12%">Итого</th>
+              <th style="width:16%">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="salaryTableBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -1614,6 +1644,7 @@ function navigateTo(page){
   if(page === 'loyalty') renderLoyaltyPage();
   if(page === 'promos') renderPromosPage();
   if(page === 'shifts') renderShiftsPage();
+  if(page === 'salary') renderSalaryPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
   if(page === 'registers') renderRegistersPage();
@@ -1703,6 +1734,162 @@ function renderServicesPage(){
       '<td class="product-table-actions" style="text-align:right"><button class="act-btn" onclick="editService('+s.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteService('+s.id+')">&#10005;</button></td>' +
     '</tr>'
   ).join('');
+}
+
+
+// ЗАРПЛАТА
+function openSalaryModal(empId){
+  fillSalarySelects();
+  document.getElementById("editSalaryId").value = "";
+  document.getElementById("salSalary").value = "";
+  document.getElementById("salPercent").value = "";
+  document.getElementById("salSalesSum").value = "";
+  document.getElementById("salBonus").value = "";
+  document.getElementById("salDeduct").value = "";
+  document.getElementById("salStatus").value = "accrued";
+  document.getElementById("salaryModalTitle").textContent = "\u041d\u0430\u0447\u0438\u0441\u043b\u0438\u0442\u044c";
+  if(empId) document.getElementById("salEmp").value = empId;
+  recalcSalaryTotal();
+  // Add event listeners for auto-recalc
+  var inputs = ["salSalary","salPercent","salBonus","salDeduct"];
+  for(var i=0;i<inputs.length;i++){
+    var el = document.getElementById(inputs[i]);
+    if(el) el.oninput = recalcSalaryTotal;
+  }
+  document.getElementById("salaryModal").classList.add("active");
+}
+function closeSalaryModal(){
+  document.getElementById("salaryModal").classList.remove("active");
+  document.getElementById("salaryForm").reset();
+}
+function fillSalarySelects(){
+  var sel = document.getElementById("salEmp");
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  sel.innerHTML = "<option value=\"\">---</option>";
+  for(var i=0;i<emps.length;i++){
+    sel.innerHTML += "<option value=\""+emps[i].id+"\">"+emps[i].name+"</option>";
+  }
+}
+function recalcSalaryTotal(){
+  var salary = parseFloat(document.getElementById("salSalary").value) || 0;
+  var percent = parseFloat(document.getElementById("salPercent").value) || 0;
+  var bonus = parseFloat(document.getElementById("salBonus").value) || 0;
+  var deduct = parseFloat(document.getElementById("salDeduct").value) || 0;
+  // Auto-calculate sales sum based on percent
+  var total = salary + bonus - deduct;
+  document.getElementById("salTotal").textContent = total.toLocaleString() + " \u20BD";
+}
+function saveSalary(e){
+  e.preventDefault();
+  var empId = parseInt(document.getElementById("salEmp").value);
+  if(!empId) return alert("\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430");
+  var editId = document.getElementById("editSalaryId").value;
+  var s = {
+    id: editId ? parseInt(editId) : Date.now(),
+    empId: empId,
+    period: document.getElementById("salPeriod").value,
+    salary: parseFloat(document.getElementById("salSalary").value) || 0,
+    percent: parseFloat(document.getElementById("salPercent").value) || 0,
+    salesSum: parseFloat(document.getElementById("salSalesSum").value) || 0,
+    bonus: parseFloat(document.getElementById("salBonus").value) || 0,
+    deduct: parseFloat(document.getElementById("salDeduct").value) || 0,
+    total: parseFloat(document.getElementById("salTotal").textContent.replace(/\s/g,"")) || 0,
+    status: document.getElementById("salStatus").value
+  };
+  var list = JSON.parse(localStorage.getItem("salary88") || "[]");
+  var idx = list.findIndex(function(x){return x.id===s.id});
+  if(idx>=0) list[idx]=s; else list.unshift(s);
+  localStorage.setItem("salary88", JSON.stringify(list));
+  closeSalaryModal();
+  renderSalaryPage();
+}
+function editSalary(id){
+  var list = JSON.parse(localStorage.getItem("salary88") || "[]");
+  var s = list.find(function(x){return x.id===id});
+  if(!s) return;
+  fillSalarySelects();
+  document.getElementById("editSalaryId").value = s.id;
+  document.getElementById("salEmp").value = s.empId;
+  document.getElementById("salPeriod").value = s.period;
+  document.getElementById("salSalary").value = s.salary;
+  document.getElementById("salPercent").value = s.percent;
+  document.getElementById("salSalesSum").value = s.salesSum;
+  document.getElementById("salBonus").value = s.bonus;
+  document.getElementById("salDeduct").value = s.deduct;
+  document.getElementById("salStatus").value = s.status;
+  document.getElementById("salaryModalTitle").textContent = "\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u043d\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u0438\u0435";
+  recalcSalaryTotal();
+  document.getElementById("salaryModal").classList.add("active");
+}
+function deleteSalary(id){
+  if(!confirm("\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u043d\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u0438\u0435?")) return;
+  var list = JSON.parse(localStorage.getItem("salary88") || "[]");
+  list = list.filter(function(x){return x.id!==id});
+  localStorage.setItem("salary88", JSON.stringify(list));
+  renderSalaryPage();
+}
+function paySalary(id){
+  var list = JSON.parse(localStorage.getItem("salary88") || "[]");
+  for(var i=0;i<list.length;i++){
+    if(list[i].id===id){ list[i].status="paid"; break; }
+  }
+  localStorage.setItem("salary88", JSON.stringify(list));
+  renderSalaryPage();
+}
+function openRateModal(empId, empName){
+  document.getElementById("rateEmpId").value = empId||"";
+  document.getElementById("rateModalSub").textContent = empName ? empName : "\u041d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0430 \u0441\u0442\u0430\u0432\u043a\u0438";
+  var rates = JSON.parse(localStorage.getItem("salaryRates88") || "[]");
+  var rate = rates.find(function(x){return x.empId===empId});
+  document.getElementById("rateSalary").value = rate ? rate.salary : "";
+  document.getElementById("ratePercent").value = rate ? rate.percent : "";
+  document.getElementById("rateModal").classList.add("active");
+}
+function closeRateModal(){
+  document.getElementById("rateModal").classList.remove("active");
+}
+function saveRate(e){
+  e.preventDefault();
+  var empId = parseInt(document.getElementById("rateEmpId").value);
+  if(!empId) return;
+  var rates = JSON.parse(localStorage.getItem("salaryRates88") || "[]");
+  var idx = rates.findIndex(function(x){return x.empId===empId});
+  var r = {empId: empId, salary: parseFloat(document.getElementById("rateSalary").value)||0, percent: parseFloat(document.getElementById("ratePercent").value)||0};
+  if(idx>=0) rates[idx]=r; else rates.push(r);
+  localStorage.setItem("salaryRates88", JSON.stringify(rates));
+  closeRateModal();
+  renderSalaryPage();
+}
+function renderSalaryPage(){
+  var list = JSON.parse(localStorage.getItem("salary88") || "[]");
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  var empMap = {}; for(var i=0;i<emps.length;i++) empMap[emps[i].id] = emps[i].name;
+  var tbody = document.getElementById("salaryTableBody");
+  if(!list.length){
+    tbody.innerHTML = "<tr><td colspan=\"8\"><div class=\"empty-products\"><div class=\"big-icon\">\uD83D\uDCB0</div><p>\u041d\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u0438\u0439 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442</p></div></td></tr>";
+    return;
+  }
+  var h = "";
+  for(var i=0;i<list.length;i++){
+    var s = list[i];
+    var name = empMap[s.empId] || "\u0423\u0434\u0430\u043b\u0435\u043d";
+    var sc = s.status === "paid" ? "#16a34a" : "#d97706";
+    var st = s.status === "paid" ? "\u2705 \u0412\u044b\u043f\u043b\u0430\u0447\u0435\u043d\u043e" : "\uD83D\uDD25 \u041d\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u043e";
+    h += "<tr>";
+    h += "<td><span class=\"prod-name\">"+name+"</span></td>";
+    h += "<td style=\"font-size:.8rem\">"+s.period+"</td>";
+    h += "<td>"+(s.salary||0).toLocaleString()+"</td>";
+    h += "<td>"+(s.percent||0)+"%</td>";
+    h += "<td style=\"color:#16a34a\">"+(s.bonus||0).toLocaleString()+"</td>";
+    h += "<td style=\"color:#dc3545\">"+(s.deduct||0).toLocaleString()+"</td>";
+    h += "<td style=\"font-weight:700\">"+s.total.toLocaleString()+"</td>";
+    h += "<td><span style=\"color:"+sc+";font-weight:600;font-size:.75rem\">"+st+"</span><br>";
+    if(s.status === "accrued") h += "<button class=\"act-btn\" onclick=\"paySalary("+s.id+")\" style=\"color:#16a34a;font-size:.7rem\">\u2705 \u0412\u044b\u043f\u043b\u0430\u0442\u0438\u0442\u044c</button>";
+    h += "<button class=\"act-btn\" onclick=\"editSalary("+s.id+")\" style=\"font-size:.7rem\">\u270F</button>";
+    h += "<button class=\"act-btn act-del\" onclick=\"deleteSalary("+s.id+")\" style=\"font-size:.7rem\">\u2716</button></td>";
+    h += "</tr>";
+  }
+  tbody.innerHTML = h;
 }
 
 // === НАСТРОЙКА ПАНЕЛИ ===
