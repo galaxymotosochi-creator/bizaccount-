@@ -3184,6 +3184,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
         <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
         <div id="gearMenu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;padding:.35rem">
           <div style="padding:.4rem .6rem;font-size:.75rem;color:var(--muted);border-bottom:1px solid var(--border);margin-bottom:.25rem">&#9881; Меню кассы</div>
+          <div onclick="showChecksHistory()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128203; История чеков</div>
           <div onclick="showShiftCloseModal()" style="display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;font-size:.8rem;cursor:pointer;border-radius:6px">&#128683; Закрыть смену</div>
         </div>
       </div>
@@ -3359,7 +3360,7 @@ function selectClient(id){
   var c=cl.find(function(x){return x.id==id});
   if(c){curClient=c;}
   document.getElementById("clientSelectModal").classList.remove("open");
-  document.getElementById("payConfirmModal").classList.add("open");
+  payR();
 }
 function addNewClient(){
   var name=(document.getElementById("newClientName")||{}).value||"";name=name.trim();
@@ -3370,11 +3371,11 @@ function addNewClient(){
   localStorage.setItem("clients88",JSON.stringify(cl));
   curClient=cl[0];
   document.getElementById("clientSelectModal").classList.remove("open");
-  document.getElementById("payConfirmModal").classList.add("open");
+  payR();
 }
 function closeClientModal(){
   document.getElementById("clientSelectModal").classList.remove("open");
-  document.getElementById("payConfirmModal").classList.add("open");
+  payR();
 }
 function confirmPay(){
   var total=curPayTotal||0;
