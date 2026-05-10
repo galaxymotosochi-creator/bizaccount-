@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>8:8 — Панель управления</title>
+<script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   :root{--primary:#1983dd;--primary-light:#eaf5ff;--body-bg:#f8f9fa;--body-color:#212529;--font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;--radius:.75rem;--shadow:0 .5rem 1rem rgba(0,0,0,.08);--border:#dee2e6;--white:#fff;--muted:#6c757d;--sidebar-width:270px}
@@ -281,6 +282,74 @@
     50% { transform: translateY(0) rotate(0deg); }
     75% { transform: translateY(-1px) rotate(-2deg); }
   }
+  /* ===== SCANNER ===== */
+  .input-with-scan { display: flex; gap: 0.4rem; align-items: flex-start; }
+  .input-with-scan select { flex: 1; }
+  .scan-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2.6rem; height: 2.6rem; flex-shrink: 0;
+    background: var(--primary); color: var(--white);
+    border: none; border-radius: var(--radius);
+    font-size: 1.3rem; cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .scan-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+  .scan-btn:active { transform: scale(0.95); }
+  .scanner-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.85);
+    display: none; flex-direction: column;
+  }
+  .scanner-overlay.active { display: flex; }
+  .scanner-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 1.2rem; color: var(--white);
+  }
+  .scanner-header h3 { font-size: 1rem; font-weight: 500; }
+  .scanner-close {
+    background: rgba(255,255,255,0.15);
+    border: none; color: var(--white);
+    padding: 0.4rem 1rem; border-radius: 2rem;
+    font-size: 0.85rem; cursor: pointer; font-family: var(--font);
+  }
+  .scanner-close:hover { background: rgba(255,255,255,0.25); }
+  .scanner-viewport {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .scanner-viewport video { max-width: 100%; max-height: 100%; }
+  .scanner-viewport canvas.drawingBuffer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  }
+  .scanner-guide {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%; max-width: 280px;
+    aspect-ratio: 1.6/1;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 12px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+  .scanner-status {
+    display: none; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 1.2rem; font-size: 0.85rem;
+  }
+  .scanner-status.found {
+    display: flex; background: rgba(22, 163, 74, 0.2); color: #16a34a;
+  }
+  .scanner-status.notfound {
+    display: flex; background: rgba(220, 38, 38, 0.2); color: #dc2626;
+  }
+  .scanner-hint {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.6); font-size: 0.85rem;
+    text-align: center; pointer-events: none;
+  }
+  @media (max-width: 480px) {
+    .scanner-guide { width: 80%; }
+  }
 
 </style>
 </head>
@@ -449,7 +518,7 @@
           <div class="action-btn" onclick="alert('Закупка')">Закупка<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-btn" onclick="alert('Расход')">Расход<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-btn" onclick="alert('Клиент')">Клиент<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
-          <div class="action-btn" onclick="alert('Сканер')">Сканер<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
+          <div class="action-btn" onclick="openScanner('quick')">Сканер<button class="action-del-btn" onclick="deleteAction(this)">✕</button></div>
           <div class="action-add-btn" onclick="showAddActionMenu()"><span style="font-size:1rem;line-height:1">+</span> Добавить</div>
         </div>
       </div>
@@ -931,9 +1000,15 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Артикул / код</label>
+          <label>Артикул</label>
           <input type="text" id="prodSku" placeholder="Например, KR-001">
         </div>
+        <div class="form-group">
+          <label>Штрихкод (EAN-13)</label>
+          <input type="text" id="prodBarcode" placeholder="Например, 4601234567890">
+        </div>
+      </div>
+      <div class="form-row">
         <div class="form-group">
           <label>Ед. измерения</label>
           <select id="prodUnit">
@@ -1051,7 +1126,10 @@
     <form id="supplyForm" onsubmit="saveSupply(event)">
       <div class="form-group">
         <label>Товар *</label>
-        <select id="supProduct" required><option value="">— выберите товар —</option></select>
+        <div class="input-with-scan">
+          <select id="supProduct" required><option value="">— выберите товар —</option></select>
+          <button type="button" class="scan-btn" onclick="openScanner('supply')" title="Сканировать штрихкод">📷</button>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1539,6 +1617,7 @@ function editProduct(id){
   document.getElementById('prodPrice').value = p.price;
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
+  document.getElementById('prodBarcode').value = p.barcode || '';
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
   document.getElementById('modalSub').textContent = p.hidden ? 'Восстановите или измените товар' : 'Измените поля и нажмите Сохранить';
@@ -1568,6 +1647,7 @@ function saveProduct(e){
     price: parseFloat(document.getElementById('prodPrice').value) || 0,
     unit: document.getElementById('prodUnit').value,
     sku: document.getElementById('prodSku').value.trim(),
+    barcode: document.getElementById('prodBarcode').value.trim(),
     desc: document.getElementById('prodDesc').value.trim(),
     hidden: false
   };
@@ -1942,7 +2022,7 @@ const ACTION_MENU_ITEMS = [
   {icon:'📥', label:'Закупка', action:"alert('Закупка')"},
   {icon:'💸', label:'Расход', action:"alert('Расход')"},
   {icon:'👤', label:'Клиент', action:"alert('Клиент')"},
-  {icon:'📷', label:'Сканер', action:"alert('Сканер')"},
+  {icon:'📷', label:'Сканер', action:"openScanner('quick')",
   {icon:'📊', label:'Статистика', action:"navigateTo('dashboard')"},
   {icon:'📦', label:'Товары', action:"navigateTo('products')"},
   {icon:'🛠️', label:'Услуги', action:"navigateTo('services')"},
@@ -3023,6 +3103,129 @@ function setPM(b,m){payM=m;document.querySelectorAll("#payM button").forEach(fun
 function payR(){var total=0;RI.forEach(function(i){total+=i.price*i.q});if(!total)return;if(!confirm("\u041e\u043f\u043b\u0430\u0442\u0438\u0442\u044c "+total.toLocaleString()+"?"))return;var Sa=JSON.parse(localStorage.getItem("sales88")||"[]");Sa.unshift({id:Date.now(),items:JSON.parse(JSON.stringify(RI)),total:total,payM:payM,empId:curEmp?curEmp.id:0,date:new Date().toISOString()});localStorage.setItem("sales88",JSON.stringify(Sa));
 var Su=JSON.parse(localStorage.getItem("supplies88")||"[]");var ns=[];Su.forEach(function(s){ns.push({id:s.id,prodId:s.prodId,qty:s.qty,cost:s.cost,date:s.date})});RI.forEach(function(r){if(r.sv)return;var need=r.q;ns=ns.map(function(s){if(s.prodId!=r.id||need<=0)return s;var take=Math.min(s.qty,need);need-=take;return{id:s.id,prodId:s.prodId,qty:s.qty-take,cost:s.cost,date:s.date}}).filter(function(s){return s.qty>0})});localStorage.setItem("supplies88",JSON.stringify(ns));
 alert("\u041e\u043f\u043b\u0430\u0447\u0435\u043d\u043e "+total.toLocaleString());RI=[];upR();rT();}
+</script>
+
+<!-- ===== СКАНЕР ШТРИХКОДОВ ===== -->
+<div class="scanner-overlay" id="scannerOverlay">
+  <div class="scanner-header">
+    <h3>📷 Сканер штрихкода</h3>
+    <button class="scanner-close" onclick="closeScanner()">Закрыть</button>
+  </div>
+  <div class="scanner-status" id="scannerStatus"></div>
+  <div class="scanner-viewport" id="scannerViewport"></div>
+  <div class="scanner-guide"></div>
+  <div class="scanner-hint">Наведите камеру на штрихкод товара</div>
+</div>
+
+<script>
+// === СКАНЕР ШТРИХКОДОВ ===
+let scannerContext = ''; // 'supply' | 'quick'
+let scannerRunning = false;
+
+function openScanner(context) {
+  scannerContext = context || 'supply';
+  const overlay = document.getElementById('scannerOverlay');
+  const vp = document.getElementById('scannerViewport');
+  const status = document.getElementById('scannerStatus');
+  overlay.classList.add('active');
+  status.className = 'scanner-status';
+  status.textContent = '';
+  vp.innerHTML = '';
+  startQuagga();
+}
+
+function closeScanner() {
+  stopQuagga();
+  document.getElementById('scannerOverlay').classList.remove('active');
+}
+
+function startQuagga() {
+  if(scannerRunning) return;
+  scannerRunning = true;
+  const vp = document.getElementById('scannerViewport');
+  vp.innerHTML = '';
+
+  Quagga.init({
+    inputStream: {
+      name: 'Live',
+      type: 'LiveStream',
+      target: vp,
+      constraints: {
+        width: { min: 480 },
+        height: { min: 320 },
+        facingMode: 'environment',
+        aspectRatio: { min: 1, max: 2 }
+      },
+      area: { top: '10%', right: '10%', left: '10%', bottom: '10%' }
+    },
+    locator: {
+      patchSize: 'medium',
+      halfSample: true
+    },
+    numOfWorkers: 1,
+    frequency: 10,
+    decoder: {
+      readers: ['ean_reader', 'ean_8_reader', 'upc_reader', 'code_128_reader', 'code_39_reader']
+    },
+    locate: true
+  }, function(err) {
+    if(err) {
+      const status = document.getElementById('scannerStatus');
+      status.className = 'scanner-status notfound';
+      status.textContent = 'Ошибка камеры: ' + (err.message || err);
+      scannerRunning = false;
+      return;
+    }
+    Quagga.start();
+  });
+
+  Quagga.onDetected(function(result) {
+    const code = result.codeResult.code;
+    stopQuagga();
+    onBarcodeFound(code);
+  });
+
+  Quagga.onProcessed(function() {
+    // Можем добавить счётчик/индикатор
+  });
+}
+
+function stopQuagga() {
+  try {
+    Quagga.stop();
+  } catch(e) {}
+  scannerRunning = false;
+}
+
+function onBarcodeFound(code) {
+  const status = document.getElementById('scannerStatus');
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  const found = products.find(p => p.barcode && p.barcode.trim() === code.trim());
+
+  if(found) {
+    status.className = 'scanner-status found';
+    status.textContent = '✅ Найден: ' + found.name;
+
+    setTimeout(function() {
+      closeScanner();
+      if(scannerContext === 'supply') {
+        const sel = document.getElementById('supProduct');
+        if(sel) {
+          sel.value = found.id;
+          sel.dispatchEvent(new Event('change'));
+        }
+      }
+    }, 600);
+  } else {
+    status.className = 'scanner-status notfound';
+    status.textContent = '❌ Товар со штрихкодом ' + code + ' не найден';
+    setTimeout(function() {
+      status.className = 'scanner-status';
+      status.textContent = '';
+      startQuagga();
+    }, 2000);
+  }
+}
 </script>
 </body>
 </html>
