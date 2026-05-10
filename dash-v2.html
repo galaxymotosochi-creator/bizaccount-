@@ -277,9 +277,8 @@
   .reg-topbar{display:flex;align-items:center;background:var(--white);border-bottom:1px solid var(--border);padding:.35rem .7rem;gap:.5rem;font-size:1.05rem;flex-wrap:wrap}
   .reg-topbar-left{display:flex;align-items:center;gap:.35rem;white-space:nowrap}
   .reg-topbar-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;position:relative;flex-wrap:wrap}
-  .reg-back{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--primary);border:none;color:var(--white);font-size:1.1rem;cursor:pointer;border-radius:8px;padding:0;transition:all .12s}
-  .reg-back:hover{opacity:.85;transform:scale(1.05)}
-  .reg-emp-name{font-size:1rem;font-weight:600;color:var(--body-color)}
+  .reg-back{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--primary);border:none;color:var(--white);font-size:.85rem;cursor:pointer;border-radius:6px;padding:0}
+  .reg-emp-name{font-size:.85rem;font-weight:500;color:var(--muted)}
   .reg-sep{color:var(--border);font-size:.85rem;opacity:.4}
   .reg-tb-btn{display:inline;font-size:.95rem;color:var(--muted);cursor:pointer;transition:color .12s;line-height:1}
   .reg-tb-btn:hover{color:var(--primary)}
@@ -352,7 +351,7 @@
   }
 
   /* Emoji dance */
-  .ic, .b-icon, .nav-parent .ic, .modal-box h2, .metric-icon, .cl-empty-icon, .action-icon, .a-icon, .reg-tb-icon, .reg-back, .reg-emp-name {
+  .ic, .b-icon, .nav-parent .ic, .modal-box h2, .metric-icon, .cl-empty-icon, .action-icon, .a-icon, .reg-tb-icon {
     animation: emoji-bounce 3s ease-in-out infinite;
     display: inline-flex;
   }
@@ -3169,8 +3168,6 @@ document.addEventListener('DOMContentLoaded', updateStats);
       <button class="reg-back" onclick="regClose()">&#9664;</button>
       <span class="reg-emp-name" id="regEmp">&#128100; Касса</span>
       <span class="reg-sep">|</span>
-      <button class="reg-header-btn">Чек</button>
-      <button class="reg-header-btn">Клиент</button>
     </div>
     <div class="reg-topbar-right">
       <button class="reg-filter-btn active" onclick="setRegFilter(this,'all')">Все</button>
