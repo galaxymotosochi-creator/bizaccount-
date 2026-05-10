@@ -267,11 +267,11 @@
   .shift-btn{width:100%;padding:.65rem;border:none;border-radius:10px;background:var(--primary);color:var(--white);font-size:.95rem;font-weight:600;cursor:pointer;font-family:var(--font)}
   .shift-btn:hover{opacity:.9;transform:translateY(-1px)}
   /* ===== REGISTER (CASH) ===== */
-  .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--white);display:none;flex-direction:column;overflow-y:auto}
+  .reg-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:var(--white);display:none;flex-direction:column;overflow:hidden}
   .reg-overlay.open{display:flex}
   .reg-wrap{display:flex;width:100%;flex:1;min-height:0}
-  .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px}
-  .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa}
+  .reg-left{flex:1;display:flex;flex-direction:column;background:var(--white);border-right:1px solid var(--border);min-width:340px;max-width:400px;overflow:hidden}
+  .reg-right{flex:2;display:flex;flex-direction:column;background:#f5f7fa;overflow:hidden}
   /* ===== TOPBAR ===== */
   /* ===== TOPBAR ===== */
   .reg-topbar{display:flex;align-items:center;background:var(--white);border-bottom:1px solid var(--border);padding:.4rem .8rem;gap:.6rem;font-size:1.1rem;flex-wrap:wrap}
@@ -288,8 +288,8 @@
   .reg-search-input{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:8px;padding:.15rem .4rem;gap:.3rem;background:var(--body-bg)}
   .reg-search-input input{border:none;outline:none;font-family:var(--font);font-size:.9rem;padding:.3rem 0;width:120px;background:transparent}
   .reg-search-input input::placeholder{font-size:.85rem}
-  .reg-receipt{flex:1;display:flex;flex-direction:column;overflow:hidden}
-  .receipt-items{flex:1;overflow-y:auto;padding:.4rem .9rem}
+  .reg-receipt{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+  .receipt-items{flex:1;overflow-y:auto;padding:.4rem .9rem;min-height:0}
   .receipt-item{display:flex;align-items:center;gap:.5rem;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
   .receipt-item .ri-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .receipt-item .ri-qty{color:var(--muted);font-size:.8rem;min-width:32px;text-align:center;display:flex;align-items:center;gap:3px}
@@ -365,7 +365,7 @@
     .pay-info{padding:.6rem}
     .pay-modal-box{width:100vw;max-height:100vh;border-radius:0}
   }
-  .reg-products{flex:1;overflow-y:auto;padding:.6rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem;align-content:start}
+  .reg-products{flex:1;overflow-y:auto;padding:.6rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem;align-content:start;min-height:0}
   .reg-product-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:.7rem .6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:95px;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   .reg-product-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
   .reg-product-card .pc-icon{font-size:1.6rem;margin-bottom:.3rem}
@@ -3235,7 +3235,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
       <button class="reg-icon-btn" onclick="openScanner('reg')" title="Сканер">&#128247;</button>
       <div class="reg-search-input">
         <span style="font-size:.7rem;color:var(--muted)">&#128269;</span>
-        <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="renderRegProducts()">
+        <input type="text" id="regSearchInput" placeholder="Поиск..." oninput="regPage=0;renderRegProducts()">
       </div>
       <div style="position:relative;display:inline-block">
         <button class="reg-icon-btn" onclick="toggleGearMenu()" title="Меню">&#9881;</button>
@@ -3285,6 +3285,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
 // === КАССА ===
 let RI=[],pin="",curEmp=null,regFilter="all",payM="cash",shiftTimer=null,curPayTotal=0;
 let curClient=null;
+var regPage=0,regPageSize=20;
 
 function openR(){
   pin="";
@@ -3561,9 +3562,11 @@ function renderRegProducts(){
   if(regFilter==="all"||regFilter==="services")S.forEach(function(x){items.push({id:x.id,sv:1,name:x.name,price:x.price||0,cat:x.cat});});
   if(q)items=items.filter(function(x){return x.name.toLowerCase().indexOf(q)>=0;});
   var el=document.getElementById("regProducts");
-  if(!items.length){el.innerHTML="";return;}
+  if(!items.length){el.innerHTML="";regPage=0;return;}
+  var start=regPage*regPageSize;
+  var pageItems=items.slice(start,start+regPageSize);
   var h="";
-  items.forEach(function(x){
+  pageItems.forEach(function(x){
     var stk=x.sv?999:getStock(x.id);
     var cls="reg-product-card";
     if(!x.sv&&stk<1) cls+=" out-of-stock";
@@ -3573,7 +3576,15 @@ function renderRegProducts(){
     if(!x.sv) h+='<div class="pc-stock '+(stk<1?"zero":"")+'">&#128230; '+stk+'</div>';
     if(x.cat) h+='<div class="pc-tag">'+x.cat+'</div>';
     h+='</div>';
-  });el.innerHTML=h;
+  });
+  if(start+regPageSize<items.length){
+    h+='<div onclick="regMore()" style="grid-column:1/-1;text-align:center;padding:.5rem;color:var(--primary);font-size:.85rem;cursor:pointer;border:1px dashed var(--border);border-radius:8px">\u0415\u0449\u0451</div>';
+  }
+  el.innerHTML=h;
+}
+function regMore(){
+  regPage++;
+  renderRegProducts();
 }
 function confirmCloseShift(){
   if(!confirm("Закрываем смену?")) return;
@@ -3605,6 +3616,7 @@ function regClose(){
 }
 function setRegFilter(btn,filter){
   regFilter=filter;
+  regPage=0;
   document.querySelectorAll(".reg-tb-btn").forEach(function(b){b.classList.remove("active");});
   btn.classList.add("active");renderRegProducts();
 }</script>
