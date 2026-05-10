@@ -2330,17 +2330,17 @@ function updateStats(){
   drawStatsChart();
 }
 function drawStatsChart(){
+  var spl=document.getElementById("statsPeriodLabel");
   var canvas=document.getElementById("statsCanvas");
+  var cp=typeof window.currentPeriod!="undefined"?window.currentPeriod:"today";
+  var labels={today:"сегодня",yesterday:"вчера",week:"за 7 дней",month:"за текущий месяц",all:"за всё время",custom:"за выбранный период"};
+  if(spl) spl.textContent=labels[cp]||"за выбранный период";
   if(!canvas) return;
   var ctx=canvas.getContext("2d");
   var W=canvas.width=600,H=canvas.height=200;
   ctx.clearRect(0,0,W,H);
   var now=new Date();
   var fromDate,toDate,labelDays;
-  var cp=typeof window.currentPeriod!="undefined"?window.currentPeriod:"today";
-  var labels={today:"сегодня",yesterday:"вчера",week:"за 7 дней",month:"за текущий месяц",all:"за всё время",custom:"за выбранный период"};
-  var spl=document.getElementById("statsPeriodLabel");
-  if(spl) spl.textContent=labels[cp]||"за выбранный период";
   if(cp==="today"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());toDate=now;labelDays=now.getDate();}
   else if(cp==="yesterday"){fromDate=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);toDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());labelDays=1;}
   else if(cp==="week"){fromDate=new Date(now.getTime()-7*864e5);toDate=now;labelDays=7;}
