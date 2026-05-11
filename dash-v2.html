@@ -888,16 +888,18 @@
     </div>
     <!-- ОСТАТКИ -->
     <div class="page-section" id="page-stock">
-      <div class="page-header">
-        <div>
+      <div class="stock-toolbar">
+        <div style="display:flex;align-items:center;gap:.5rem">
           <h1 style="font-size:1.2rem;font-weight:600;margin:0">Остатки</h1>
-          <div class="sub">Управляйте остатками на складе</div>
+          <span class="stock-count" id="stockCount">0</span>
         </div>
-        <div class="page-actions">
-          <button class="btn-green" onclick="openProductModal()">+ Добавить</button>
+        <div style="display:flex;align-items:center;gap:.3rem">
+          <button class="stock-icon-btn">📊</button>
+          <button class="stock-icon-btn">📥</button>
+          <button class="stock-icon-btn">🖨</button>
+          <button class="stock-add-btn" onclick="openProductModal()">+ Добавить</button>
         </div>
       </div>
-      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
       <div class="search-row">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
