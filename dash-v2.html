@@ -216,6 +216,13 @@
 .search-icon{font-size:16px;color:#9CA3AF;line-height:1;flex-shrink:0;display:flex;align-items:center}
 .search-field{border:none;outline:none;font-family:var(--font);font-size:.85rem;padding:0;width:100%;background:transparent;color:var(--body-color);height:100%;line-height:1}
 .search-field::placeholder{color:#9CA3AF;opacity:1}
+
+.categories-row{display:flex;align-items:center;gap:.75rem;margin-top:10px;margin-bottom:10px}
+.cat-label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.cat-tabs{display:flex;gap:.25rem;flex-wrap:wrap}
+.cat-tab{padding:.3rem .75rem;font-size:.78rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--font);transition:all .12s}
+.cat-tab:hover{border-color:var(--primary);color:var(--primary)}
+.cat-tab.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
   .filter-tabs{display:flex;gap:.25rem;margin-bottom:1.25rem;flex-wrap:wrap}
   .filter-tab{padding:.4rem .9rem;font-size:.8rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--font);transition:all .12s}
   .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
@@ -746,6 +753,17 @@
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
           <input type="text" class="search-field" placeholder="Быстрый поиск">
+        </div>
+      </div>
+
+      <div class="categories-row">
+        <span class="cat-label">Категории</span>
+        <div class="cat-tabs">
+          <span class="cat-tab active">Все</span>
+          <span class="cat-tab">Материалы</span>
+          <span class="cat-tab">Инструменты</span>
+          <span class="cat-tab">Оборудование</span>
+          <span class="cat-tab">Прочее</span>
         </div>
       </div>
     </div>
