@@ -219,12 +219,12 @@
 
 /* Category dropdown */
 .cat-wrapper{position:relative;margin-left:10px}
-.trash-btn{display:flex;align-items:center;justify-content:center;margin-left:8px;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);transition:all .12s;flex-shrink:0;padding:2px}
-.trash-btn:hover{opacity:.7}
-
-.export-btn{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;font-size:.82rem;color:var(--primary);padding:4px 8px;margin-left:6px;transition:all .12s;font-family:var(--font);font-weight:500}
-.export-btn:hover{border-color:var(--primary);background:var(--primary-light)}
 .export-wrapper{position:relative}
+
+.action-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0;margin-left:10px}
+.action-btn:hover{opacity:.8}
+.act-arrow{font-size:.6rem;transition:transform .15s}
+.act-arrow.open{transform:rotate(180deg)}
 .export-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.75rem;z-index:100;display:none}
 .export-dropdown.open{display:block}
 .export-dd-title{font-size:.85rem;color:var(--body-color);margin-bottom:.75rem;text-align:center}
@@ -233,9 +233,7 @@
 .export-dd-btn:hover{opacity:.85}
 .export-dd-cancel{background:var(--body-bg);color:var(--muted);border:1px solid var(--border)}
 .export-dd-cancel:hover{background:var(--border)}
-.cols-wrapper{position:relative;margin-left:2px}
-.cols-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;transition:all .12s}
-.cols-btn:hover{opacity:.7}
+.cols-wrapper{position:relative;margin-left:10px}
 .cols-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
 .cols-dropdown.open{display:block}
 .cols-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
@@ -247,10 +245,7 @@
 .cols-footer{padding:.35rem .5rem 0;border-top:1px solid var(--border);margin-top:.25rem}
 .cols-reset{font-size:.78rem;color:var(--primary);cursor:pointer;font-family:var(--font);display:block;padding:.35rem 0}
 .cols-reset:hover{opacity:.8}
-.cat-trigger{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0}
-.cat-trigger:hover{opacity:.8}
-.cat-arrow{font-size:.6rem;transition:transform .15s}
-.cat-arrow.open{transform:rotate(180deg)}
+
 
 .cat-dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
 .cat-dropdown.open{display:block}
@@ -800,8 +795,8 @@
           <input type="text" class="search-field" placeholder="Быстрый поиск">
         </div>
         <div class="cat-wrapper">
-          <button class="cat-trigger" onclick="toggleCatDropdown(event)">
-            Категория <span class="cat-arrow" id="catArrow">▼</span>
+          <button class="action-btn" onclick="toggleCatDropdown(event)">
+            Категория <span class="act-arrow" id="catArrow">▼</span>
           </button>
           <div class="cat-dropdown" id="catDropdown">
             <div class="cat-dd-actions">
@@ -814,9 +809,9 @@
             <div class="cat-dd-list" id="catList"></div>
           </div>
         </div>
-        <button class="trash-btn" onclick="openTrashModal()" title="Корзина">🗑️</button>
+        <button class="action-btn" onclick="openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
         <div class="export-wrapper">
-          <button class="export-btn" onclick="toggleExportDropdown(event)">📥 Скачать</button>
+          <button class="action-btn" onclick="toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
           <div class="export-dropdown" id="exportDropdown">
             <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
             <div class="export-dd-actions">
@@ -826,7 +821,7 @@
           </div>
         </div>
         <div class="cols-wrapper">
-          <button class="cols-btn" onclick="toggleColsDropdown(event)">☰</button>
+          <button class="action-btn" onclick="toggleColsDropdown(event)">Столбцы <span class="act-arrow">▼</span></button>
           <div class="cols-dropdown" id="colsDropdown">
             <div class="cols-title">Отображать столбцы</div>
             <div class="cols-list" id="colsList"></div>
