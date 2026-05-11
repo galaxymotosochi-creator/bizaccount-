@@ -1455,6 +1455,43 @@
         </div>
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label>Тип</label>
+          <select id="prodType">
+            <option value="product">Товар</option>
+            <option value="service">Услуга</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Весовой товар</label>
+          <label class="checkbox-label" style="display:flex;align-items:center;gap:.5rem;padding-top:.3rem">
+            <input type="checkbox" id="prodWeight" style="width:16px;height:16px">
+            <span style="font-size:.82rem;color:var(--muted)">Взвешивается при продаже</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Себестоимость без НДС (₽)</label>
+          <input type="number" id="prodCostNoVat" placeholder="0" min="0" oninput="calcProfit()">
+        </div>
+        <div class="form-group">
+          <label>Себестоимость с НДС (₽)</label>
+          <input type="number" id="prodCostWithVat" placeholder="0" min="0" oninput="calcProfit()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Прибыль (₽)</label>
+          <input type="text" id="prodProfit" placeholder="—" readonly style="background:var(--body-bg);color:var(--muted);font-weight:500">
+        </div>
+        <div class="form-group">
+          <label>Наценка (%)</label>
+          <input type="text" id="prodMargin" placeholder="—" readonly style="background:var(--body-bg);color:var(--muted);font-weight:500">
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Описание</label>
         <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
@@ -2030,6 +2067,17 @@ function openProductModal(){
   fillCatSelect('prodCat', 'prodCats88');
   document.getElementById('productModal').classList.add('active');
 }
+function calcProfit(){
+  var price = parseFloat(document.getElementById('prodPrice').value) || 0;
+  var costNoVat = parseFloat(document.getElementById('prodCostNoVat').value) || 0;
+  var costWithVat = parseFloat(document.getElementById('prodCostWithVat').value) || 0;
+  var cost = costWithVat || costNoVat;
+  var profit = price - cost;
+  document.getElementById('prodProfit').value = profit > 0 ? profit.toFixed(2) : '0.00';
+  var margin = cost > 0 ? (profit / cost * 100) : 0;
+  document.getElementById('prodMargin').value = margin > 0 ? margin.toFixed(1) : '0.0';
+}
+
 function closeProductModal(){
   document.getElementById('productModal').classList.remove('active');
   document.getElementById('productForm').reset();
@@ -2080,6 +2128,12 @@ function saveProduct(e){
     unit: document.getElementById('prodUnit').value,
     sku: document.getElementById('prodSku').value.trim(),
     barcode: document.getElementById('prodBarcode').value.trim(),
+    type: document.getElementById('prodType').value,
+    weight: document.getElementById('prodWeight').checked,
+    costNoVat: parseFloat(document.getElementById('prodCostNoVat').value) || 0,
+    costWithVat: parseFloat(document.getElementById('prodCostWithVat').value) || 0,
+    profit: parseFloat(document.getElementById('prodProfit').value) || 0,
+    margin: parseFloat(document.getElementById('prodMargin').value) || 0,
     desc: document.getElementById('prodDesc').value.trim(),
     hidden: false
   };
