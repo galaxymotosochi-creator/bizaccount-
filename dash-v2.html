@@ -222,6 +222,8 @@
 .trash-btn{display:flex;align-items:center;justify-content:center;margin-left:8px;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);transition:all .12s;flex-shrink:0;padding:2px}
 .trash-btn:hover{opacity:.7}
 
+.export-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;margin-left:2px;transition:all .12s}
+.export-btn:hover{opacity:.7}
 .cols-wrapper{position:relative;margin-left:2px}
 .cols-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;transition:all .12s}
 .cols-btn:hover{opacity:.7}
@@ -613,6 +615,7 @@
   }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -803,6 +806,7 @@
           </div>
         </div>
         <button class="trash-btn" onclick="openTrashModal()" title="Корзина">🗑️</button>
+        <button class="export-btn" onclick="exportToExcel()" title="Экспорт">⬇</button>
         <div class="cols-wrapper">
           <button class="cols-btn" onclick="toggleColsDropdown(event)">☰</button>
           <div class="cols-dropdown" id="colsDropdown">
@@ -2099,6 +2103,28 @@ function clearAllCats(){
 
 function filterCatList(val){
   renderCatList(val);
+}
+
+/* Export to Excel */
+function exportToExcel(){
+  const products = JSON.parse(localStorage.getItem('products88') || '[]');
+  if(!products.length){
+    alert('Нет товаров для экспорта');
+    return;
+  }
+  const cats = {material:'Материалы',tool:'Инструменты',equipment:'Оборудование',other:'Прочее'};
+  const data = products.map(p => ({
+    'Название': p.name,
+    'Категория': cats[p.cat] || p.cat || '',
+    'Цена': p.price,
+    'Ед. измерения': p.unit || '',
+    'Остаток': p.stock ?? ''
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{wch:30},{wch:15},{wch:12},{wch:12},{wch:8}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Товары');
+  XLSX.writeFile(wb, 'Товары.xlsx');
 }
 
 /* Columns dropdown */
