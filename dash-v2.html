@@ -2119,7 +2119,7 @@ let activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
 // Click delegation for columns list
 document.getElementById('colsList').addEventListener('click', function(e){
   const item = e.target.closest('.cols-item');
-  if(item) toggleCol(item.dataset.id);
+  if(item) { e.stopPropagation(); toggleCol(item.dataset.id); }
 });
 
 function toggleColsDropdown(e){
