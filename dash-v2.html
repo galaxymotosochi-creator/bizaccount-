@@ -841,7 +841,7 @@
               </tr>
             </thead>
             <tbody id="trashModalBody">
-              <tr><td colspan="3"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>
+              <tr><td colspan="2"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -2976,7 +2976,7 @@ function renderCatPage(type){
   if(changed) localStorage.setItem(key, JSON.stringify(lists));
   const tbody = document.getElementById(tblId);
   if(!lists.length){
-    tbody.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="2"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = lists.map(c =>
