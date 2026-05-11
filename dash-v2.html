@@ -181,7 +181,7 @@
   .tip{background:var(--primary-light);border:1px solid rgba(25,131,221,.15);border-radius:var(--radius);padding:1rem 1.25rem;font-size:.85rem;display:flex;gap:.75rem;align-items:flex-start;color:var(--body-color)}
   .tip .info{width:1.5rem;height:1.5rem;background:var(--primary);color:var(--white);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
 
-  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
   .modal-overlay.active{display:flex}
   .modal-box{background:var(--white);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;box-shadow:0 1rem 2rem rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
   .modal-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.25rem}
