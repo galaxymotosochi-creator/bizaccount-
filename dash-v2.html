@@ -218,11 +218,12 @@
 .search-field::placeholder{color:#9CA3AF;opacity:1}
 
 /* Category dropdown */
-.cat-wrapper{position:relative;margin-left:10px}
+.cat-wrapper{position:relative}
+.actions-group{display:flex;align-items:center;gap:10px;margin-left:12px}
+.text-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0}
+.text-btn:hover{opacity:.8}
 .export-wrapper{position:relative}
 
-.action-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0;margin-left:10px}
-.action-btn:hover{opacity:.8}
 .act-arrow{font-size:.6rem;transition:transform .15s}
 .act-arrow.open{transform:rotate(180deg)}
 .export-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.75rem;z-index:100;display:none}
@@ -233,7 +234,7 @@
 .export-dd-btn:hover{opacity:.85}
 .export-dd-cancel{background:var(--body-bg);color:var(--muted);border:1px solid var(--border)}
 .export-dd-cancel:hover{background:var(--border)}
-.cols-wrapper{position:relative;margin-left:10px}
+.cols-wrapper{position:relative}
 .cols-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
 .cols-dropdown.open{display:block}
 .cols-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
@@ -794,8 +795,8 @@
           <span class="search-icon">🔍</span>
           <input type="text" class="search-field" placeholder="Быстрый поиск">
         </div>
-        <div class="cat-wrapper">
-          <button class="action-btn" onclick="toggleCatDropdown(event)">
+        <div class="actions-group"><div class="cat-wrapper">
+          <button class="text-btn" onclick="toggleCatDropdown(event)">
             Категория <span class="act-arrow" id="catArrow">▼</span>
           </button>
           <div class="cat-dropdown" id="catDropdown">
@@ -809,9 +810,9 @@
             <div class="cat-dd-list" id="catList"></div>
           </div>
         </div>
-        <button class="action-btn" onclick="openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
+        <button class="text-btn" onclick="openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
         <div class="export-wrapper">
-          <button class="action-btn" onclick="toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
+          <button class="text-btn" onclick="toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
           <div class="export-dropdown" id="exportDropdown">
             <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
             <div class="export-dd-actions">
@@ -821,7 +822,7 @@
           </div>
         </div>
         <div class="cols-wrapper">
-          <button class="action-btn" onclick="toggleColsDropdown(event)">Столбцы <span class="act-arrow">▼</span></button>
+          <button class="text-btn" onclick="toggleColsDropdown(event)">Столбцы <span class="act-arrow">▼</span></button>
           <div class="cols-dropdown" id="colsDropdown">
             <div class="cols-title">Отображать столбцы</div>
             <div class="cols-list" id="colsList"></div>
@@ -831,6 +832,7 @@
           </div>
         </div>
       </div>
+    </div>
 
     </div>
 
