@@ -217,6 +217,27 @@
 .search-field{border:none;outline:none;font-family:var(--font);font-size:.85rem;padding:0;width:100%;background:transparent;color:var(--body-color);height:100%;line-height:1}
 .search-field::placeholder{color:#9CA3AF;opacity:1}
 
+/* Category dropdown */
+.cat-trigger{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;margin-left:10px;flex-shrink:0}
+.cat-trigger:hover{opacity:.8}
+.cat-arrow{font-size:.6rem;transition:transform .15s}
+.cat-arrow.open{transform:rotate(180deg)}
+
+.cat-dropdown{position:absolute;top:100%;left:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
+.cat-dropdown.open{display:block}
+.cat-dd-actions{display:flex;gap:.5rem;padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
+.cat-dd-action{font-size:.78rem;color:var(--primary);cursor:pointer;font-family:var(--font)}
+.cat-dd-action:hover{opacity:.8}
+.cat-dd-search{margin:0 .25rem .35rem;position:relative}
+.cat-dd-search input{width:100%;padding:.35rem .5rem .35rem 1.4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);background:var(--white)}
+.cat-dd-search input:focus{border-color:var(--primary)}
+.cat-dd-search .ic{position:absolute;left:5px;top:50%;transform:translateY(-50%);font-size:.65rem;color:var(--muted)}
+.cat-dd-list{max-height:200px;overflow-y:auto;padding:.25rem 0}
+.cat-dd-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color)}
+.cat-dd-item:hover{background:var(--primary-light)}
+.cat-dd-item .cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;color:transparent}
+.cat-dd-item .cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
+
   .filter-tabs{display:flex;gap:.25rem;margin-bottom:1.25rem;flex-wrap:wrap}
   .filter-tab{padding:.4rem .9rem;font-size:.8rem;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:var(--white);color:var(--muted);font-family:var(--font);transition:all .12s}
   .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
@@ -743,10 +764,24 @@
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
 
-      <div class="search-row">
+      <div class="search-row" style="position:relative">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
           <input type="text" class="search-field" placeholder="Быстрый поиск">
+        </div>
+        <button class="cat-trigger" onclick="toggleCatDropdown(event)">
+          Категория <span class="cat-arrow" id="catArrow">▼</span>
+        </button>
+        <div class="cat-dropdown" id="catDropdown">
+          <div class="cat-dd-actions">
+            <span class="cat-dd-action" onclick="selectAllCats()">✓ Выбрать все</span>
+            <span class="cat-dd-action" onclick="clearAllCats()">✕ Очистить</span>
+          </div>
+          <div class="cat-dd-search">
+            <span class="ic">🔍</span>
+            <input type="text" placeholder="Поиск..." oninput="filterCatList(this.value)">
+          </div>
+          <div class="cat-dd-list" id="catList"></div>
         </div>
       </div>
 
@@ -1965,6 +2000,60 @@ function saveProduct(e){
   renderProductsPage();
   updateStats();
 }
+
+/* Category dropdown */
+let selectedCats = new Set();
+
+function toggleCatDropdown(e){
+  e.stopPropagation();
+  const dd = document.getElementById('catDropdown');
+  const arr = document.getElementById('catArrow');
+  const open = dd.classList.toggle('open');
+  arr.classList.toggle('open', open);
+  if(open) renderCatList();
+}
+
+function renderCatList(filter){
+  const list = JSON.parse(localStorage.getItem('prodCats88') || '[]');
+  const el = document.getElementById('catList');
+  const items = list.map(c => {
+    const checked = selectedCats.has(c.name);
+    if(filter && !c.name.toLowerCase().includes(filter.toLowerCase())) return '';
+    return '<div class="cat-dd-item" onclick="toggleCat(\''+c.name.replace(/'/g,"\\'")+'\')">' +
+      '<span class="cb'+(checked?' checked':'')+'">✓</span>' +
+      '<span>'+c.name+'</span></div>';
+  }).filter(Boolean).join('');
+  el.innerHTML = items || '<div style="padding:.5rem;color:var(--muted);font-size:.78rem">Нет категорий</div>';
+}
+
+function toggleCat(name){
+  if(selectedCats.has(name)) selectedCats.delete(name); else selectedCats.add(name);
+  renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+}
+
+function selectAllCats(){
+  const list = JSON.parse(localStorage.getItem('prodCats88') || '[]');
+  list.forEach(c => selectedCats.add(c.name));
+  renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+}
+
+function clearAllCats(){
+  selectedCats.clear();
+  renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+}
+
+function filterCatList(val){
+  renderCatList(val);
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e){
+  const dd = document.getElementById('catDropdown');
+  if(dd && !e.target.closest('.search-row')){
+    dd.classList.remove('open');
+    document.getElementById('catArrow')?.classList.remove('open');
+  }
+});
 
 function renderProductsPage(){
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
