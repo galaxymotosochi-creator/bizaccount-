@@ -2138,6 +2138,7 @@ function restoreProduct(){
   closeProductModal();
   renderProductsPage();
   updateStats();
+  showToast();
 }
 
 function saveProduct(e){
@@ -2169,6 +2170,7 @@ function saveProduct(e){
   closeProductModal();
   renderProductsPage();
   updateStats();
+  showToast();
 }
 
 /* Category dropdown */
@@ -2273,6 +2275,15 @@ document.getElementById('colsList').addEventListener('click', function(e){
   const item = e.target.closest('.cols-item');
   if(item) { e.stopPropagation(); toggleCol(item.dataset.id); }
 });
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg || 'Товар успешно добавлен!';
+  t.style.opacity = '1';
+  t.style.transform = 'translateY(0)';
+  setTimeout(function(){ t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; }, 1500);
+}
 
 function closeAllDropdowns(){
   document.getElementById('catDropdown')?.classList.remove('open');
@@ -2435,6 +2446,7 @@ function deleteProduct(id){
   localStorage.setItem('products88', JSON.stringify(list));
   renderProductsPage();
   updateStats();
+  showToast();
 }
 
 const SVC_CAT = {repair:'Ремонт',cleaning:'Клининг',delivery:'Доставка',consult:'Консультация',install:'Монтаж',other:'Прочее'};
