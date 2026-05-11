@@ -732,37 +732,6 @@
           <h1>Товары</h1>
           <div class="sub">Управляйте товарами — добавляйте, редактируйте, ищите</div>
         </div>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="openProductModal()">+ Добавить товар</button>
-        </div>
-      </div>
-
-      <div class="search-bar">
-        <input type="text" id="productSearch" placeholder="Поиск по названию или артикулу..." oninput="renderProductsPage()">
-      </div>
-
-      <div class="filter-tabs" id="filterTabs">
-        <span class="filter-tab active" data-filter="all" onclick="setFilter('all')">Все</span>
-        <span class="filter-tab" data-filter="material" onclick="setFilter('material')">Материалы</span>
-        <span class="filter-tab" data-filter="tool" onclick="setFilter('tool')">Инструменты</span>
-        <span class="filter-tab" data-filter="equipment" onclick="setFilter('equipment')">Оборудование</span>
-        <span class="filter-tab" data-filter="other" onclick="setFilter('other')">Прочее</span>
-      </div>
-
-      <div class="product-table">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:38%">Название</th>
-              <th style="width:15%">Категория</th>
-              <th style="width:18%" class="prod-price">Цена</th>
-              <th style="width:10%">Ед.</th>
-              <th style="width:19%"></th>
-            </tr>
-          </thead>
-          <tbody id="productTableBody">
-          </tbody>
-        </table>
       </div>
     </div>
 
