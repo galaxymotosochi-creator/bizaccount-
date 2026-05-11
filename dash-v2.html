@@ -1304,13 +1304,20 @@
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
-      <div class="product-table">
-        <table>
-          <thead>
+
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-field" placeholder="Быстрый поиск">
+        </div>
+      </div>
+
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table style="min-width:600px">
+          <thead style="display:none">
             <tr>
-              <th style="width:60%">Название</th>
-              <th style="width:25%">Товаров</th>
-              <th style="width:15%"></th>
+              <th style="width:80%">Название</th>
+              <th style="width:20%"></th>
             </tr>
           </thead>
           <tbody id="prodCatTableBody">
