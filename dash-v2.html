@@ -2139,8 +2139,8 @@ function restoreProduct(){
   list = list.map(p => p.id === id ? {...p, hidden: false} : p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  renderProductsPage();
-  updateStats();
+  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
+  try { updateStats(); } catch(e) {}
   showToast();
 }
 
@@ -2171,8 +2171,8 @@ function saveProduct(e){
   if(idx >= 0) list[idx] = p; else list.unshift(p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  renderProductsPage();
-  updateStats();
+  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
+  try { updateStats(); } catch(e) {}
   showToast();
 }
 
@@ -2372,6 +2372,7 @@ document.addEventListener('click', function(e){
 });
 
 function renderProductsPage(){
+  try {
   renderColHeaders();
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
@@ -2404,7 +2405,8 @@ function renderProductsPage(){
     '</tr>';
   }).join('');
 }
-
+  } catch(e) { console.error(e); }
+}
 // Закрыть все меню ••• при клике вне
 document.addEventListener('click', function(e){
   if(!e.target.closest('.prod-more-wrap')){
@@ -2447,8 +2449,8 @@ function deleteProduct(id){
   let list = JSON.parse(localStorage.getItem('products88') || '[]');
   list = list.filter(p => p.id !== id);
   localStorage.setItem('products88', JSON.stringify(list));
-  renderProductsPage();
-  updateStats();
+  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
+  try { updateStats(); } catch(e) {}
   showToast();
 }
 
