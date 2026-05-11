@@ -221,6 +221,21 @@
 .cat-wrapper{position:relative;margin-left:10px}
 .trash-btn{display:flex;align-items:center;justify-content:center;margin-left:8px;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);transition:all .12s;flex-shrink:0;padding:2px}
 .trash-btn:hover{opacity:.7}
+
+.cols-wrapper{position:relative;margin-left:2px}
+.cols-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;transition:all .12s}
+.cols-btn:hover{opacity:.7}
+.cols-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
+.cols-dropdown.open{display:block}
+.cols-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
+.cols-list{padding:0 0 .25rem}
+.cols-item{display:flex;align-items:center;gap:.5rem;padding:.3rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color)}
+.cols-item:hover{background:var(--primary-light)}
+.cols-item .cb{width:15px;height:15px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;color:transparent;transition:all .1s}
+.cols-item .cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
+.cols-footer{padding:.35rem .5rem 0;border-top:1px solid var(--border);margin-top:.25rem}
+.cols-reset{font-size:.78rem;color:var(--primary);cursor:pointer;font-family:var(--font);display:block;padding:.35rem 0}
+.cols-reset:hover{opacity:.8}
 .cat-trigger{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0}
 .cat-trigger:hover{opacity:.8}
 .cat-arrow{font-size:.6rem;transition:transform .15s}
@@ -788,6 +803,16 @@
           </div>
         </div>
         <button class="trash-btn" onclick="openTrashModal()" title="Корзина">🗑️</button>
+        <div class="cols-wrapper">
+          <button class="cols-btn" onclick="toggleColsDropdown(event)">☰</button>
+          <div class="cols-dropdown" id="colsDropdown">
+            <div class="cols-title">Отображать столбцы</div>
+            <div class="cols-list" id="colsList"></div>
+            <div class="cols-footer">
+              <span class="cols-reset" onclick="resetCols()">Вернуть по умолчанию</span>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -2076,6 +2101,48 @@ function filterCatList(val){
   renderCatList(val);
 }
 
+/* Columns dropdown */
+const COLUMNS = [
+  {id:'category', label:'Категория', def:true},
+  {id:'barcode', label:'Штрихкод', def:false},
+  {id:'type', label:'Тип', def:false},
+  {id:'weight', label:'Весовой товар', def:false},
+  {id:'unit', label:'Ед. измерения', def:false},
+  {id:'costNoVat', label:'Себестоимость без НДС', def:true},
+  {id:'costWithVat', label:'Себестоимость с НДС', def:false},
+  {id:'price', label:'Цена', def:true},
+  {id:'profit', label:'Прибыль', def:false},
+  {id:'margin', label:'Наценка', def:true}
+];
+let activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
+
+function toggleColsDropdown(e){
+  e.stopPropagation();
+  const dd = document.getElementById('colsDropdown');
+  dd.classList.toggle('open');
+  if(dd.classList.contains('open')) renderColsList();
+}
+
+function renderColsList(){
+  const el = document.getElementById('colsList');
+  el.innerHTML = COLUMNS.map(c => {
+    const checked = activeCols.has(c.id);
+    return '<div class="cols-item" onclick="toggleCol(\''+c.id+'\')">' +
+      '<span class="cb'+(checked?' checked':'')+'">✓</span>' +
+      '<span>'+c.label+'</span></div>';
+  }).join('');
+}
+
+function toggleCol(id){
+  if(activeCols.has(id)) activeCols.delete(id); else activeCols.add(id);
+  renderColsList();
+}
+
+function resetCols(){
+  activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
+  renderColsList();
+}
+
 /* Trash modal */
 function openTrashModal(){
   document.getElementById('trashModal').classList.add('active');
@@ -2086,10 +2153,14 @@ function closeTrashModal(){
 
 // Close dropdown on outside click
 document.addEventListener('click', function(e){
-  const dd = document.getElementById('catDropdown');
-  if(dd && !e.target.closest('.search-row')){
-    dd.classList.remove('open');
+  const catDD = document.getElementById('catDropdown');
+  const colsDD = document.getElementById('colsDropdown');
+  if(catDD && !e.target.closest('.search-row')){
+    catDD.classList.remove('open');
     document.getElementById('catArrow')?.classList.remove('open');
+  }
+  if(colsDD && !e.target.closest('.cols-wrapper')){
+    colsDD.classList.remove('open');
   }
 });
 
