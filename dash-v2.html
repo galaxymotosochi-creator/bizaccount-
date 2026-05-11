@@ -2981,9 +2981,8 @@ function renderCatPage(type){
   }
   tbody.innerHTML = lists.map(c =>
     '<tr>' +
-      '<td><span class="prod-name" style="cursor:pointer;color:var(--primary)" onclick="editClient('+c.id+')">'+c.name+'</span></td>' +
-      '<td style="color:var(--muted)">—</td>' +
-      '<td style="text-align:right"><button class="act-btn" onclick="editCategory(\''+type+'\','+c.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteCategory(\''+type+'\','+c.id+')">&#10005;</button></td>' +
+      '<td><div class="prod-name" style="font-size:.85rem">'+c.name+'</div></td>' +
+      '<td style="text-align:right;white-space:nowrap"><button class="act-btn" onclick="editCategory(&#39;"+type+"&#39;,"+c.id+")">Ред.</button> <button class="act-btn" onclick="deleteCategory(&#39;"+type+"&#39;,"+c.id+")" style="color:#dc3545">Удалить</button></td>' +
     '</tr>'
   ).join('');
 }
