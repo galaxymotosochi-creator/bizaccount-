@@ -2139,9 +2139,8 @@ function restoreProduct(){
   list = list.map(p => p.id === id ? {...p, hidden: false} : p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
-  try { updateStats(); } catch(e) {}
   showToast();
+  renderProductsPage();
 }
 
 function saveProduct(e){
@@ -2171,9 +2170,8 @@ function saveProduct(e){
   if(idx >= 0) list[idx] = p; else list.unshift(p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
-  try { updateStats(); } catch(e) {}
   showToast();
+  renderProductsPage();
 }
 
 /* Category dropdown */
@@ -2449,8 +2447,8 @@ function deleteProduct(id){
   let list = JSON.parse(localStorage.getItem('products88') || '[]');
   list = list.filter(p => p.id !== id);
   localStorage.setItem('products88', JSON.stringify(list));
-  try { renderProductsPage(); } catch(e) { console.error('render err', e); }
-  try { updateStats(); } catch(e) {}
+  renderProductsPage();
+  updateStats();
   showToast();
 }
 
