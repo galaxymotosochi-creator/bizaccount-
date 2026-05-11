@@ -804,7 +804,7 @@
           <input type="text" class="search-field" placeholder="Быстрый поиск">
         </div>
         <div class="actions-group"><div class="cat-wrapper">
-          <button class="text-btn" onclick="toggleCatDropdown(event)">
+          <button class="text-btn" onclick="document.getElementById('exportDropdown')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
             Категория <span class="act-arrow" id="catArrow">▼</span>
           </button>
           <div class="cat-dropdown" id="catDropdown">
@@ -818,9 +818,9 @@
             <div class="cat-dd-list" id="catList"></div>
           </div>
         </div>
-        <button class="text-btn" onclick="openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
+        <button class="text-btn" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
         <div class="export-wrapper">
-          <button class="text-btn" onclick="toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
+          <button class="text-btn" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
           <div class="export-dropdown" id="exportDropdown">
             <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
             <div class="export-dd-actions">
@@ -830,7 +830,7 @@
           </div>
         </div>
         <div class="cols-wrapper">
-          <button class="text-btn" onclick="toggleColsDropdown(event)">Столбцы <span class="act-arrow">▼</span></button>
+          <button class="text-btn" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">Столбцы <span class="act-arrow">▼</span></button>
           <div class="cols-dropdown" id="colsDropdown">
             <div class="cols-title">Отображать столбцы</div>
             <div class="cols-list" id="colsList"></div>
