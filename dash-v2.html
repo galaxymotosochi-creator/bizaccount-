@@ -2116,6 +2116,12 @@ const COLUMNS = [
 ];
 let activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
 
+// Click delegation for columns list
+document.getElementById('colsList').addEventListener('click', function(e){
+  const item = e.target.closest('.cols-item');
+  if(item) toggleCol(item.dataset.id);
+});
+
 function toggleColsDropdown(e){
   e.stopPropagation();
   const dd = document.getElementById('colsDropdown');
@@ -2127,7 +2133,7 @@ function renderColsList(){
   const el = document.getElementById('colsList');
   el.innerHTML = COLUMNS.map(c => {
     const checked = activeCols.has(c.id);
-    return '<div class="cols-item" onclick="toggleCol(\''+c.id+'\')">' +
+    return '<div class="cols-item" data-id="'+c.id+'">' +
       '<span class="cb'+(checked?' checked':'')+'">✓</span>' +
       '<span>'+c.label+'</span></div>';
   }).join('');
