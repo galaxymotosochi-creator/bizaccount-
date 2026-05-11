@@ -844,13 +844,7 @@
     </div>
 
     <!-- Заголовки столбцов товаров -->
-    <div class="col-headers" id="colHeaders">
-      <span class="col-h" style="flex:2" data-col="name">Название</span>
-      <span class="col-h" style="flex:1" data-col="category">Категория</span>
-      <span class="col-h" style="flex:1" data-col="costNoVat">Себес. без НДС</span>
-      <span class="col-h" style="flex:1" data-col="price">Цена</span>
-      <span class="col-h" style="flex:1" data-col="margin">Наценка</span>
-    </div>
+    <div class="col-headers" id="colHeaders"></div>
 
     <!-- Корзина модалка -->
     <div class="modal-overlay" id="trashModal" onclick="if(event.target===this)closeTrashModal()">
@@ -2193,12 +2187,28 @@ document.getElementById('colsList').addEventListener('click', function(e){
 });
 
 function renderColHeaders(){
-  var headers = document.querySelectorAll('#colHeaders .col-h');
-  headers.forEach(function(h){
+  var colHeaders = document.getElementById('colHeaders');
+  var existing = {};
+  colHeaders.querySelectorAll('.col-h').forEach(function(h){
     var col = h.getAttribute('data-col');
-    if(col === 'name'){ h.style.display = ''; return; }
-    h.style.display = activeCols.has(col) ? '' : 'none';
+    existing[col] = h;
   });
+  // Всегда показываем Название
+  if(existing['name']) existing['name'].style.display = '';
+  // Порядок колонок
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
+  var labels = {category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
+  var flexVals = {name:2,category:1,barcode:1,type:1,weight:1,unit:1,costNoVat:1,costWithVat:1,price:1,profit:1,margin:1};
+  // Собираем HTML в правильном порядке
+  var html = '';
+  order.forEach(function(col){
+    if(col === 'name' || activeCols.has(col)){
+      var label = labels[col] || col;
+      var flex = flexVals[col] || 1;
+      html += '<span class="col-h" style="flex:'+flex+'" data-col="'+col+'">'+label+'</span>';
+    }
+  });
+  colHeaders.innerHTML = html;
 }
 
 function toggleColsDropdown(e){
