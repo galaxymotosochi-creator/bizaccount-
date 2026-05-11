@@ -218,7 +218,8 @@
 .search-icon{font-size:16px;color:#9CA3AF;line-height:1;flex-shrink:0;display:flex;align-items:center}
 .search-field{border:none;outline:none;font-family:var(--font);font-size:.85rem;padding:0;width:100%;background:transparent;color:var(--body-color);height:100%;line-height:1}
 .search-field::placeholder{color:#9CA3AF;opacity:1}
-.col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+.col-headers-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:1px}
+.col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);white-space:nowrap}
 .col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
 
 /* Category dropdown */
@@ -844,7 +845,7 @@
     </div>
 
     <!-- Заголовки столбцов товаров -->
-    <div class="col-headers" id="colHeaders"></div>
+    <div class="col-headers-scroll"><div class="col-headers" id="colHeaders"></div></div>
 
     <!-- Корзина модалка -->
     <div class="modal-overlay" id="trashModal" onclick="if(event.target===this)closeTrashModal()">
