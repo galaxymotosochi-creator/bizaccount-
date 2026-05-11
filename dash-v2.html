@@ -900,16 +900,10 @@
           <button class="stock-add-btn" onclick="openProductModal()">+ Добавить</button>
         </div>
       </div>
-      <div class="stock-filterbar">
-        <div class="stock-search">
-          <span style="font-size:.75rem;color:var(--muted)">🔍</span>
-          <input type="text" id="stockSearch" placeholder="Быстрый поиск" oninput="renderStockPage()">
-        </div>
-        <div class="stock-filter-links">
-          <span class="stock-filter-link">Поставщик</span>
-          <span class="stock-filter-link">Счет</span>
-          <span class="stock-filter-link">Категории</span>
-          <span class="stock-filter-link stock-filter-add">+ Фильтр</span>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-field" placeholder="Быстрый поиск" oninput="renderStockPage()" style="width:120px">
         </div>
       </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
