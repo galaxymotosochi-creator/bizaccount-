@@ -844,12 +844,12 @@
     </div>
 
     <!-- Заголовки столбцов товаров -->
-    <div class="col-headers">
-      <span class="col-h" style="flex:2">Название</span>
-      <span class="col-h" style="flex:1">Категория</span>
-      <span class="col-h" style="flex:1">Себес. без НДС</span>
-      <span class="col-h" style="flex:1">Цена</span>
-      <span class="col-h" style="flex:1">Наценка</span>
+    <div class="col-headers" id="colHeaders">
+      <span class="col-h" style="flex:2" data-col="name">Название</span>
+      <span class="col-h" style="flex:1" data-col="category">Категория</span>
+      <span class="col-h" style="flex:1" data-col="costNoVat">Себес. без НДС</span>
+      <span class="col-h" style="flex:1" data-col="price">Цена</span>
+      <span class="col-h" style="flex:1" data-col="margin">Наценка</span>
     </div>
 
     <!-- Корзина модалка -->
@@ -2192,6 +2192,15 @@ document.getElementById('colsList').addEventListener('click', function(e){
   if(item) { e.stopPropagation(); toggleCol(item.dataset.id); }
 });
 
+function renderColHeaders(){
+  var headers = document.querySelectorAll('#colHeaders .col-h');
+  headers.forEach(function(h){
+    var col = h.getAttribute('data-col');
+    if(col === 'name'){ h.style.display = ''; return; }
+    h.style.display = activeCols.has(col) ? '' : 'none';
+  });
+}
+
 function toggleColsDropdown(e){
   e.stopPropagation();
   const dd = document.getElementById('colsDropdown');
@@ -2212,11 +2221,13 @@ function renderColsList(){
 function toggleCol(id){
   if(activeCols.has(id)) activeCols.delete(id); else activeCols.add(id);
   renderColsList();
+  renderColHeaders();
 }
 
 function resetCols(){
   activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
   renderColsList();
+  renderColHeaders();
 }
 
 /* Trash modal */
@@ -2245,6 +2256,7 @@ document.addEventListener('click', function(e){
 });
 
 function renderProductsPage(){
+  renderColHeaders();
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
   if(currentFilter !== 'all') products = products.filter(p => p.cat === currentFilter);
