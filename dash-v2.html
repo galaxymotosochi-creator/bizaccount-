@@ -2145,33 +2145,21 @@ function restoreProduct(){
 
 function saveProduct(e){
   e.preventDefault();
-  const editId = document.getElementById('editProductId')?.value;
-  const p = {
-    id: editId ? parseInt(editId) : Date.now(),
-    name: document.getElementById('prodName').value.trim(),
-    cat: document.getElementById('prodCat').value,
-    price: parseFloat(document.getElementById('prodPrice').value) || 0,
-    unit: document.getElementById('prodUnit').value,
-    sku: document.getElementById('prodSku').value.trim(),
-    barcode: document.getElementById('prodBarcode').value.trim(),
-    type: document.getElementById('prodType').value,
-    weight: parseFloat(document.getElementById('prodWeight').value) || 0,
-    weightUnit: document.getElementById('prodWeightUnit').value,
-    costNoVat: parseFloat(document.getElementById('prodCostNoVat').value) || 0,
-    costWithVat: parseFloat(document.getElementById('prodCostWithVat').value) || 0,
-    profit: parseFloat(document.getElementById('prodProfit').value) || 0,
-    margin: parseFloat(document.getElementById('prodMargin').value) || 0,
-    desc: document.getElementById('prodDesc').value.trim(),
-    hidden: false
-  };
-  if(!p.name) return alert('Введите название');
-  let list = JSON.parse(localStorage.getItem('products88') || '[]');
-  const idx = list.findIndex(x => x.id === p.id);
-  if(idx >= 0) list[idx] = p; else list.unshift(p);
+  var name = document.getElementById('prodName').value.trim();
+  if(!name) return alert('Введите название');
+  var p = {id:Date.now(), name:name, cat:document.getElementById('prodCat').value, price:parseFloat(document.getElementById('prodPrice').value)||0, unit:document.getElementById('prodUnit').value, sku:document.getElementById('prodSku').value.trim(), hidden:false};
+  var list = JSON.parse(localStorage.getItem('products88') || '[]');
+  list.unshift(p);
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  showToast();
-  renderProductsPage();
+  var tbody = document.getElementById('productTableBody');
+  if(tbody){
+    var cats = {material:'Материалы',tool:'Инструменты',equipment:'Оборудование',other:'Прочее'};
+    var row = '<tr><td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td><td><span class="prod-cat">'+(cats[p.cat]||p.cat||'')+'</span></td><td><span class="prod-price">'+p.price.toLocaleString()+'\u20BD</span></td><td>'+p.unit+'</td><td style="text-align:right"><\/td><\/tr>';
+    tbody.innerHTML = row + tbody.innerHTML;
+  }
+  var t = document.getElementById('toast');
+  if(t){ t.style.opacity='1'; t.style.transform='translateY(0)'; setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateY(10px)'; },2000); }
 }
 
 /* Category dropdown */
