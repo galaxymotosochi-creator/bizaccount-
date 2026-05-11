@@ -2097,11 +2097,12 @@ let selectedCats = new Set();
 
 function toggleCatDropdown(e){
   e.stopPropagation();
+  closeAllDropdowns();
   const dd = document.getElementById('catDropdown');
   const arr = document.getElementById('catArrow');
-  const open = dd.classList.toggle('open');
-  arr.classList.toggle('open', open);
-  if(open) renderCatList();
+  dd.classList.add('open');
+  arr.classList.add('open');
+  renderCatList();
 }
 
 function renderCatList(filter){
@@ -2162,7 +2163,8 @@ function exportToExcel(){
 /* Export dropdown */
 function toggleExportDropdown(e){
   e.stopPropagation();
-  document.getElementById('exportDropdown').classList.toggle('open');
+  closeAllDropdowns();
+  document.getElementById('exportDropdown').classList.add('open');
 }
 function closeExportDropdown(){
   document.getElementById('exportDropdown').classList.remove('open');
@@ -2193,6 +2195,13 @@ document.getElementById('colsList').addEventListener('click', function(e){
   if(item) { e.stopPropagation(); toggleCol(item.dataset.id); }
 });
 
+function closeAllDropdowns(){
+  document.getElementById('catDropdown')?.classList.remove('open');
+  document.getElementById('catArrow')?.classList.remove('open');
+  document.getElementById('exportDropdown')?.classList.remove('open');
+  document.getElementById('colsDropdown')?.classList.remove('open');
+}
+
 function renderColHeaders(){
   var el = document.getElementById('colHeaders');
   if(!el) return;
@@ -2215,9 +2224,10 @@ function renderColHeaders(){
 
 function toggleColsDropdown(e){
   e.stopPropagation();
+  closeAllDropdowns();
   const dd = document.getElementById('colsDropdown');
-  dd.classList.toggle('open');
-  if(dd.classList.contains('open')) renderColsList();
+  dd.classList.add('open');
+  renderColsList();
 }
 
 function renderColsList(){
@@ -2244,6 +2254,7 @@ function resetCols(){
 
 /* Trash modal */
 function openTrashModal(){
+  closeAllDropdowns();
   document.getElementById('trashModal').classList.add('active');
 }
 function closeTrashModal(){
