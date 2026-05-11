@@ -222,8 +222,17 @@
 .trash-btn{display:flex;align-items:center;justify-content:center;margin-left:8px;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);transition:all .12s;flex-shrink:0;padding:2px}
 .trash-btn:hover{opacity:.7}
 
-.export-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;margin-left:2px;transition:all .12s}
-.export-btn:hover{opacity:.7}
+.export-btn{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;font-size:.82rem;color:var(--primary);padding:4px 8px;margin-left:6px;transition:all .12s;font-family:var(--font);font-weight:500}
+.export-btn:hover{border-color:var(--primary);background:var(--primary-light)}
+.export-wrapper{position:relative}
+.export-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.75rem;z-index:100;display:none}
+.export-dropdown.open{display:block}
+.export-dd-title{font-size:.85rem;color:var(--body-color);margin-bottom:.75rem;text-align:center}
+.export-dd-actions{display:flex;gap:.5rem;justify-content:center}
+.export-dd-btn{display:inline-block;padding:.35rem 1.2rem;border-radius:6px;font-size:.82rem;cursor:pointer;font-family:var(--font);background:var(--primary);color:#fff;border:none;font-weight:500;transition:all .12s}
+.export-dd-btn:hover{opacity:.85}
+.export-dd-cancel{background:var(--body-bg);color:var(--muted);border:1px solid var(--border)}
+.export-dd-cancel:hover{background:var(--border)}
 .cols-wrapper{position:relative;margin-left:2px}
 .cols-btn{display:flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;background:none;cursor:pointer;font-size:.95rem;color:var(--primary);padding:2px;transition:all .12s}
 .cols-btn:hover{opacity:.7}
@@ -806,7 +815,16 @@
           </div>
         </div>
         <button class="trash-btn" onclick="openTrashModal()" title="Корзина">🗑️</button>
-        <button class="export-btn" onclick="exportToExcel()" title="Экспорт">⬇</button>
+        <div class="export-wrapper">
+          <button class="export-btn" onclick="toggleExportDropdown(event)">📥 Скачать</button>
+          <div class="export-dropdown" id="exportDropdown">
+            <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
+            <div class="export-dd-actions">
+              <span class="export-dd-btn" onclick="confirmExport()">Да</span>
+              <span class="export-dd-btn export-dd-cancel" onclick="closeExportDropdown()">Нет</span>
+            </div>
+          </div>
+        </div>
         <div class="cols-wrapper">
           <button class="cols-btn" onclick="toggleColsDropdown(event)">☰</button>
           <div class="cols-dropdown" id="colsDropdown">
@@ -2127,6 +2145,19 @@ function exportToExcel(){
   XLSX.writeFile(wb, 'Товары.xlsx');
 }
 
+/* Export dropdown */
+function toggleExportDropdown(e){
+  e.stopPropagation();
+  document.getElementById('exportDropdown').classList.toggle('open');
+}
+function closeExportDropdown(){
+  document.getElementById('exportDropdown').classList.remove('open');
+}
+function confirmExport(){
+  closeExportDropdown();
+  exportToExcel();
+}
+
 /* Columns dropdown */
 const COLUMNS = [
   {id:'category', label:'Категория', def:true},
@@ -2193,6 +2224,10 @@ document.addEventListener('click', function(e){
   }
   if(colsDD && !e.target.closest('.cols-wrapper')){
     colsDD.classList.remove('open');
+  }
+  const expDD = document.getElementById('exportDropdown');
+  if(expDD && !e.target.closest('.export-wrapper')){
+    expDD.classList.remove('open');
   }
 });
 
