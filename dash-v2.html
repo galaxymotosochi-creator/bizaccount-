@@ -218,7 +218,7 @@
 .search-icon{font-size:16px;color:#9CA3AF;line-height:1;flex-shrink:0;display:flex;align-items:center}
 .search-field{border:none;outline:none;font-family:var(--font);font-size:.85rem;padding:0;width:100%;background:transparent;color:var(--body-color);height:100%;line-height:1}
 .search-field::placeholder{color:#9CA3AF;opacity:1}
-.col-headers-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:1px}
+.col-headers-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);white-space:nowrap}
 .col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
 
@@ -845,7 +845,13 @@
     </div>
 
     <!-- Заголовки столбцов товаров -->
-    <div class="col-headers-scroll"><div class="col-headers" id="colHeaders"></div></div>
+    <div class="col-headers-scroll"><div class="col-headers" id="colHeaders">
+      <span class="col-h" style="flex:2" data-col="name">Название</span>
+      <span class="col-h" style="flex:1" data-col="category">Категория</span>
+      <span class="col-h" style="flex:1" data-col="costNoVat">Себес. без НДС</span>
+      <span class="col-h" style="flex:1" data-col="price">Цена</span>
+      <span class="col-h" style="flex:1" data-col="margin">Наценка</span>
+    </div></div>
 
     <!-- Корзина модалка -->
     <div class="modal-overlay" id="trashModal" onclick="if(event.target===this)closeTrashModal()">
@@ -2188,28 +2194,23 @@ document.getElementById('colsList').addEventListener('click', function(e){
 });
 
 function renderColHeaders(){
-  var colHeaders = document.getElementById('colHeaders');
+  var el = document.getElementById('colHeaders');
+  if(!el) return;
   var existing = {};
-  colHeaders.querySelectorAll('.col-h').forEach(function(h){
+  el.querySelectorAll('.col-h').forEach(function(h){
     var col = h.getAttribute('data-col');
-    existing[col] = h;
+    if(col) existing[col] = h;
   });
-  // Всегда показываем Название
-  if(existing['name']) existing['name'].style.display = '';
-  // Порядок колонок
   var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
   var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
   var flexVals = {name:2,category:1,barcode:1,type:1,weight:1,unit:1,costNoVat:1,costWithVat:1,price:1,profit:1,margin:1};
-  // Собираем HTML в правильном порядке
   var html = '';
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
-      var label = labels[col] || col;
-      var flex = flexVals[col] || 1;
-      html += '<span class="col-h" style="flex:'+flex+'" data-col="'+col+'">'+label+'</span>';
+      html += '<span class="col-h" style="flex:'+(flexVals[col]||1)+'" data-col="' + col + '">' + (labels[col]||col) + '</span>';
     }
   });
-  colHeaders.innerHTML = html;
+  el.innerHTML = html;
 }
 
 function toggleColsDropdown(e){
