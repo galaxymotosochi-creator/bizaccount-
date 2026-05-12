@@ -2600,7 +2600,7 @@ function renderSuppliesPage(){
       '<td>'+paySt+'</td>' +
       '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        (payStatus !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button>' : '') +
+        (payStatus !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button> ' : '') +
         '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
@@ -2726,6 +2726,7 @@ function viewSupply(id){
   var supplyLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано'};
   var payLabels = {unpaid:'🔴 Не оплачено',partially_paid:'🟠 Частично',paid:'💰 Оплачено'};
   var supSt = supplyLabels[s.supplyStatus || 'ordered'] || '🔵 Заказано';
+  var payStatus = s.paid >= total ? 'paid' : (s.paid > 0 ? 'partially_paid' : 'unpaid');
   var paySt = payLabels[payStatus] || '🔴 Не оплачено';
   var body = '<div style="margin-bottom:1rem">' +
     '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Накладная:</span><span style="font-weight:600">'+(s.invoice||'—')+'</span></div>' +
