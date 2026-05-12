@@ -227,6 +227,9 @@
 /* Шапка поставок — единый стиль с товарами */
 #supplyColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #supplyColHeaders th:first-child{text-align:left;padding-left:0}
+#supColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#supColHeaders th:first-child{text-align:left;padding-left:0}
+#supplierTableBody td:first-child{padding-left:0}
 /* Шапка корзины — единый стиль с товарами */
 #trashColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #trashColHeaders th:first-child{text-align:left}
@@ -946,21 +949,25 @@
     <div class="page-section" id="page-suppliers">
       <div class="page-header">
         <div>
-          <h1>Поставщики</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Поставщики</h1>
           <div class="sub">Управляйте списком поставщиков</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openSupplierModal()">+ Добавить</button>
+          <button class="btn-green" onclick="openSupplierModal()">+ Добавить поставщика</button>
         </div>
       </div>
-      <div class="product-table">
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table>
-          <thead>
+          <thead id="supColHeaders">
             <tr>
-              <th style="width:35%">Название</th>
-              <th style="width:25%">Контакт</th>
-              <th style="width:25%">Телефон</th>
-              <th style="width:15%"></th>
+              <th>Название</th>
+              <th>Контакт</th>
+              <th>Телефон</th>
+              <th>Способ связи</th>
+              <th>Поставок</th>
+              <th>Сумма</th>
+              <th style="width:130px"></th>
             </tr>
           </thead>
           <tbody id="supplierTableBody">
@@ -984,11 +991,12 @@
         <table>
           <thead id="supplyColHeaders">
             <tr>
-              <th>Товар</th>
               <th>№ накладной</th>
               <th>Поставщик</th>
-              <th>Кол-во</th>
-              <th>Цена закуп.</th>
+              <th>Сумма</th>
+              <th>Статус</th>
+              <th>Долг</th>
+              <th>Дата</th>
               <th style="width:130px"></th>
             </tr>
           </thead>
@@ -1535,6 +1543,17 @@
           <input type="text" id="supPhone" placeholder="+7 (999) 123-45-67">
         </div>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Способ связи</label>
+          <select id="supContactMethod">
+            <option value="telegram">📱 Telegram</option>
+            <option value="whatsapp">💬 WhatsApp</option>
+            <option value="max">🧑‍💼 MAX</option>
+          </select>
+        </div>
+        <div class="form-group"></div>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeSupplierModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -1575,6 +1594,21 @@
         <div class="form-group">
           <label>Закупочная цена (₽)</label>
           <input type="number" id="supCost" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Статус</label>
+          <select id="supStatus">
+            <option value="ordered">🔵 Заказано</option>
+            <option value="transit">🟡 В пути</option>
+            <option value="received">🟢 Оприходовано</option>
+            <option value="paid">💰 Оплачено</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Оплачено (₽)</label>
+          <input type="number" id="supPaid" placeholder="0" min="0" value="0">
         </div>
       </div>
       <div class="modal-actions">
@@ -2517,26 +2551,30 @@ function renderSuppliesPage(){
   var tb = document.getElementById('supplyTableBody');
   if(!tb) return;
   if(!supplies.length){
-    tb.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
     return;
   }
-  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  var statusLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано',paid:'💰 Оплачено'};
   tb.innerHTML = supplies.map(function(s){
-    var prod = products.find(function(p){ return p.id === s.prodId; });
     var total = (s.qty || 0) * (s.cost || 0);
+    var paid = s.paid || 0;
+    var debt = total - paid;
+    var st = statusLabels[s.status] || '—';
+    var d = s.date || '—';
     return '<tr>' +
-      '<td><div class="prod-name">'+(prod ? prod.name : 'Товар #'+s.prodId)+'</div></td>' +
       '<td><span style="font-size:.8rem;color:var(--muted)">'+(s.invoice||'—')+'</span></td>' +
       '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
-      '<td>'+s.qty+'</td>' +
-      '<td><span class="num">'+(s.cost?s.cost.toLocaleString()+'₽':'—')+'</span></td>' +
+      '<td><span class="num">'+total.toLocaleString()+'₽</span></td>' +
+      '<td>'+st+'</td>' +
+      '<td><span class="num" style="color:'+(debt>0?'#dc2626':'#16a34a')+'">'+debt.toLocaleString()+'₽</span></td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
+        (s.status !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')" style="background:#dcfce7!important;color:#16a34a!important">💰</button>' : '') +
         '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
             '<button onclick="copySupply('+s.id+')">Копировать</button>' +
-            (s.hidden?'<button onclick="unhideSupply('+s.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideSupply('+s.id+')">Скрыть</button>') +
             '<button onclick="deleteSupply('+s.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
@@ -2566,12 +2604,15 @@ function saveSupply(e){
   if(!prodId) return alert('Выберите товар');
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
   var editId = parseInt(document.getElementById('editSupplyId').value);
+  var paid = parseFloat(document.getElementById('supPaid').value) || 0;
   var obj = {
     invoice: document.getElementById('supInvoice').value.trim(),
     supplierName: document.getElementById('supSupplier').value.trim(),
     qty: parseInt(document.getElementById('supQty').value) || 1,
     cost: parseFloat(document.getElementById('supCost').value) || 0,
-    prodId: prodId
+    prodId: prodId,
+    status: document.getElementById('supStatus').value,
+    paid: paid
   };
   if(editId){
     var idx = list.findIndex(function(x){ return x.id === editId; });
@@ -2596,6 +2637,8 @@ function editSupply(id){
   document.getElementById('supSupplier').value = s.supplierName || '';
   document.getElementById('supQty').value = s.qty;
   document.getElementById('supCost').value = s.cost || 0;
+  document.getElementById('supStatus').value = s.status || 'ordered';
+  document.getElementById('supPaid').value = s.paid || 0;
   document.querySelector('#supplyModal h2').textContent = 'Редактировать поставку';
   document.querySelector('#supplyModal .sub').textContent = 'Измените данные поставки';
 }
@@ -2603,6 +2646,19 @@ function deleteSupply(id){
   if(!confirm('Удалить поставку?')) return;
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
   list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+}
+function paySupply(id){
+  var p = prompt('Сколько оплатили?', '');
+  if(!p || !parseFloat(p)) return;
+  var amount = parseFloat(p);
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var s = list.find(function(x){ return x.id === id; });
+  if(!s) return;
+  s.paid = (s.paid || 0) + amount;
+  var total = (s.qty || 0) * (s.cost || 0);
+  if(s.paid >= total) s.status = 'paid';
   localStorage.setItem('supplies88', JSON.stringify(list));
   renderSuppliesPage();
 }
@@ -2937,6 +2993,92 @@ function deleteWriteoff(id){
   list = list.filter(function(x){ return x.id !== id; });
   localStorage.setItem('writeoffs88', JSON.stringify(list));
   renderWriteoffsPage();
+}
+// ================== ПОСТАВЩИКИ ==================
+var contactIcons = {telegram:'📱', whatsapp:'💬', max:'🧑‍💼'};
+var contactLabels = {telegram:'Telegram', whatsapp:'WhatsApp', max:'MAX'};
+function renderSuppliersPage(){
+  var list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  var supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var tb = document.getElementById('supplierTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">🏢</div><p>Поставщиков пока нет. Нажмите «+ Добавить поставщика»</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = list.map(function(s){
+    var supSupplies = supplies.filter(function(sp){ return sp.supplierName === s.name; });
+    var supplyCount = supSupplies.length;
+    var totalSum = supSupplies.reduce(function(sum, sp){ return sum + ((sp.qty||0) * (sp.cost||0)); }, 0);
+    var icon = contactIcons[s.contactMethod] || '📞';
+    var label = contactLabels[s.contactMethod] || s.contactMethod || '—';
+    return '<tr>' +
+      '<td><div class="prod-name" style="font-size:.85rem">'+s.name+'</div></td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">'+(s.contact||'—')+'</td>' +
+      '<td style="font-size:.82rem">'+(s.phone||'—')+'</td>' +
+      '<td><span class="prod-cat">'+icon+' '+label+'</span></td>' +
+      '<td>'+supplyCount+'</td>' +
+      '<td><span class="num">'+totalSum.toLocaleString()+'₽</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editSupplier('+s.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="deleteSupplier('+s.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function openSupplierModal(){
+  document.getElementById('supplierModal').classList.add('active');
+}
+function closeSupplierModal(){
+  document.getElementById('supplierModal').classList.remove('active');
+  document.getElementById('supplierForm').reset();
+  document.getElementById('editSupplierId').value = '';
+}
+function saveSupplier(e){
+  e.preventDefault();
+  var name = document.getElementById('supName').value.trim();
+  if(!name) return alert('Введите название');
+  var list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  var editId = parseInt(document.getElementById('editSupplierId').value);
+  var obj = {
+    name: name,
+    contact: document.getElementById('supContact').value.trim(),
+    phone: document.getElementById('supPhone').value.trim(),
+    contactMethod: document.getElementById('supContactMethod').value
+  };
+  if(editId){
+    var idx = list.findIndex(function(x){ return x.id === editId; });
+    if(idx > -1) list[idx] = {...list[idx], ...obj};
+  } else {
+    obj.id = Date.now();
+    list.unshift(obj);
+  }
+  localStorage.setItem('suppliers88', JSON.stringify(list));
+  renderSuppliersPage();
+  closeSupplierModal();
+}
+function editSupplier(id){
+  var list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  var s = list.find(function(x){ return x.id === id; });
+  if(!s) return;
+  document.getElementById('editSupplierId').value = s.id;
+  document.getElementById('supName').value = s.name;
+  document.getElementById('supContact').value = s.contact || '';
+  document.getElementById('supPhone').value = s.phone || '';
+  document.getElementById('supContactMethod').value = s.contactMethod || 'telegram';
+  document.getElementById('supplierModal').classList.add('active');
+}
+function deleteSupplier(id){
+  if(!confirm('Удалить поставщика?')) return;
+  var list = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('suppliers88', JSON.stringify(list));
+  renderSuppliersPage();
 }
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
