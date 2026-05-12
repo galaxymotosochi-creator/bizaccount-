@@ -1014,8 +1014,9 @@
           <h1 style="font-size:1.2rem;font-weight:600;margin:0">Инвентаризация</h1>
           <div class="sub">Сверка фактических остатков с учётными</div>
         </div>
-        <div class="page-actions">
-          <button class="btn-green" onclick="startInventory()">+ Новая инвентаризация</button>
+        <div id="invActions">
+          <button class="btn-green" onclick="startInventory()" id="invNewBtn">+ Новая инвентаризация</button>
+          <button class="btn btn-outline" onclick="cancelInventoryEdit()" id="invBackBtn" style="display:none;font-size:.8rem">← Назад</button>
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
@@ -2621,6 +2622,11 @@ function copySupply(id){
 // ================== ИНВЕНТАРИЗАЦИЯ ==================
 var editingInventoryId = null;
 function renderInventoryPage(){
+  editingInventoryId = null;
+  var nb = document.getElementById('invNewBtn');
+  var bb = document.getElementById('invBackBtn');
+  if(nb) nb.style.display = '';
+  if(bb) bb.style.display = 'none';
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
   var tb = document.getElementById('inventoryTableBody');
   if(!tb) return;
@@ -2648,6 +2654,10 @@ function renderInventoryPage(){
   }).join('');
 }
 function startInventory(){
+  var nb = document.getElementById('invNewBtn');
+  var bb = document.getElementById('invBackBtn');
+  if(nb) nb.style.display = 'none';
+  if(bb) bb.style.display = '';
   var now = new Date();
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
   var num = 'INV-' + String(list.length + 1).padStart(3, '0');
@@ -2670,6 +2680,7 @@ function startInventory(){
     id: Date.now(),
     number: num,
     date: now.toISOString().split('T')[0],
+    responsible: '',
     status: 'draft',
     items: items,
     totals: { totalBefore: totalBefore, totalAfter: totalBefore, shortage: 0, surplus: 0, result: 0 }
@@ -2682,7 +2693,16 @@ function startInventory(){
 function renderInventoryEditor(doc){
   var tb = document.getElementById('inventoryTableBody');
   if(!tb) return;
-  tb.innerHTML = doc.items.map(function(it, idx){
+  // Шапка документа — номер, дата, ответственный
+  var headerHtml = '<tr><td colspan="5" style="padding:.5rem 0 1rem 0"><div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">';
+  headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">№</span><span style="font-size:1rem;font-weight:600">'+doc.number+'</span></div>';
+  headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">Дата</span><input type="date" id="invDate" value="'+doc.date+'" onchange="updateInvMeta('+doc.id+')" style="padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.85rem"></div>';
+  headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">Ответственный</span><input type="text" id="invResponsible" value="'+(doc.responsible||'')+'" placeholder="ФИО" onchange="updateInvMeta('+doc.id+')" style="padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.85rem;max-width:200px"></div>';
+  headerHtml += '</div></td></tr>';
+  // Шапка колонок таблицы
+  headerHtml += '<tr id="invEditHeaders"><th style="text-align:left;font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;border-bottom:1px solid var(--border);background:var(--white)">Товар</th><th style="font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;border-bottom:1px solid var(--border);background:var(--white)">Учтено</th><th style="font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;border-bottom:1px solid var(--border);background:var(--white)">Факт</th><th style="font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;border-bottom:1px solid var(--border);background:var(--white)">Разница</th><th style="font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;border-bottom:1px solid var(--border);background:var(--white)">Сумма</th></tr>';
+  // Строки товаров
+  var bodyHtml = doc.items.map(function(it, idx){
     var diff = it.actual - it.expected;
     var diffSum = diff * it.cost;
     return '<tr>' +
@@ -2692,8 +2712,18 @@ function renderInventoryEditor(doc){
       '<td><span class="num" style="color:'+(diff>0?'#16a34a':(diff<0?'#dc2626':'var(--muted)'))+'">'+(diff>0?'+':'')+diff+'</span></td>' +
       '<td><span class="num" style="color:'+(diffSum>0?'#16a34a':(diffSum<0?'#dc2626':'var(--muted)'))+'">'+(diffSum>0?'+':'')+diffSum.toLocaleString()+'₽</span></td>' +
     '</tr>';
-  }).join('') +
-  '<tr><td colspan="5" style="text-align:center;padding:1rem"><button class="btn-green" onclick="completeInventory('+doc.id+')" style="padding:.6rem 2rem">✅ Завершить инвентаризацию</button></td></tr>';
+  }).join('');
+  // Кнопка справа
+  bodyHtml += '<tr><td colspan="5" style="text-align:right;padding:1rem 0"><button class="btn btn-primary" onclick="completeInventory('+doc.id+')" style="padding:.6rem 1.5rem;font-size:.85rem">Завершить инвентаризацию</button></td></tr>';
+  tb.innerHTML = headerHtml + bodyHtml;
+}
+function updateInvMeta(docId){
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var doc = list.find(function(d){ return d.id === docId; });
+  if(!doc) return;
+  doc.date = document.getElementById('invDate').value;
+  doc.responsible = document.getElementById('invResponsible').value.trim();
+  localStorage.setItem('inventory88', JSON.stringify(list));
 }
 function updateInvItem(docId, idx){
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
@@ -2767,7 +2797,9 @@ function deleteInventory(id){
   localStorage.setItem('inventory88', JSON.stringify(list));
   renderInventoryPage();
 }
-
+function cancelInventoryEdit(){
+  renderInventoryPage();
+}
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
