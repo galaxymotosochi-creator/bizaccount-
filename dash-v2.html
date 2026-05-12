@@ -2248,6 +2248,18 @@ function resetCols(){
 /* Trash modal */
 function openTrashModal(){
   closeAllDropdowns();
+  var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  var tb = document.getElementById('trashModalBody');
+  if(tb){
+    if(!trash.length){
+      tb.innerHTML = '<tr><td colspan="2"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>';
+    } else {
+      tb.innerHTML = trash.map(function(p){
+        var daysLeft = Math.max(0, 30 - Math.floor((Date.now() - p.deletedAt) / 86400000));
+        return '<tr><td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td><td style="font-size:.78rem;color:var(--muted)">осталось ' + daysLeft + ' дн.</td></tr>';
+      }).join('');
+    }
+  }
   document.getElementById('trashModal').classList.add('active');
 }
 function closeTrashModal(){
@@ -2357,13 +2369,79 @@ function unhideProduct(id){
 }
 function deleteProduct(id){
   if(!confirm('Удалить товар?')) return;
-  let list = JSON.parse(localStorage.getItem('products88') || '[]');
-  list = list.filter(p => p.id !== id);
-  localStorage.setItem('products88', JSON.stringify(list));
+  let products = JSON.parse(localStorage.getItem('products88') || '[]');
+  let trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  let idx = products.findIndex(p => p.id === id);
+  if(idx === -1) return;
+  let item = products[idx];
+  item.deletedAt = Date.now();
+  trash.unshift(item);
+  products.splice(idx, 1);
+  localStorage.setItem('products88', JSON.stringify(products));
+  localStorage.setItem('trash88', JSON.stringify(trash));
   renderProductsPage();
   updateStats();
   showToast();
 }
+function renderTrashPage(){
+  var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  var tb = document.getElementById('trashTableBody');
+  if(!tb) return;
+  if(!trash.length){
+    tb.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = trash.map(function(p){
+    var deletedDate = new Date(p.deletedAt).toLocaleDateString('ru-RU');
+    var daysLeft = Math.max(0, 30 - Math.floor((Date.now() - p.deletedAt) / 86400000));
+    return '<tr>' +
+      '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
+      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="restoreFromTrash('+p.id+')" style="color:var(--primary)">Восстановить</button>' +
+            '<button onclick="deleteForever('+p.id+')" style="color:#dc3545">Удалить навсегда</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function restoreFromTrash(id){
+  var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  var idx = trash.findIndex(function(p){ return p.id === id; });
+  if(idx === -1) return;
+  var item = trash[idx];
+  delete item.deletedAt;
+  products.unshift(item);
+  trash.splice(idx, 1);
+  localStorage.setItem('products88', JSON.stringify(products));
+  localStorage.setItem('trash88', JSON.stringify(trash));
+  renderTrashPage();
+  // Если мы на странице товаров — обновить
+  var productsPage = document.getElementById('page-products');
+  if(productsPage && productsPage.classList.contains('active')) renderProductsPage();
+}
+function deleteForever(id){
+  if(!confirm('Удалить товар навсегда?')) return;
+  var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  trash = trash.filter(function(p){ return p.id !== id; });
+  localStorage.setItem('trash88', JSON.stringify(trash));
+  renderTrashPage();
+}
+function cleanupOldTrash(){
+  var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
+  var now = Date.now();
+  var cutoff = 30 * 24 * 60 * 60 * 1000; // 30 дней
+  var before = trash.length;
+  trash = trash.filter(function(p){ return (now - (p.deletedAt||0)) < cutoff; });
+  if(trash.length !== before) localStorage.setItem('trash88', JSON.stringify(trash));
+}
+// Очистка при загрузке — удаляем товары старше 30 дней
+cleanupOldTrash();
 const SVC_CAT = {repair:'Ремонт',cleaning:'Клининг',delivery:'Доставка',consult:'Консультация',install:'Монтаж',other:'Прочее'};
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
