@@ -779,7 +779,7 @@
             <div class="cat-dd-list" id="catList"></div>
           </div>
         </div>
-        <button class="text-btn" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');openTrashModal()">Корзина <span class="act-arrow">▼</span></button>
+        <button class="text-btn" onclick="closeAllDropdowns();navigateTo('trash')">Корзина <span class="act-arrow">▼</span></button>
         <div class="export-wrapper">
           <button class="text-btn" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');toggleExportDropdown(event)">Скачать <span class="act-arrow">▼</span></button>
           <div class="export-dropdown" id="exportDropdown">
@@ -1300,7 +1300,7 @@
           <div class="sub">Управляйте категориями для товаров</div>
         </div>
         <div class="page-actions">
-          <button onclick="openTrashModal()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--primary);padding:2px;margin-right:4px">🗑️</button>
+          <button onclick="navigateTo('trash')" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--primary);padding:2px;margin-right:4px">🗑️</button>
           <button class="btn-green" onclick="openCatModal('product')">+ Добавить категорию</button>
         </div>
       </div>
