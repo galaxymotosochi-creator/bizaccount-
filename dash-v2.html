@@ -807,8 +807,7 @@
     </div>
     <!-- Заголовки столбцов товаров -->
     <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <table id="productTable" style="width:auto!important;table-layout:fixed;min-width:0">
-        <colgroup id="productColGroup"></colgroup>
+      <table>
         <thead id="colHeaders">
           <tr></tr>
         </thead>
@@ -2214,30 +2213,17 @@ function closeAllDropdowns(){
 }
 function renderColHeaders(){
   var el = document.getElementById('colHeaders');
-  var cg = document.getElementById('productColGroup');
   if(!el) return;
   var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
   var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
-  var COL_W = {name:220,category:140,barcode:140,type:120,weight:140,unit:120,costNoVat:150,costWithVat:150,price:130,profit:130,margin:130};
-  var thHtml = '';
-  var colHtml = '';
-  var totalW = 0;
+  var html = '';
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
-      var w = COL_W[col] || 130;
-      thHtml += '<th data-col="' + col + '">' + (labels[col]||col) + '</th>';
-      colHtml += '<col style="width:'+w+'px">';
-      totalW += w;
+      html += '<th data-col="' + col + '">' + (labels[col]||col) + '</th>';
     }
   });
-  var actionsW = 140;
-  thHtml += '<th style="width:'+actionsW+'px;text-align:right"></th>';
-  colHtml += '<col style="width:'+actionsW+'px">';
-  totalW += actionsW;
-  el.querySelector('tr').innerHTML = thHtml;
-  if(cg) cg.innerHTML = colHtml;
-  var tbl = document.getElementById('productTable');
-  if(tbl) tbl.style.minWidth = totalW + 'px';
+  html += '<th style="width:140px;text-align:right"></th>';
+  el.querySelector('tr').innerHTML = html;
 }
 function toggleColsDropdown(e){
   e.stopPropagation();
