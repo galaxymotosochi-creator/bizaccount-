@@ -1922,6 +1922,18 @@
         </div>
       </div>
       <div class="form-group">
+        <label>Группа</label>
+        <select id="clGroup" onchange="onClientGroupChange()">
+          <option value="">— без группы —</option>
+          <option value="new">🆕 Новый</option>
+          <option value="regular">🔵 Постоянный</option>
+          <option value="vip">🌟 VIP</option>
+          <option value="wholesale">🟢 Оптовик</option>
+          <option value="custom">✏️ Своя группа...</option>
+        </select>
+        <input type="text" id="clGroupCustom" placeholder="Введите название группы" style="display:none;margin-top:.3rem">
+      </div>
+      <div class="form-group">
         <label>Комментарий</label>
         <textarea id="clComment" placeholder="Заметки о клиенте..."></textarea>
       </div>
@@ -3288,8 +3300,12 @@ function renderClientsPage(){
     return;
   }
   tb.innerHTML = list.map(function(c){
+    var grp = c.group || '';
+    if(grp && groupLabels[grp]) grp = groupLabels[grp];
+    var grpColor = groupColors[c.group] || '#6b7280';
+    var grpBadge = c.group ? '<span style="font-size:.65rem;color:'+grpColor+';font-weight:600;margin-left:.35rem">['+grp+']</span>' : '';
     return '<tr>' +
-      '<td style="text-align:left"><div class="prod-name">'+c.name+'</div>'+(c.email?'<div class="prod-sku">'+c.email+'</div>':'')+'</td>' +
+      '<td style="text-align:left"><div class="prod-name">'+c.name+grpBadge+'</div>'+(c.email?'<div class="prod-sku">'+c.email+'</div>':'')+'</td>' +
       '<td style="font-size:.82rem">'+(c.phone||'—')+'</td>' +
       '<td>'+(c.purchases||0)+'</td>' +
       '<td><span class="num">'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></td>' +
@@ -3325,7 +3341,8 @@ function saveClient(e){
     name: name,
     phone: document.getElementById('clPhone').value.trim(),
     email: document.getElementById('clEmail').value.trim(),
-    comment: document.getElementById('clComment').value.trim()
+    comment: document.getElementById('clComment').value.trim(),
+    group: document.getElementById('clGroup').value === 'custom' ? document.getElementById('clGroupCustom').value.trim() : document.getElementById('clGroup').value
   };
   if(editId){
     var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
@@ -3349,6 +3366,19 @@ function editClient(id){
   document.getElementById('clPhone').value = c.phone || '';
   document.getElementById('clEmail').value = c.email || '';
   document.getElementById('clComment').value = c.comment || '';
+  var grp = c.group || '';
+  var sel = document.getElementById('clGroup');
+  if(sel){
+    if(['new','regular','vip','wholesale'].includes(grp)){
+      sel.value = grp;
+    } else if(grp){
+      sel.value = 'custom';
+      var custom = document.getElementById('clGroupCustom');
+      if(custom){ custom.value = grp; custom.style.display = ''; }
+    } else {
+      sel.value = '';
+    }
+  }
   document.getElementById('clientModalTitle').textContent = 'Редактировать клиента';
   document.querySelector('#clientModal .sub').textContent = 'Измените данные';
   document.getElementById('clientModal').classList.add('active');
@@ -3375,6 +3405,13 @@ function toggleClientPeriod(){
   if(btn) btn.innerHTML = clPeriodLabels[clPeriods[clPeriodIndex]] + ' <span class="act-arrow">▼</span>';
   renderClientsPage();
 }
+function onClientGroupChange(){
+  var sel = document.getElementById('clGroup');
+  var custom = document.getElementById('clGroupCustom');
+  if(custom) custom.style.display = sel.value === 'custom' ? '' : 'none';
+}
+var groupColors = {new:'#6b7280',regular:'#2563eb',vip:'#d97706',wholesale:'#16a34a'};
+var groupLabels = {new:'Новый',regular:'Постоянный',vip:'VIP',wholesale:'Оптовик'};
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
