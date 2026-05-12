@@ -206,18 +206,18 @@
 .search-field::placeholder{color:#9CA3AF;opacity:1}
 .col-headers-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);white-space:nowrap}
-.col-h{font-size:.72rem;font-weight:400;color:var(--muted);letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
+.col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
 /* Выравнивание левого края для категорий */
 #catTableBody td:first-child{padding-left:0}
-#catColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#catColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #catColHeaders th:first-child{text-align:left;padding-left:0}
 #supplyTableBody td:first-child{padding-left:0}
 /* Шапка товаров внутри thead */
-#colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #colHeaders th:first-child{text-align:left;padding-left:0}
 #productTableBody td:first-child{text-align:left;padding-left:0}
 /* Шапка инвентаризации — единый стиль с товарами */
-#invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #invColHeaders th:first-child{text-align:left;padding-left:0}
 #inventoryTableBody td:first-child{padding-left:0}
 /* Шапка списаний — единый стиль с товарами */
@@ -225,7 +225,7 @@
 #woColHeaders th:first-child{text-align:left;padding-left:0}
 #writeoffTableBody td:first-child{padding-left:0}
 /* Шапка поставок — единый стиль с товарами */
-#supplyColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#supplyColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #supplyColHeaders th:first-child{text-align:left;padding-left:0}
 #supColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #supColHeaders th:first-child{text-align:left;padding-left:0}
@@ -281,7 +281,7 @@
   .filter-tab.active{background:var(--primary);color:var(--white);border-color:var(--primary)}
       .product-table{overflow-x:auto;margin:0}
   .product-table table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:700px}
-  .product-table th{text-align:center;padding:.6rem .5rem;color:var(--muted);font-weight:700;font-size:.7rem;letter-spacing:.04em;background:transparent;white-space:nowrap;border-bottom:1px solid var(--border)}
+  .product-table th{text-align:center;padding:.6rem .5rem;color:var(--muted);font-weight:700;font-size:.7rem;text-transform:uppercase;background:transparent;white-space:nowrap;border-bottom:1px solid var(--border)}
   .product-table td{padding:.5rem .5rem;border-bottom:1px solid #e9ecef;vertical-align:middle;text-align:center;background:transparent}
   .product-table tr:hover td{background:#f8f9fa}
   .product-table .prod-name{font-weight:500;color:var(--body-color);text-align:left;font-size:.85rem}
@@ -2759,20 +2759,7 @@ function viewSupply(id){
   document.getElementById('invResultSub').textContent = s.supplierName || '';
   document.getElementById('invResultBody').innerHTML = body;
   document.getElementById('invResultTotals').innerHTML = '';
-  var confirmBtn = document.getElementById('invConfirmBtn');
-  confirmBtn.textContent = 'Закрыть';
-  confirmBtn.onclick = function(){ document.getElementById('invResultModal').classList.remove('active'); };
-  var cancelBtn = confirmBtn.parentNode.querySelector('.btn-outline');
-  if(cancelBtn) cancelBtn.style.display = 'none';
   document.getElementById('invResultModal').classList.add('active');
-}
-function closeInvResult(){
-  document.getElementById('invResultModal').classList.remove('active');
-  var confirmBtn = document.getElementById('invConfirmBtn');
-  confirmBtn.textContent = 'Провести';
-  confirmBtn.onclick = null;
-  var cancelBtn = confirmBtn.parentNode.querySelector('.btn-outline');
-  if(cancelBtn) cancelBtn.style.display = '';
 }
 function editSupply(id){
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
