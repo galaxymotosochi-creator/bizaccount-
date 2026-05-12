@@ -2611,6 +2611,7 @@ function saveSupply(e){
   var editId = parseInt(document.getElementById('editSupplyId').value);
   var paid = parseFloat(document.getElementById('supPaid').value) || 0;
   var total = supTempItems.reduce(function(acc, it){ return acc + it.qty * it.cost; }, 0);
+  alert('Сохраняю: ' + supTempItems.length + ' товаров на сумму ' + total + '₽');
   var obj = {
     invoice: document.getElementById('supInvoice').value.trim(),
     supplierName: document.getElementById('supSupplier').value.trim(),
