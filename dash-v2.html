@@ -983,7 +983,7 @@
           <div class="sub">Оприходование товаров на склад</div>
         </div>
         <div class="page-actions">
-          <button class="btn-green" onclick="openSupplyModal()">+ Новая поставка</button>
+          <button class="btn-green" onclick="supTempItems=[];openSupplyModal()">+ Новая поставка</button>
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
@@ -2579,7 +2579,6 @@ function renderSuppliesPage(){
   }).join('');
 }
 function openSupplyModal(){
-  supTempItems = [];
   var supSel = document.getElementById('supSupplier');
   if(supSel){
     var suppliers = JSON.parse(localStorage.getItem('suppliers88') || '[]');
@@ -2607,6 +2606,7 @@ function closeSupplyModal(){
 function saveSupply(e){
   e.preventDefault();
   if(!supTempItems.length) return alert('Добавьте хотя бы один товар');
+  var itemsToSave = supTempItems.slice();
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
   var editId = parseInt(document.getElementById('editSupplyId').value);
   var paid = parseFloat(document.getElementById('supPaid').value) || 0;
@@ -2614,7 +2614,7 @@ function saveSupply(e){
   var obj = {
     invoice: document.getElementById('supInvoice').value.trim(),
     supplierName: document.getElementById('supSupplier').value.trim(),
-    items: supTempItems.slice(),
+    items: itemsToSave,
     total: total,
     status: document.getElementById('supStatus').value,
     paid: paid,
@@ -2712,8 +2712,8 @@ function editSupply(id){
   document.getElementById('supSupplier').value = s.supplierName || '';
   document.getElementById('supStatus').value = s.status || 'ordered';
   document.getElementById('supPaid').value = s.paid || 0;
-  supTempItems = (s.items || [{ prodId: s.prodId, name: 'Товар', qty: s.qty||0, cost: s.cost||0 }]).slice();
   openSupplyModal();
+  supTempItems = (s.items || [{ prodId: s.prodId, name: 'Товар', qty: s.qty||0, cost: s.cost||0 }]).slice();
   renderSupplyItemsList();
   document.getElementById('supModalTitle').textContent = 'Редактировать поставку';
   document.getElementById('supModalSub').textContent = 'Товары в накладной';
