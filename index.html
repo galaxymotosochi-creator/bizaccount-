@@ -173,7 +173,7 @@
   .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
   .modal-overlay.active{display:flex}
   .modal-box{background:var(--white);border-radius:var(--radius);padding:2rem;max-width:560px;width:100%;box-shadow:0 1rem 2rem rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
-  .modal-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.25rem}
+  .modal-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.25rem;animation:none!important}
   .modal-box .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
   .modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted)}
   .form-group{margin-bottom:1rem}
@@ -373,7 +373,7 @@
   /* ===== PIN ===== */
   .pin-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
   .pin-overlay.open{display:flex}
-  .pin-box{background:var(--white);border-radius:1.2rem;padding:2rem 2rem 1.5rem;max-width:300px;width:90%;text-align:center;box-shadow:0 1rem 3rem rgba(0,0,0,.2);position:relative;animation:pinIn .25s ease}
+  .pin-box{background:var(--white);border-radius:1.2rem;padding:2rem 2rem 1.5rem;max-width:300px;width:90%;text-align:center;box-shadow:0 1rem 3rem rgba(0,0,0,.2);position:relative}
   @keyframes pinIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
   .pin-box h2{font-size:1.1rem;font-weight:600;margin-bottom:.1rem}
   .pin-box .sub{font-size:.8rem;color:var(--muted);margin-bottom:.75rem}
@@ -391,7 +391,7 @@
   /* ===== SHIFT OPENING ===== */
   .shift-overlay{position:fixed;top:0;left:0;right:0;bottom:0;z-index:350;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
   .shift-overlay.open{display:flex}
-  .shift-box{background:var(--white);border-radius:1.2rem;padding:2rem 2.2rem;max-width:420px;width:90%;box-shadow:0 1rem 3rem rgba(0,0,0,.2);text-align:center;animation:shiftIn .3s ease}
+  .shift-box{background:var(--white);border-radius:1.2rem;padding:2rem 2.2rem;max-width:420px;width:90%;box-shadow:0 1rem 3rem rgba(0,0,0,.2);text-align:center}
   @keyframes shiftIn{from{opacity:0;transform:scale(.94) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
   .shift-box h2{font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
   .shift-box .shift-desc{font-size:.85rem;color:var(--muted);line-height:1.5;margin-bottom:1rem}
@@ -457,7 +457,7 @@
   .receipt-go:hover:not(:disabled){opacity:.9;transform:translateY(-1px)}
   .receipt-go:disabled{opacity:.35;cursor:default}
   /* ===== PAY MODAL ===== */
-  .pay-modal-box{background:var(--white);border-radius:1.2rem;width:95vw;max-width:760px;max-height:90vh;box-shadow:0 1rem 3rem rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;position:relative;animation:regIn .25s ease}
+  .pay-modal-box{background:var(--white);border-radius:1.2rem;width:95vw;max-width:760px;max-height:90vh;box-shadow:0 1rem 3rem rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;position:relative}
   .pay-modal-inner{display:flex;flex:1;min-height:0}
   .pay-keypad{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem}
   .pay-kp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;max-width:260px;width:100%}
