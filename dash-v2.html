@@ -1581,17 +1581,17 @@
       </div>
       <div style="border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-bottom:.5rem;background:var(--body-bg)">
         <div style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.5rem">Товары в поставке</div>
-        <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.5rem"></div>
-        <div class="form-row" style="gap:.35rem;flex-wrap:nowrap">
-          <div class="form-group" style="flex:1;min-width:0">
-      <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.5rem"></div>
-      <div style="display:flex;gap:.35rem">
-        <select id="supAddProduct" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px"><option value="">— выберите товар —</option></select>
-        <input type="number" id="supAddQty" placeholder="Количество" min="1" step="any" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px">
-        <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px">
+        <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.65rem"></div>
+        <div style="display:flex;gap:.35rem">
+          <select id="supAddProduct" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font)"><option value="">— выберите товар —</option></select>
+          <input type="number" id="supAddQty" placeholder="Количество" min="1" step="any" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font)">
+          <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="flex:1;font-size:.82rem;padding:.35rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font)">
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:.35rem">
+          <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.25rem .55rem;font-size:.75rem">+ Добавить</button>
+        </div>
+        <div id="supItemsTotal" style="text-align:right;font-size:.85rem;font-weight:600;padding-top:.35rem;border-top:1px solid var(--border);margin-top:.35rem"></div>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-top:.35rem">
-        <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.3rem .65rem;font-size:.78rem">+ Добавить</button>
       </div>
         <div id="supItemsTotal" style="text-align:right;font-size:.9rem;font-weight:600;padding-top:.35rem;border-top:1px solid var(--border);margin-top:.35rem"></div>
       </div>
