@@ -994,8 +994,8 @@
               <th>№ накладной</th>
               <th>Поставщик</th>
               <th>Сумма</th>
-              <th>📦 Поставка</th>
-              <th>💳 Оплата</th>
+              <th>Поставка</th>
+              <th>Оплата</th>
               <th>Дата</th>
               <th style="width:130px"></th>
             </tr>
@@ -1595,10 +1595,9 @@
         <div class="form-group">
           <label>Статус</label>
           <select id="supStatus">
-            <option value="ordered">🔵 Заказано</option>
-            <option value="transit">🟡 В пути</option>
-            <option value="received">🟢 Оприходовано</option>
-            <option value="paid">💰 Оплачено</option>
+            <option value="ordered">Заказано</option>
+            <option value="transit">В пути</option>
+            <option value="received">Оприходовано</option>
           </select>
         </div>
         <div class="form-group">
@@ -2581,23 +2580,25 @@ function renderSuppliesPage(){
     return;
   }
   var supplyStatuses = ['ordered','transit','received'];
-  var supplyLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано'};
-  var payLabels = {unpaid:'🔴 Не оплачено',partially_paid:'🟠 Частично',paid:'💰 Оплачено'};
+  var supplyLabels = {ordered:'Заказано',transit:'В пути',received:'Оприходовано'};
+  var payLabels = {unpaid:'Не оплачено',partially_paid:'Частично оплачено',paid:'Оплачено'};
   tb.innerHTML = supplies.map(function(s){
     var total = s.total || (s.items||[]).reduce(function(sum, it){ return sum + it.qty * it.cost; }, 0) || (s.qty||0)*(s.cost||0);
     var paid = s.paid || 0;
     var debt = total - paid;
     var payStatus = paid >= total ? 'paid' : (paid > 0 ? 'partially_paid' : 'unpaid');
-    var supSt = supplyLabels[s.supplyStatus || 'ordered'] || '🔵 Заказано';
-    var paySt = payLabels[payStatus] || '🔴 Не оплачено';
+    var supSt = supplyLabels[s.supplyStatus || 'ordered'] || 'Заказано';
+    var paySt = payLabels[payStatus] || 'Не оплачено';
+    var supColor = (s.supplyStatus||'ordered') === 'received' ? '#16a34a' : ((s.supplyStatus||'ordered') === 'transit' ? '#d97706' : '#2563eb');
+    var payColor = payStatus === 'paid' ? '#16a34a' : (payStatus === 'partially_paid' ? '#d97706' : '#dc2626');
     var d = s.date || '—';
     var invoiceLink = s.invoice ? '<span style="color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary)" onclick="viewSupply('+s.id+')">'+s.invoice+'</span>' : '—';
     return '<tr>' +
       '<td style="text-align:left"><div class="prod-name">'+invoiceLink+'</div><div class="prod-sku">'+(s.items?s.items.length:1)+' поз.</div></td>' +
       '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
       '<td><span class="num">'+Number(total).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'₽</span></td>' +
-      '<td><span style="cursor:pointer" onclick="cycleSupplyStatus('+s.id+')" title="Нажмите чтобы изменить">'+supSt+'</span></td>' +
-      '<td>'+paySt+'</td>' +
+      '<td><span style="cursor:pointer;color:'+supColor+'" onclick="cycleSupplyStatus('+s.id+')" title="Нажмите чтобы изменить">'+supSt+'</span></td>' +
+      '<td><span style="color:'+payColor+'">'+paySt+'</span></td>' +
       '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
         (payStatus !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button> ' : '') +
@@ -2723,46 +2724,54 @@ function viewSupply(id){
   if(!s) return;
   var items = s.items || [{ name: 'Товар', qty: s.qty || 0, cost: s.cost || 0 }];
   var total = s.total || items.reduce(function(sum, it){ return sum + it.qty * it.cost; }, 0);
-  var supplyLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано'};
-  var payLabels = {unpaid:'🔴 Не оплачено',partially_paid:'🟠 Частично',paid:'💰 Оплачено'};
-  var supSt = supplyLabels[s.supplyStatus || 'ordered'] || '🔵 Заказано';
+  var supplyLabels = {ordered:'Заказано',transit:'В пути',received:'Оприходовано'};
+  var payLabels = {unpaid:'Не оплачено',partially_paid:'Частично оплачено',paid:'Оплачено'};
+  var supSt = supplyLabels[s.supplyStatus || 'ordered'] || 'Заказано';
   var payStatus = s.paid >= total ? 'paid' : (s.paid > 0 ? 'partially_paid' : 'unpaid');
-  var paySt = payLabels[payStatus] || '🔴 Не оплачено';
-  var body = '<div style="margin-bottom:1rem">' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Накладная:</span><span style="font-weight:600">'+(s.invoice||'—')+'</span></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Поставщик:</span><span>'+(s.supplierName||'—')+'</span></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">📦 Поставка:</span><span>'+supSt+'</span></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">💳 Оплата:</span><span>'+paySt+'</span></div>' +
-    '<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Дата:</span><span>'+(s.date||'—')+'</span></div>' +
+  var paySt = payLabels[payStatus] || 'Не оплачено';
+  var supColor = s.supplyStatus === 'received' ? '#16a34a' : (s.supplyStatus === 'transit' ? '#d97706' : '#2563eb');
+  var payColor = payStatus === 'paid' ? '#16a34a' : (payStatus === 'partially_paid' ? '#d97706' : '#dc2626');
+  var body = '<div style="margin-bottom:.75rem">' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Накладная:</span> <span style="font-weight:600">'+(s.invoice||'—')+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Поставщик:</span> <span>'+(s.supplierName||'—')+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Статус поставки:</span> <span style="color:'+supColor+'">'+supSt+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Статус оплаты:</span> <span style="color:'+payColor+'">'+paySt+'</span></div>' +
+    '<div style="margin-bottom:0"><span style="color:var(--muted)">Дата оприходования:</span> <span>'+(s.date||'—')+'</span></div>' +
   '</div>' +
-  '<div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:.35rem;margin-bottom:.35rem">Товары</div>';
+  '<div style="font-size:.78rem;font-weight:600;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);padding-bottom:.35rem;margin-bottom:.35rem">Товары</div>';
   body += items.map(function(it){
-    return '<div style="display:flex;justify-content:space-between;padding:.2rem 0;font-size:.85rem"><span>'+it.name+'</span><span>'+it.qty+' шт × '+it.cost.toFixed(2)+'₽</span><span style="font-weight:500">'+(it.qty*it.cost).toFixed(2)+'₽</span></div>';
+    return '<div style="display:flex;justify-content:space-between;padding:.2rem 0;font-size:.85rem"><span>'+it.name+'</span><span>'+it.qty+' шт x '+it.cost.toFixed(2)+'</span><span style="font-weight:500">'+(it.qty*it.cost).toFixed(2)+'₽</span></div>';
   }).join('');
-  body += '<div style="border-top:1px solid var(--border);padding-top:.5rem;margin-top:.35rem;display:flex;justify-content:space-between;font-weight:600;font-size:.9rem"><span>Итого:</span><span>'+total.toFixed(2)+'₽</span></div>';
+  body += '<div style="border-top:1px solid var(--border);padding-top:.35rem;margin-top:.25rem;display:flex;justify-content:space-between;font-weight:600"><span>Итого:</span><span>'+total.toFixed(2)+'₽</span></div>';
   if(s.paid < total){
-    body += '<div style="display:flex;justify-content:space-between;color:#dc2626;padding-top:.25rem"><span>Долг:</span><span>'+(total - (s.paid||0)).toFixed(2)+'₽</span></div>';
+    body += '<div style="display:flex;justify-content:space-between;color:#dc2626;padding-top:.15rem"><span>Долг:</span><span>'+(total - (s.paid||0)).toFixed(2)+'₽</span></div>';
   }
-  // История платежей
   if(s.payments && s.payments.length > 0){
-    body += '<div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;border-top:1px solid var(--border);padding-top:.5rem;margin-top:.35rem;padding-bottom:.35rem">Платежи</div>';
+    body += '<div style="font-size:.78rem;font-weight:600;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);padding-bottom:.35rem">Платежи</div>';
     s.payments.forEach(function(pm){
-      var methodLabels = {cash:'💵 Наличные',transfer:'💳 Безнал',card:'💳 Карта'};
-      body += '<div style="display:flex;justify-content:space-between;padding:.2rem 0;font-size:.85rem"><span>'+pm.date+'</span><span>'+(methodLabels[pm.method]||pm.method)+'</span><span style="font-weight:500;color:#16a34a">'+pm.amount.toFixed(2)+'₽</span></div>';
+      body += '<div style="display:flex;justify-content:space-between;padding:.15rem 0;font-size:.82rem"><span>'+pm.date+'</span><span>'+(pm.method||'')+'</span><span style="font-weight:500;color:#16a34a">'+pm.amount.toFixed(2)+'₽</span></div>';
     });
   } else if(s.paid > 0){
-    body += '<div style="border-top:1px solid var(--border);padding-top:.35rem;margin-top:.35rem;display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--muted)">Оплачено всего:</span><span style="color:#16a34a">'+s.paid.toFixed(2)+'₽</span></div>';
+    body += '<div style="border-top:1px solid var(--border);padding-top:.35rem;margin-top:.25rem;font-size:.82rem"><span style="color:var(--muted)">Оплачено всего:</span> <span style="color:#16a34a">'+s.paid.toFixed(2)+'₽</span></div>';
   }
-  document.getElementById('invResultTitle').textContent = 'Поставка ' + (s.invoice||'');
+  document.getElementById('invResultTitle').textContent = 'Поставка №' + (s.invoice||'');
   document.getElementById('invResultSub').textContent = s.supplierName || '';
   document.getElementById('invResultBody').innerHTML = body;
   document.getElementById('invResultTotals').innerHTML = '';
   var confirmBtn = document.getElementById('invConfirmBtn');
-  var newBtn = confirmBtn.cloneNode(true);
-  newBtn.onclick = function(){ document.getElementById('invResultModal').classList.remove('active'); };
-  newBtn.textContent = 'Закрыть';
-  confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+  confirmBtn.textContent = 'Закрыть';
+  confirmBtn.onclick = function(){ document.getElementById('invResultModal').classList.remove('active'); };
+  var cancelBtn = confirmBtn.parentNode.querySelector('.btn-outline');
+  if(cancelBtn) cancelBtn.style.display = 'none';
   document.getElementById('invResultModal').classList.add('active');
+}
+function closeInvResult(){
+  document.getElementById('invResultModal').classList.remove('active');
+  var confirmBtn = document.getElementById('invConfirmBtn');
+  confirmBtn.textContent = 'Провести';
+  confirmBtn.onclick = null;
+  var cancelBtn = confirmBtn.parentNode.querySelector('.btn-outline');
+  if(cancelBtn) cancelBtn.style.display = '';
 }
 function editSupply(id){
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
@@ -2771,7 +2780,7 @@ function editSupply(id){
   document.getElementById('editSupplyId').value = s.id;
   document.getElementById('supInvoice').value = s.invoice || '';
   document.getElementById('supSupplier').value = s.supplierName || '';
-  document.getElementById('supStatus').value = s.supplyStatus || s.status || 'ordered';
+  document.getElementById('supStatus').value = s.supplyStatus || 'ordered';
   document.getElementById('supPaid').value = s.paid || 0;
   openSupplyModal();
   supTempItems = (s.items || [{ prodId: s.prodId, name: 'Товар', qty: s.qty||0, cost: s.cost||0 }]).slice();
