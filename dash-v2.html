@@ -807,7 +807,7 @@
     </div>
     <!-- Заголовки столбцов товаров -->
     <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <table style="min-width:680px">
+      <table style="min-width:1100px">
         <thead id="colHeaders">
           <tr></tr>
         </thead>
@@ -1033,16 +1033,8 @@
         <button class="btn btn-outline" onclick="navigateTo('products')" style="font-size:.8rem;gap:.3rem">← Назад к товарам</button>
       </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="min-width:700px">
-          <thead id="trashColHeaders"><tr>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>Цена</th>
-            <th>Себес.</th>
-            <th>Наценка</th>
-            <th>Осталось</th>
-            <th style="width:130px"></th>
-          </tr></thead>
+        <table style="min-width:900px">
+          <thead id="trashColHeaders"><tr></tr></thead>
           <tbody id="trashTableBody"></tbody>
         </table>
       </div>
@@ -2401,36 +2393,56 @@ function deleteProduct(id){
 function renderTrashPage(){
   var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
   var tb = document.getElementById('trashTableBody');
+  var th = document.getElementById('trashColHeaders');
   if(!tb) return;
+  // Колонки как в Товарах — все всегда видны
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
+  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
+  // Рисуем шапку
+  var headHtml = '';
+  order.forEach(function(col){
+    headHtml += '<th>'+(labels[col]||col)+'</th>';
+  });
+  headHtml += '<th style="width:130px;min-width:130px;text-align:right"></th>';
+  if(th && th.querySelector('tr')) th.querySelector('tr').innerHTML = headHtml;
+  // Пусто
+  var colspan = order.length + 1;
   if(!trash.length){
-    tb.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="'+colspan+'"><div class="empty-products"><div class="big-icon">🗑️</div><p>В корзине пока ничего нет</p></div></td></tr>';
     return;
   }
-  tb.innerHTML = trash.map(function(p){
-    var daysLeft = Math.max(0, 30 - Math.floor((Date.now() - p.deletedAt) / 86400000));
-    var costVal = p.costWithVat || p.costNoVat || 0;
-    var marginStr = '—';
-    if(costVal > 0 && p.price > 0){
-      var m = ((p.price - costVal) / costVal * 100);
-      marginStr = '<span class="num" style="color:'+(m>0?'#16a34a':'#dc2626')+'">'+m.toFixed(1)+'%</span>';
+  var CAT_LABELS_R = CAT_LABELS || {};
+  function cellFor(col, p){
+    switch(col){
+      case 'name': return '<div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div>';
+      case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
+      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||p.sku||'—')+'</span>';
+      case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
+      case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
+      case 'unit': return p.unit || '—';
+      case 'costNoVat': return '<span class="num">'+(p.costNoVat != null ? p.costNoVat.toLocaleString()+'₽' : '—')+'</span>';
+      case 'costWithVat': return '<span class="num">'+(p.costWithVat != null ? p.costWithVat.toLocaleString()+'₽' : '—')+'</span>';
+      case 'price': return '<span class="prod-price">'+(p.price ? p.price.toLocaleString()+'₽' : '—')+'</span>';
+      case 'profit': return '<span class="num" style="'+(p.profit>0?'color:#16a34a':(p.profit<0?'color:#dc2626':''))+'">'+(p.profit != null ? (p.profit>0?'+':'')+p.profit.toFixed(0)+'₽' : '—')+'</span>';
+      case 'margin': return '<span class="num" style="'+(p.margin>0?'color:#16a34a':(p.margin<0?'color:#dc2626':''))+'">'+(p.margin != null ? p.margin.toFixed(1)+'%' : '—')+'</span>';
+      default: return '—';
     }
-    return '<tr>' +
-      '<td style="text-align:left"><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div>'+(p.barcode?'<div style="font-size:.68rem;color:var(--muted)">ШК: '+p.barcode+'</div>':'')+'</td>' +
-      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'—')+'</span></td>' +
-      '<td><span class="prod-price">'+ (p.price ? p.price.toLocaleString()+'₽' : '—') +'</span></td>' +
-      '<td><span class="num">'+ (costVal ? costVal.toLocaleString()+'₽' : '—') +'</span></td>' +
-      '<td>'+marginStr+'</td>' +
-      '<td style="font-size:.78rem;color:'+(daysLeft<7?'#dc2626':'var(--muted)')+'">'+daysLeft+' дн.</td>' +
-      '<td style="text-align:right;white-space:nowrap">' +
-        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
-          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
-          '<div class="prod-dropdown">' +
-            '<button onclick="restoreFromTrash('+p.id+')" style="color:var(--primary)">Восстановить</button>' +
-            '<button onclick="deleteForever('+p.id+')" style="color:#dc3545">Удалить навсегда</button>' +
-          '</div>' +
+  }
+  tb.innerHTML = trash.map(function(p){
+    var cells = '';
+    order.forEach(function(col){
+      cells += '<td>' + cellFor(col, p) + '</td>';
+    });
+    cells += '<td style="text-align:right;white-space:nowrap">' +
+      '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+        '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+        '<div class="prod-dropdown">' +
+          '<button onclick="restoreFromTrash('+p.id+')" style="color:var(--primary)">Восстановить</button>' +
+          '<button onclick="deleteForever('+p.id+')" style="color:#dc3545">Удалить навсегда</button>' +
         '</div>' +
-      '</td>' +
-    '</tr>';
+      '</div>' +
+    '</td>';
+    return '<tr>' + cells + '</tr>';
   }).join('');
 }
 function restoreFromTrash(id){
