@@ -1917,9 +1917,16 @@
           <input type="text" id="clPhone" placeholder="+7 (999) 123-45-67">
         </div>
         <div class="form-group">
+          <label>Дата рождения</label>
+          <input type="date" id="clBirthday">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label>Email</label>
           <input type="email" id="clEmail" placeholder="ivan@example.com">
         </div>
+        <div class="form-group"></div>
       </div>
       <div class="form-group">
         <label>Группа</label>
@@ -3293,6 +3300,22 @@ function renderClientsPage(){
   var list = JSON.parse(localStorage.getItem('clients88') || '[]');
   var tb = document.getElementById('clientTableBody');
   if(!tb) return;
+  // Дни рождения
+  var today = new Date();
+  var todayMD = (today.getMonth()+1)+'-'+today.getDate();
+  var birthdayClients = list.filter(function(c){ return c.birthday && (c.birthday.slice(5) === todayMD); }).map(function(c){ return c.name; });
+  var bannerEl = document.getElementById('clBirthdayBanner') || document.querySelector('#page-clients .search-row');
+  var existingBanner = document.getElementById('clBirthdayBanner');
+  if(existingBanner){
+    if(birthdayClients.length) existingBanner.style.display = '';
+    else existingBanner.style.display = 'none';
+  } else if(birthdayClients.length && bannerEl){
+    var banner = document.createElement('div');
+    banner.id = 'clBirthdayBanner';
+    banner.style.cssText = 'background:linear-gradient(135deg,#fef3cd,#fde68a);border:1px solid #f59e0b;border-radius:8px;padding:.5rem .75rem;margin-bottom:.5rem;font-size:.85rem;display:flex;align-items:center;gap:.5rem';
+    banner.innerHTML = '🎉 <b>День рождения</b> у ' + birthdayClients.join(', ') + '! Предложите скидку или поздравьте!';
+    bannerEl.parentNode.insertBefore(banner, bannerEl.nextSibling);
+  }
   var q = (document.querySelector('#page-clients .search-field')?.value || '').toLowerCase().trim();
   if(q) list = list.filter(function(c){ return c.name.toLowerCase().includes(q) || (c.phone||'').includes(q); });
   if(!list.length){
@@ -3340,6 +3363,7 @@ function saveClient(e){
   var obj = {
     name: name,
     phone: document.getElementById('clPhone').value.trim(),
+    birthday: document.getElementById('clBirthday').value,
     email: document.getElementById('clEmail').value.trim(),
     comment: document.getElementById('clComment').value.trim(),
     group: document.getElementById('clGroup').value === 'custom' ? document.getElementById('clGroupCustom').value.trim() : document.getElementById('clGroup').value
@@ -3364,6 +3388,7 @@ function editClient(id){
   document.getElementById('editClientId').value = c.id;
   document.getElementById('clName').value = c.name;
   document.getElementById('clPhone').value = c.phone || '';
+  document.getElementById('clBirthday').value = c.birthday || '';
   document.getElementById('clEmail').value = c.email || '';
   document.getElementById('clComment').value = c.comment || '';
   var grp = c.group || '';
