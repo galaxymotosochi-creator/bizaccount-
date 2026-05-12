@@ -1027,6 +1027,7 @@
           <h1>Корзина</h1>
           <div class="sub">Скрытые товары — восстановите или удалите навсегда</div>
         </div>
+        <button class="btn btn-outline" onclick="navigateTo('products')" style="font-size:.8rem;gap:.3rem">← Назад к товарам</button>
       </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table style="min-width:700px">
@@ -2440,17 +2441,14 @@ function restoreFromTrash(id){
   trash.splice(idx, 1);
   localStorage.setItem('products88', JSON.stringify(products));
   localStorage.setItem('trash88', JSON.stringify(trash));
-  renderTrashPage();
-  // Если мы на странице товаров — обновить
-  var productsPage = document.getElementById('page-products');
-  if(productsPage && productsPage.classList.contains('active')) renderProductsPage();
+  navigateTo('products');
 }
 function deleteForever(id){
   if(!confirm('Удалить товар навсегда?')) return;
   var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
   trash = trash.filter(function(p){ return p.id !== id; });
   localStorage.setItem('trash88', JSON.stringify(trash));
-  renderTrashPage();
+  navigateTo('products');
 }
 function cleanupOldTrash(){
   var trash = JSON.parse(localStorage.getItem('trash88') || '[]');
