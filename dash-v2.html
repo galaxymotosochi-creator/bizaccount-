@@ -1607,8 +1607,7 @@
       </div>
       <div id="supItemsTotal" style="text-align:right;font-size:.85rem;font-weight:600;padding-top:.35rem"></div>
       <div class="modal-actions">
-        <button type="button" class="btn btn-outline" onclick="closeSupplyModal()">Отмена</button>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <button type="submit" class="btn btn-primary" style="width:100%">Провести</button>
       </div>
     </form>
   </div>
@@ -2677,6 +2676,7 @@ function saveSupply(e){
   localStorage.setItem('supplies88', JSON.stringify(list));
   renderSuppliesPage();
   closeSupplyModal();
+  showToast('Поставка проведена');
 }
 var supTempItems = [];
 function addSupplyItem(){
@@ -2760,6 +2760,8 @@ function viewSupply(id){
   document.getElementById('invResultBody').innerHTML = body;
   document.getElementById('invResultTotals').innerHTML = '';
   document.getElementById('invResultModal').classList.add('active');
+  var btns = document.querySelectorAll('#invResultModal .modal-actions button');
+  btns.forEach(function(b){ b.style.display = 'none'; });
 }
 function editSupply(id){
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
@@ -3043,6 +3045,8 @@ function completeInventory(docId){
 }
 function closeInvResult(){
   document.getElementById('invResultModal').classList.remove('active');
+  var btns = document.querySelectorAll('#invResultModal .modal-actions button');
+  btns.forEach(function(b){ b.style.display = ''; });
 }
 function viewInventory(id){
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
