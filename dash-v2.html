@@ -219,6 +219,10 @@
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #invColHeaders th:first-child{text-align:left;padding-left:0}
 #inventoryTableBody td:first-child{padding-left:0}
+/* Шапка списаний — единый стиль с товарами */
+#woColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#woColHeaders th:first-child{text-align:left;padding-left:0}
+#writeoffTableBody td:first-child{padding-left:0}
 /* Шапка поставок — единый стиль с товарами */
 #supplyColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #supplyColHeaders th:first-child{text-align:left;padding-left:0}
@@ -996,15 +1000,28 @@
     <div class="page-section" id="page-writeoffs">
       <div class="page-header">
         <div>
-          <h1>Списания</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Списания</h1>
           <div class="sub">Списание товаров со склада (брак, потеря)</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openWriteoffModal()">+ Списать товар</button>
+          <button class="btn-green" onclick="openWriteoffModal()">+ Списать товар</button>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:32%">Товар</th><th style="width:14%">Кол-во</th><th style="width:18%">Сумма</th><th style="width:22%">Причина</th><th style="width:14%">Дата</th></tr></thead><tbody id="writeoffTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table>
+          <thead id="woColHeaders">
+            <tr>
+              <th>Товар</th>
+              <th>Кол-во</th>
+              <th>Сумма</th>
+              <th>Причина</th>
+              <th>Дата</th>
+              <th style="width:130px"></th>
+            </tr>
+          </thead>
+          <tbody id="writeoffTableBody"></tbody>
+        </table>
       </div>
     </div>
     <!-- ИНВЕНТАРИЗАЦИЯ -->
@@ -1608,9 +1625,10 @@
 <div class="modal-overlay" id="writeoffModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeWriteoffModal()">&times;</button>
-    <h2>Списание товара</h2>
-    <div class="sub">Укажите товар и причину списания</div>
+    <h2 id="woModalTitle">Списание товара</h2>
+    <div class="sub" id="woModalSub">Укажите товар и причину списания</div>
     <form id="writeoffForm" onsubmit="saveWriteoff(event)">
+      <input type="hidden" id="editWriteoffId" value="">
       <div class="form-group">
         <label>Товар *</label>
         <select id="woProduct" required><option value="">— выберите товар —</option></select>
@@ -2836,6 +2854,99 @@ function cancelInventoryEdit(){
   }
   editingInventoryId = null;
   renderInventoryPage();
+}
+// ================== СПИСАНИЯ ==================
+function renderWriteoffsPage(){
+  var list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  var tb = document.getElementById('writeoffTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">🗑️</div><p>Списаний пока нет. Нажмите «+ Списать товар»</p></div></td></tr>';
+    return;
+  }
+  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  var reasons = {breakage:'Брак / порча',loss:'Потеря',expiry:'Истёк срок',other:'Прочее'};
+  tb.innerHTML = list.map(function(w){
+    var prod = products.find(function(p){ return p.id === w.prodId; });
+    return '<tr>' +
+      '<td style="text-align:left"><div class="prod-name">'+(prod ? prod.name : 'Товар #'+w.prodId)+'</div></td>' +
+      '<td>'+w.qty+'</td>' +
+      '<td><span class="num">'+(w.cost?w.cost.toLocaleString()+'₽':'—')+'</span></td>' +
+      '<td><span class="prod-cat">'+(reasons[w.reason]||w.reason||'—')+'</span></td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">'+(w.date||'—')+'</td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editWriteoff('+w.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="deleteWriteoff('+w.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function openWriteoffModal(){
+  var sel = document.getElementById('woProduct');
+  if(sel){
+    var prods = JSON.parse(localStorage.getItem('products88') || '[]');
+    sel.innerHTML = '<option value="">— выберите товар —</option>' +
+      prods.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('');
+  }
+  document.getElementById('writeoffModal').classList.add('active');
+}
+function closeWriteoffModal(){
+  document.getElementById('writeoffModal').classList.remove('active');
+  document.getElementById('writeoffForm').reset();
+  document.getElementById('editWriteoffId').value = '';
+}
+function saveWriteoff(e){
+  e.preventDefault();
+  var prodId = parseInt(document.getElementById('woProduct').value);
+  if(!prodId) return alert('Выберите товар');
+  var list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  var editId = parseInt(document.getElementById('editWriteoffId').value);
+  var obj = {
+    qty: parseInt(document.getElementById('woQty').value) || 1,
+    cost: 0,
+    reason: document.getElementById('woReason').value,
+    date: new Date().toLocaleDateString('ru-RU'),
+    prodId: prodId
+  };
+  // Находим себестоимость товара для суммы
+  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  var prod = products.find(function(p){ return p.id === prodId; });
+  if(prod) obj.cost = (prod.costWithVat || prod.costNoVat || 0) * obj.qty;
+  if(editId){
+    var idx = list.findIndex(function(x){ return x.id === editId; });
+    if(idx > -1) list[idx] = {...list[idx], ...obj};
+  } else {
+    obj.id = Date.now();
+    obj.hidden = false;
+    list.unshift(obj);
+  }
+  localStorage.setItem('writeoffs88', JSON.stringify(list));
+  renderWriteoffsPage();
+  closeWriteoffModal();
+}
+function editWriteoff(id){
+  var list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  var w = list.find(function(x){ return x.id === id; });
+  if(!w) return;
+  document.getElementById('editWriteoffId').value = w.id;
+  openWriteoffModal();
+  document.getElementById('woProduct').value = w.prodId;
+  document.getElementById('woQty').value = w.qty;
+  document.getElementById('woReason').value = w.reason || 'breakage';
+  document.getElementById('woModalTitle').textContent = 'Редактировать списание';
+  document.getElementById('woModalSub').textContent = 'Измените данные списания';
+}
+function deleteWriteoff(id){
+  if(!confirm('Удалить списание?')) return;
+  var list = JSON.parse(localStorage.getItem('writeoffs88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('writeoffs88', JSON.stringify(list));
+  renderWriteoffsPage();
 }
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
