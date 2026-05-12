@@ -209,6 +209,7 @@
 .col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
 /* Выравнивание левого края для категорий */
 #prodCatTableBody td:first-child, #svcCatTableBody td:first-child{padding-left:0}
+#supplyTableBody td:first-child{padding-left:0}
 .product-table .col-headers .col-h:first-child{padding-left:0}
 /* Шапка товаров внутри thead */
 #colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
@@ -959,22 +960,23 @@
     <div class="page-section" id="page-supplies">
       <div class="page-header">
         <div>
-          <h1>Поставки</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Поставки</h1>
           <div class="sub">Оприходование товаров на склад</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openSupplyModal()">+ Новая поставка</button>
+          <button class="btn-green" onclick="openSupplyModal()">+ Новая поставка</button>
         </div>
       </div>
-      <div class="product-table">
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table>
           <thead>
             <tr>
-              <th style="width:30%">Товар</th>
-              <th style="width:20%">Поставщик</th>
-              <th style="width:14%">Кол-во</th>
-              <th style="width:18%">Цена закуп.</th>
-              <th style="width:18%">Сумма</th>
+              <th>Товар</th>
+              <th>Поставщик</th>
+              <th>Кол-во</th>
+              <th>Цена закуп.</th>
+              <th>Сумма</th>
             </tr>
           </thead>
           <tbody id="supplyTableBody">
@@ -2480,6 +2482,28 @@ function cleanupOldTrash(){
 // Очистка при загрузке — удаляем товары старше 30 дней
 cleanupOldTrash();
 const SVC_CAT = {repair:'Ремонт',cleaning:'Клининг',delivery:'Доставка',consult:'Консультация',install:'Монтаж',other:'Прочее'};
+function renderSuppliesPage(){
+  var supplies = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var tb = document.getElementById('supplyTableBody');
+  if(!tb) return;
+  if(!supplies.length){
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
+    return;
+  }
+  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  tb.innerHTML = supplies.map(function(s){
+    var prod = products.find(function(p){ return p.id === s.prodId; });
+    var total = (s.qty || 0) * (s.cost || 0);
+    var d = s.date ? new Date(s.date).toLocaleDateString('ru-RU') : '—';
+    return '<tr>' +
+      '<td><div class="prod-name">'+(prod ? prod.name : 'Товар #'+s.prodId)+'</div><div class="prod-sku">'+d+'</div></td>' +
+      '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
+      '<td>'+s.qty+'</td>' +
+      '<td><span class="num">'+(s.cost?s.cost.toLocaleString()+'₽':'—')+'</span></td>' +
+      '<td><span class="num">'+total.toLocaleString()+'₽</span></td>' +
+    '</tr>';
+  }).join('');
+}
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
