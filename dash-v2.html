@@ -2622,21 +2622,6 @@ function cycleSupplyStatus(id){
   s.supplyStatus = supplyStatuses[(idx + 1) % supplyStatuses.length];
   localStorage.setItem('supplies88', JSON.stringify(list));
   renderSuppliesPage();
-}">'+debt.toLocaleString()+'₽</span></td>' +
-      '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
-      '<td style="text-align:right;white-space:nowrap">' +
-        (s.paid < total ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button>' : '') +
-        '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
-        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
-          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
-          '<div class="prod-dropdown">' +
-            '<button onclick="copySupply('+s.id+')">Копировать</button>' +
-            '<button onclick="deleteSupply('+s.id+')" style="color:#dc3545">Удалить</button>' +
-          '</div>' +
-        '</div>' +
-      '</td>' +
-    '</tr>';
-  }).join('');
 }
 function openSupplyModal(){
   var supSel = document.getElementById('supSupplier');
