@@ -994,8 +994,8 @@
               <th>№ накладной</th>
               <th>Поставщик</th>
               <th>Сумма</th>
-              <th>Статус</th>
-              <th>Долг</th>
+              <th>📦 Поставка</th>
+              <th>💳 Оплата</th>
               <th>Дата</th>
               <th style="width:130px"></th>
             </tr>
@@ -2580,22 +2580,52 @@ function renderSuppliesPage(){
     tb.innerHTML = '<tr><td colspan="7"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
     return;
   }
-  var statusLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано',partially_paid:'🟠 Частично оплачено',paid:'💰 Оплачено'};
+  var supplyStatuses = ['ordered','transit','received'];
+  var supplyLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано'};
+  var payLabels = {unpaid:'🔴 Не оплачено',partially_paid:'🟠 Частично',paid:'💰 Оплачено'};
   tb.innerHTML = supplies.map(function(s){
     var total = s.total || (s.items||[]).reduce(function(sum, it){ return sum + it.qty * it.cost; }, 0) || (s.qty||0)*(s.cost||0);
     var paid = s.paid || 0;
     var debt = total - paid;
-    var st = statusLabels[s.status] || '—';
+    var payStatus = paid >= total ? 'paid' : (paid > 0 ? 'partially_paid' : 'unpaid');
+    var supSt = supplyLabels[s.supplyStatus || 'ordered'] || '🔵 Заказано';
+    var paySt = payLabels[payStatus] || '🔴 Не оплачено';
     var d = s.date || '—';
+    var invoiceLink = s.invoice ? '<span style="color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary)" onclick="viewSupply('+s.id+')">'+s.invoice+'</span>' : '—';
     return '<tr>' +
-      '<td><div class="prod-name" style="cursor:pointer" onclick="viewSupply('+s.id+')">'+(s.invoice||'—')+'</div><div class="prod-sku">'+(s.items?s.items.length:1)+' поз.</div></td>' +
+      '<td style="text-align:left"><div class="prod-name">'+invoiceLink+'</div><div class="prod-sku">'+(s.items?s.items.length:1)+' поз.</div></td>' +
       '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
       '<td><span class="num">'+Number(total).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'₽</span></td>' +
-      '<td>'+st+'</td>' +
-      '<td><span class="num" style="color:'+(debt>0?'#dc2626':'#16a34a')+'">'+debt.toLocaleString()+'₽</span></td>' +
+      '<td><span style="cursor:pointer" onclick="cycleSupplyStatus('+s.id+')" title="Нажмите чтобы изменить">'+supSt+'</span></td>' +
+      '<td>'+paySt+'</td>' +
       '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        (s.status !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button>' : '') +
+        (payStatus !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button>' : '') +
+        '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="copySupply('+s.id+')">Копировать</button>' +
+            '<button onclick="deleteSupply('+s.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function cycleSupplyStatus(id){
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var s = list.find(function(x){ return x.id === id; });
+  if(!s) return;
+  var supplyStatuses = ['ordered','transit','received'];
+  var idx = supplyStatuses.indexOf(s.supplyStatus || 'ordered');
+  s.supplyStatus = supplyStatuses[(idx + 1) % supplyStatuses.length];
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+}">'+debt.toLocaleString()+'₽</span></td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        (s.paid < total ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button>' : '') +
         '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
@@ -2646,7 +2676,7 @@ function saveSupply(e){
     supplierName: document.getElementById('supSupplier').value.trim(),
     items: itemsToSave,
     total: total,
-    status: document.getElementById('supStatus').value,
+    supplyStatus: document.getElementById('supStatus').value,
     paid: paid,
     payments: [],
     date: new Date().toLocaleDateString('ru-RU')
@@ -2708,11 +2738,15 @@ function viewSupply(id){
   if(!s) return;
   var items = s.items || [{ name: 'Товар', qty: s.qty || 0, cost: s.cost || 0 }];
   var total = s.total || items.reduce(function(sum, it){ return sum + it.qty * it.cost; }, 0);
-  var statusLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано',partially_paid:'🟠 Частично оплачено',paid:'💰 Оплачено'};
+  var supplyLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано'};
+  var payLabels = {unpaid:'🔴 Не оплачено',partially_paid:'🟠 Частично',paid:'💰 Оплачено'};
+  var supSt = supplyLabels[s.supplyStatus || 'ordered'] || '🔵 Заказано';
+  var paySt = payLabels[payStatus] || '🔴 Не оплачено';
   var body = '<div style="margin-bottom:1rem">' +
     '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Накладная:</span><span style="font-weight:600">'+(s.invoice||'—')+'</span></div>' +
     '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Поставщик:</span><span>'+(s.supplierName||'—')+'</span></div>' +
-    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">Статус:</span><span>'+(statusLabels[s.status]||'—')+'</span></div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">📦 Поставка:</span><span>'+supSt+'</span></div>' +
+    '<div style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="color:var(--muted)">💳 Оплата:</span><span>'+paySt+'</span></div>' +
     '<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Дата:</span><span>'+(s.date||'—')+'</span></div>' +
   '</div>' +
   '<div style="font-size:.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:.35rem;margin-bottom:.35rem">Товары</div>';
@@ -2751,7 +2785,7 @@ function editSupply(id){
   document.getElementById('editSupplyId').value = s.id;
   document.getElementById('supInvoice').value = s.invoice || '';
   document.getElementById('supSupplier').value = s.supplierName || '';
-  document.getElementById('supStatus').value = s.status || 'ordered';
+  document.getElementById('supStatus').value = s.supplyStatus || s.status || 'ordered';
   document.getElementById('supPaid').value = s.paid || 0;
   openSupplyModal();
   supTempItems = (s.items || [{ prodId: s.prodId, name: 'Товар', qty: s.qty||0, cost: s.cost||0 }]).slice();
