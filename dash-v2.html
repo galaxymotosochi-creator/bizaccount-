@@ -1579,7 +1579,9 @@
       <div class="form-row">
         <div class="form-group">
           <label>Поставщик *</label>
-          <input type="text" id="supSupplier" placeholder="Например, ООО СтройСнаб">
+          <select id="supSupplier">
+            <option value="">— выберите поставщика —</option>
+          </select>
         </div>
         <div class="form-group">
           <label>№ накладной</label>
@@ -2588,6 +2590,14 @@ function openSupplyModal(){
     var prods = JSON.parse(localStorage.getItem('products88') || '[]');
     sel.innerHTML = '<option value="">— выберите товар —</option>' +
       prods.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('');
+  }
+  var supSel = document.getElementById('supSupplier');
+  if(supSel){
+    var suppliers = JSON.parse(localStorage.getItem('suppliers88') || '[]');
+    var currentVal = supSel.value;
+    supSel.innerHTML = '<option value="">— выберите поставщика —</option>' +
+      suppliers.map(function(s){ return '<option value="'+s.name+'">'+s.name+'</option>'; }).join('');
+    if(currentVal) supSel.value = currentVal;
   }
   document.getElementById('supplyModal').classList.add('active');
 }
