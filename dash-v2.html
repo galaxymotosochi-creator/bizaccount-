@@ -2552,15 +2552,15 @@ function renderSuppliesPage(){
   }
   var statusLabels = {ordered:'🔵 Заказано',transit:'🟡 В пути',received:'🟢 Оприходовано',paid:'💰 Оплачено'};
   tb.innerHTML = supplies.map(function(s){
-    var total = (s.qty || 0) * (s.cost || 0);
+    var total = s.total || (s.items||[]).reduce(function(sum, it){ return sum + it.qty * it.cost; }, 0) || (s.qty||0)*(s.cost||0);
     var paid = s.paid || 0;
     var debt = total - paid;
     var st = statusLabels[s.status] || '—';
     var d = s.date || '—';
     return '<tr>' +
-      '<td><span style="font-size:.8rem;color:var(--muted)">'+(s.invoice||'—')+'</span></td>' +
+      '<td><div class="prod-name" style="cursor:pointer" onclick="viewSupply('+s.id+')">'+(s.invoice||'—')+'</div><div class="prod-sku">'+(s.items?s.items.length:1)+' поз.</div></td>' +
       '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
-      '<td><span class="num">'+total.toLocaleString()+'₽</span></td>' +
+      '<td><span class="num">'+Number(total).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})+'₽</span></td>' +
       '<td>'+st+'</td>' +
       '<td><span class="num" style="color:'+(debt>0?'#dc2626':'#16a34a')+'">'+debt.toLocaleString()+'₽</span></td>' +
       '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
@@ -2611,7 +2611,6 @@ function saveSupply(e){
   var editId = parseInt(document.getElementById('editSupplyId').value);
   var paid = parseFloat(document.getElementById('supPaid').value) || 0;
   var total = supTempItems.reduce(function(acc, it){ return acc + it.qty * it.cost; }, 0);
-  alert('Сохраняю: ' + supTempItems.length + ' товаров на сумму ' + total + '₽');
   var obj = {
     invoice: document.getElementById('supInvoice').value.trim(),
     supplierName: document.getElementById('supSupplier').value.trim(),
