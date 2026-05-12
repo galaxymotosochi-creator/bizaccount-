@@ -2244,12 +2244,12 @@ function renderColsList(){
 function toggleCol(id){
   if(activeCols.has(id)) activeCols.delete(id); else activeCols.add(id);
   renderColsList();
-  renderColHeaders();
+  renderProductsPage();
 }
 function resetCols(){
   activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
   renderColsList();
-  renderColHeaders();
+  renderProductsPage();
 }
 /* Trash modal */
 function openTrashModal(){
