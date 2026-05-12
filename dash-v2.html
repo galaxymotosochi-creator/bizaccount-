@@ -2024,6 +2024,12 @@ function editProduct(id){
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodBarcode').value = p.barcode || '';
+  document.getElementById('prodType').value = p.type || 'product';
+  document.getElementById('prodWeight').value = p.weight || 0;
+  document.getElementById('prodWeightUnit').value = p.weightUnit || 'кг';
+  document.getElementById('prodCostNoVat').value = p.costNoVat || 0;
+  document.getElementById('prodCostWithVat').value = p.costWithVat || 0;
+  if(typeof calcProfit === 'function') calcProfit();
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
   document.getElementById('modalSub').textContent = p.hidden ? 'Восстановите или измените товар' : 'Измените поля и нажмите Сохранить';
@@ -2045,17 +2051,57 @@ function saveProduct(e){
   e.preventDefault();
   var name = document.getElementById('prodName').value.trim();
   if(!name) return alert('Введите название');
-  var p = {id:Date.now(), name:name, cat:document.getElementById('prodCat').value, price:parseFloat(document.getElementById('prodPrice').value)||0, unit:document.getElementById('prodUnit').value, sku:document.getElementById('prodSku').value.trim(), hidden:false};
+  var price = parseFloat(document.getElementById('prodPrice').value) || 0;
+  var costNoVat = parseFloat(document.getElementById('prodCostNoVat').value) || 0;
+  var costWithVat = parseFloat(document.getElementById('prodCostWithVat').value) || 0;
+  var cost = costWithVat || costNoVat;
+  var profit = price - cost;
+  var margin = cost > 0 ? (profit / cost * 100) : 0;
   var list = JSON.parse(localStorage.getItem('products88') || '[]');
-  list.unshift(p);
+  var editId = parseInt(document.getElementById('editProductId').value);
+  if(editId){
+    // Редактирование — обновляем существующий товар
+    var idx = list.findIndex(x => x.id === editId);
+    if(idx === -1) return alert('Товар не найден');
+    list[idx] = {
+      ...list[idx],
+      name: name,
+      cat: document.getElementById('prodCat').value,
+      price: price,
+      unit: document.getElementById('prodUnit').value,
+      sku: document.getElementById('prodSku').value.trim(),
+      barcode: document.getElementById('prodBarcode').value.trim(),
+      type: document.getElementById('prodType').value,
+      weight: parseFloat(document.getElementById('prodWeight').value) || 0,
+      weightUnit: document.getElementById('prodWeightUnit').value,
+      costNoVat: costNoVat,
+      costWithVat: costWithVat,
+      profit: profit,
+      margin: margin
+    };
+  } else {
+    // Создание — добавляем новый товар
+    list.unshift({
+      id: Date.now(),
+      name: name,
+      cat: document.getElementById('prodCat').value,
+      price: price,
+      unit: document.getElementById('prodUnit').value,
+      sku: document.getElementById('prodSku').value.trim(),
+      barcode: document.getElementById('prodBarcode').value.trim(),
+      type: document.getElementById('prodType').value,
+      weight: parseFloat(document.getElementById('prodWeight').value) || 0,
+      weightUnit: document.getElementById('prodWeightUnit').value,
+      costNoVat: costNoVat,
+      costWithVat: costWithVat,
+      profit: profit,
+      margin: margin,
+      hidden: false
+    });
+  }
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  var tbody = document.getElementById('productTableBody');
-  if(tbody){
-    var cats = {material:'Материалы',tool:'Инструменты',equipment:'Оборудование',other:'Прочее'};
-    var row = '<tr><td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td><td><span class="prod-cat">'+(cats[p.cat]||p.cat||'')+'</span></td><td><span class="prod-price">'+p.price.toLocaleString()+'\u20BD</span></td><td>'+p.unit+'</td><td style="text-align:right"><\/td><\/tr>';
-    tbody.innerHTML = row + tbody.innerHTML;
-  }
+  renderProductsPage();
   var t = document.getElementById('toast');
   if(t){ t.style.opacity='1'; t.style.transform='translateY(0)'; setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateY(10px)'; },2000); }
 }
@@ -2235,7 +2281,6 @@ document.addEventListener('click', function(e){
   }
 });
 function renderProductsPage(){
-  // try removed
   renderColHeaders();
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
@@ -2243,28 +2288,47 @@ function renderProductsPage(){
   if(q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q));
   const tbody = document.getElementById('productTableBody');
   if(!products.length){
-    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
+    var colspan = 2 + activeCols.size;
+    tbody.innerHTML = '<tr><td colspan="' + colspan + '"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
     return;
   }
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
+  var CAT_LABELS_R = CAT_LABELS || {};
+  function cellFor(col, p){
+    switch(col){
+      case 'name': return '<div class="prod-name">'+p.name+'</div>';
+      case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
+      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||p.sku||'—')+'</span>';
+      case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
+      case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
+      case 'unit': return p.unit || '—';
+      case 'costNoVat': return '<span class="num">'+(p.costNoVat != null ? p.costNoVat.toLocaleString()+'₽' : '—')+'</span>';
+      case 'costWithVat': return '<span class="num">'+(p.costWithVat != null ? p.costWithVat.toLocaleString()+'₽' : '—')+'</span>';
+      case 'price': return '<span class="prod-price">'+p.price.toLocaleString()+'₽</span>';
+      case 'profit': return '<span class="num" style="'+(p.profit>0?'color:#16a34a':(p.profit<0?'color:#dc2626':''))+'" >'+(p.profit != null ? (p.profit>0?'+':'')+p.profit.toFixed(0)+'₽' : '—')+'</span>';
+      case 'margin': return '<span class="num" style="'+(p.margin>0?'color:#16a34a':(p.margin<0?'color:#dc2626':''))+'" >'+(p.margin != null ? p.margin.toFixed(1)+'%' : '—')+'</span>';
+      default: return '—';
+    }
+  }
   tbody.innerHTML = products.map(p => {
-    const isHidden = p.hidden;
-    return '<tr'+(isHidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' +
-      '<td><div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div></td>' +
-      '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat)+'</span>'+(isHidden?' <span class="prod-hidden-badge">Скрыто</span>':'')+'</td>' +
-      '<td><span class="prod-price">'+p.price.toLocaleString()+'&#8381;</span></td>' +
-      '<td>'+p.unit+'</td>' +
-      '<td style="text-align:right;white-space:nowrap">' +
-        '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
-        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
-          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
-          '<div class="prod-dropdown">' +
-            '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
-            (isHidden?'<button onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideProduct('+p.id+')">Скрыть</button>') +
-            '<button onclick="deleteProduct('+p.id+')" style="color:#dc3545">Удалить</button>' +
-          '</div>' +
+    var cells = '';
+    order.forEach(function(col){
+      if(col === 'name' || activeCols.has(col)){
+        cells += '<td>' + cellFor(col, p) + '</td>';
+      }
+    });
+    cells += '<td style="text-align:right;white-space:nowrap">' +
+      '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
+      '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+        '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+        '<div class="prod-dropdown">' +
+          '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
+          (p.hidden?'<button onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideProduct('+p.id+')">Скрыть</button>') +
+          '<button onclick="deleteProduct('+p.id+')" style="color:#dc3545">Удалить</button>' +
         '</div>' +
-      '</td>' +
-    '</tr>';
+      '</div>' +
+    '</td>';
+    return '<tr'+(p.hidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' + cells + '</tr>';
   }).join('');
 }
 // Закрыть все меню ••• при клике вне
