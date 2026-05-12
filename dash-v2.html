@@ -976,10 +976,11 @@
           <thead id="supplyColHeaders">
             <tr>
               <th>Товар</th>
+              <th>№ накладной</th>
               <th>Поставщик</th>
               <th>Кол-во</th>
               <th>Цена закуп.</th>
-              <th>Сумма</th>
+              <th style="width:130px"></th>
             </tr>
           </thead>
           <tbody id="supplyTableBody">
@@ -1551,6 +1552,7 @@
     <h2>Новая поставка</h2>
     <div class="sub">Оприходуйте товар на склад</div>
     <form id="supplyForm" onsubmit="saveSupply(event)">
+      <input type="hidden" id="editSupplyId" value="">
       <div class="form-group">
         <label>Товар *</label>
         <div class="input-with-scan">
@@ -1561,21 +1563,21 @@
       <div class="form-row">
         <div class="form-group">
           <label>Поставщик *</label>
-          <select id="supSupplier" required><option value="">— выберите —</option></select>
+          <input type="text" id="supSupplier" placeholder="Например, ООО СтройСнаб">
         </div>
         <div class="form-group">
-          <label>Количество *</label>
-          <input type="number" id="supQty" placeholder="1" value="1" min="1" required>
+          <label>№ накладной</label>
+          <input type="text" id="supInvoice" placeholder="Например, INV-001">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Закупочная цена (₽)</label>
-          <input type="number" id="supCost" placeholder="0" min="0">
+          <label>Количество *</label>
+          <input type="number" id="supQty" placeholder="1" value="1" min="1" required>
         </div>
         <div class="form-group">
-          <label>Дата</label>
-          <input type="date" id="supDate">
+          <label>Закупочная цена (₽)</label>
+          <input type="number" id="supCost" placeholder="0" min="0">
         </div>
       </div>
       <div class="modal-actions">
@@ -2490,22 +2492,115 @@ function renderSuppliesPage(){
   var tb = document.getElementById('supplyTableBody');
   if(!tb) return;
   if(!supplies.length){
-    tb.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
+    tb.innerHTML = '<tr><td colspan="6"><div class="empty-products"><div class="big-icon">📦</div><p>Поставок пока нет. Нажмите «+ Новая поставка»</p></div></td></tr>';
     return;
   }
   var products = JSON.parse(localStorage.getItem('products88') || '[]');
   tb.innerHTML = supplies.map(function(s){
     var prod = products.find(function(p){ return p.id === s.prodId; });
     var total = (s.qty || 0) * (s.cost || 0);
-    var d = s.date ? new Date(s.date).toLocaleDateString('ru-RU') : '—';
     return '<tr>' +
-      '<td><div class="prod-name">'+(prod ? prod.name : 'Товар #'+s.prodId)+'</div><div class="prod-sku">'+d+'</div></td>' +
+      '<td><div class="prod-name">'+(prod ? prod.name : 'Товар #'+s.prodId)+'</div></td>' +
+      '<td><span style="font-size:.8rem;color:var(--muted)">'+(s.invoice||'—')+'</span></td>' +
       '<td><span class="prod-cat">'+(s.supplierName||'—')+'</span></td>' +
       '<td>'+s.qty+'</td>' +
       '<td><span class="num">'+(s.cost?s.cost.toLocaleString()+'₽':'—')+'</span></td>' +
-      '<td><span class="num">'+total.toLocaleString()+'₽</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="copySupply('+s.id+')">Копировать</button>' +
+            (s.hidden?'<button onclick="unhideSupply('+s.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideSupply('+s.id+')">Скрыть</button>') +
+            '<button onclick="deleteSupply('+s.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
     '</tr>';
   }).join('');
+}
+function openSupplyModal(){
+  var sel = document.getElementById('supProduct');
+  if(sel){
+    var prods = JSON.parse(localStorage.getItem('products88') || '[]');
+    sel.innerHTML = '<option value="">— выберите товар —</option>' +
+      prods.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('');
+  }
+  document.getElementById('supplyModal').classList.add('active');
+}
+function closeSupplyModal(){
+  document.getElementById('supplyModal').classList.remove('active');
+  document.getElementById('supplyForm').reset();
+  document.getElementById('editSupplyId').value = '';
+  document.querySelector('#supplyModal h2').textContent = 'Новая поставка';
+  document.querySelector('#supplyModal .sub').textContent = 'Оприходуйте товар на склад';
+}
+function saveSupply(e){
+  e.preventDefault();
+  var prodId = parseInt(document.getElementById('supProduct').value);
+  if(!prodId) return alert('Выберите товар');
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var editId = parseInt(document.getElementById('editSupplyId').value);
+  var obj = {
+    invoice: document.getElementById('supInvoice').value.trim(),
+    supplierName: document.getElementById('supSupplier').value.trim(),
+    qty: parseInt(document.getElementById('supQty').value) || 1,
+    cost: parseFloat(document.getElementById('supCost').value) || 0,
+    prodId: prodId
+  };
+  if(editId){
+    var idx = list.findIndex(function(x){ return x.id === editId; });
+    if(idx > -1) list[idx] = {...list[idx], ...obj};
+  } else {
+    obj.id = Date.now();
+    obj.hidden = false;
+    list.unshift(obj);
+  }
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+  closeSupplyModal();
+}
+function editSupply(id){
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var s = list.find(function(x){ return x.id === id; });
+  if(!s) return alert('Поставка не найдена');
+  document.getElementById('editSupplyId').value = s.id;
+  openSupplyModal();
+  document.getElementById('supProduct').value = s.prodId;
+  document.getElementById('supInvoice').value = s.invoice || '';
+  document.getElementById('supSupplier').value = s.supplierName || '';
+  document.getElementById('supQty').value = s.qty;
+  document.getElementById('supCost').value = s.cost || 0;
+  document.querySelector('#supplyModal h2').textContent = 'Редактировать поставку';
+  document.querySelector('#supplyModal .sub').textContent = 'Измените данные поставки';
+}
+function deleteSupply(id){
+  if(!confirm('Удалить поставку?')) return;
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+}
+function hideSupply(id){
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  list = list.map(function(x){ return x.id === id ? {...x, hidden: true} : x; });
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+}
+function unhideSupply(id){
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  list = list.map(function(x){ return x.id === id ? {...x, hidden: false} : x; });
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
+}
+function copySupply(id){
+  var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
+  var s = list.find(function(x){ return x.id === id; });
+  if(!s) return;
+  var copy = {...s, id: Date.now(), hidden: false};
+  list.unshift(copy);
+  localStorage.setItem('supplies88', JSON.stringify(list));
+  renderSuppliesPage();
 }
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
