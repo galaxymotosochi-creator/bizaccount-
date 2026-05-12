@@ -2250,6 +2250,7 @@ function resetCols(){
   activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
   renderColsList();
   renderProductsPage();
+  showToast('Столбцы сброшены');
 }
 /* Trash modal */
 function openTrashModal(){
