@@ -219,6 +219,10 @@
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #invColHeaders th:first-child{text-align:left;padding-left:0}
 #inventoryTableBody td:first-child{padding-left:0}
+/* Шапка клиентов — единый стиль с товарами */
+#clColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#clColHeaders th:first-child{text-align:left;padding-left:0}
+#clientTableBody td:first-child{padding-left:0}
 /* Шапка списаний — единый стиль с товарами */
 #woColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #woColHeaders th:first-child{text-align:left;padding-left:0}
@@ -1096,28 +1100,30 @@
       <div class="page-header"><div><h1>Общие настройки</h1><div class="sub">Настройки системы (в разработке)</div></div></div>
     </div>
     <div class="page-section" id="page-clients">
-      <div class="cl-top">
-        <div class="cl-title-row">
-          <h1>Клиенты</h1>
-          <div class="cl-period" id="clPeriodLabel" onclick="toggleClientPeriod()">Весь период</div>
+      <div class="page-header">
+        <div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Клиенты</h1>
+          <div class="sub">Управляйте базой клиентов</div>
         </div>
-        <div class="cl-toolbar">
-          <div class="cl-left">
-            <button class="cl-filter-btn">Группа</button>
-            <button class="cl-filter-btn">Фильтр</button>
-          </div>
-          <div class="cl-right">
-            <button class="btn btn-primary" style="padding:.35rem .7rem;font-size:.8rem" onclick="openClientModal()">+ Добавить клиента</button>
-          </div>
+        <div class="page-actions">
+          <button class="btn-green" onclick="openClientModal()">+ Добавить клиента</button>
         </div>
       </div>
-      <div id="clStats" class="cl-stats-empty">
-        <div class="cl-empty-icon">&#128202;</div>
-        <div class="cl-empty-title">Здесь будет статистика покупок клиентов</div>
-        <div class="cl-empty-sub">Добавьте ваших гостей, чтобы контролировать выручку, средний чек и количество продаж по каждому из них</div>
-      </div>
-      <div class="product-table" id="clTable" style="display:none">
-        <table><thead><tr><th style="width:18%">Клиент</th><th style="width:12%">Телефон</th><th style="width:12%">Наличными</th><th style="width:13%">Карточкой</th><th style="width:13%">Прибыль</th><th style="width:8%">Чеки</th><th style="width:14%">Средний чек</th><th style="width:10%"></th></tr></thead><tbody id="clientTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table>
+          <thead id="clColHeaders">
+            <tr>
+              <th>Клиент</th>
+              <th>Телефон</th>
+              <th>Покупок</th>
+              <th>Сумма</th>
+              <th style="width:130px"></th>
+            </tr>
+          </thead>
+          <tbody id="clientTableBody">
+          </tbody>
+        </table>
       </div>
     </div>
     <!-- ПРОГРАММЫ ЛОЯЛЬНОСТИ -->
@@ -3260,6 +3266,94 @@ function deleteSupplier(id){
   list = list.filter(function(x){ return x.id !== id; });
   localStorage.setItem('suppliers88', JSON.stringify(list));
   renderSuppliersPage();
+}
+// ================== КЛИЕНТЫ ==================
+function renderClientsPage(){
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  var tb = document.getElementById('clientTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">👤</div><p>Клиентов пока нет. Нажмите «+ Добавить клиента»</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = list.map(function(c){
+    return '<tr>' +
+      '<td style="text-align:left"><div class="prod-name">'+c.name+'</div>'+(c.email?'<div class="prod-sku">'+c.email+'</div>':'')+'</td>' +
+      '<td style="font-size:.82rem">'+(c.phone||'—')+'</td>' +
+      '<td>'+(c.purchases||0)+'</td>' +
+      '<td><span class="num">'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editClient('+c.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="deleteClient('+c.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function openClientModal(){
+  document.getElementById('clientModal').classList.add('active');
+}
+function closeClientModal(){
+  document.getElementById('clientModal').classList.remove('active');
+  document.getElementById('clientForm').reset();
+  document.getElementById('editClientId').value = '';
+  document.getElementById('clientModalTitle').textContent = 'Добавить клиента';
+  document.querySelector('#clientModal .sub').textContent = 'Введите контактные данные';
+}
+function saveClient(e){
+  e.preventDefault();
+  var name = document.getElementById('clName').value.trim();
+  if(!name) return alert('Введите имя');
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  var editId = document.getElementById('editClientId').value;
+  var obj = {
+    name: name,
+    phone: document.getElementById('clPhone').value.trim(),
+    email: document.getElementById('clEmail').value.trim(),
+    comment: document.getElementById('clComment').value.trim()
+  };
+  if(editId){
+    var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
+    if(idx > -1) list[idx] = {...list[idx], ...obj};
+  } else {
+    obj.id = Date.now();
+    obj.purchases = 0;
+    obj.total = 0;
+    list.unshift(obj);
+  }
+  localStorage.setItem('clients88', JSON.stringify(list));
+  renderClientsPage();
+  closeClientModal();
+}
+function editClient(id){
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  var c = list.find(function(x){ return x.id === id; });
+  if(!c) return;
+  document.getElementById('editClientId').value = c.id;
+  document.getElementById('clName').value = c.name;
+  document.getElementById('clPhone').value = c.phone || '';
+  document.getElementById('clEmail').value = c.email || '';
+  document.getElementById('clComment').value = c.comment || '';
+  document.getElementById('clientModalTitle').textContent = 'Редактировать клиента';
+  document.querySelector('#clientModal .sub').textContent = 'Измените данные';
+  document.getElementById('clientModal').classList.add('active');
+}
+function deleteClient(id){
+  if(!confirm('Удалить клиента?')) return;
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('clients88', JSON.stringify(list));
+  renderClientsPage();
+}
+function deleteClientFromEdit(){
+  var id = parseInt(document.getElementById('editClientId').value);
+  if(!id || !confirm('Удалить клиента?')) return;
+  deleteClient(id);
+  closeClientModal();
 }
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
