@@ -1110,6 +1110,12 @@
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-field" placeholder="Поиск по имени или телефону..." oninput="renderClientsPage()">
+        </div>
+      </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table>
           <thead id="clColHeaders">
@@ -3272,6 +3278,8 @@ function renderClientsPage(){
   var list = JSON.parse(localStorage.getItem('clients88') || '[]');
   var tb = document.getElementById('clientTableBody');
   if(!tb) return;
+  var q = (document.querySelector('#page-clients .search-field')?.value || '').toLowerCase().trim();
+  if(q) list = list.filter(function(c){ return c.name.toLowerCase().includes(q) || (c.phone||'').includes(q); });
   if(!list.length){
     tb.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">👤</div><p>Клиентов пока нет. Нажмите «+ Добавить клиента»</p></div></td></tr>';
     return;
@@ -3354,6 +3362,15 @@ function deleteClientFromEdit(){
   if(!id || !confirm('Удалить клиента?')) return;
   deleteClient(id);
   closeClientModal();
+}
+var clPeriodIndex = 0;
+var clPeriods = ['all','today','week','month','year'];
+var clPeriodLabels = {all:'📅 Весь период',today:'📅 Сегодня',week:'📅 Неделя',month:'📅 Месяц',year:'📅 Год'};
+function toggleClientPeriod(){
+  clPeriodIndex = (clPeriodIndex + 1) % clPeriods.length;
+  var btn = document.getElementById('clPeriodBtn');
+  if(btn) btn.innerHTML = clPeriodLabels[clPeriods[clPeriodIndex]] + ' <span class="act-arrow">▼</span>';
+  renderClientsPage();
 }
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
