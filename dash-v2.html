@@ -807,7 +807,7 @@
     </div>
     <!-- Заголовки столбцов товаров -->
     <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <table style="min-width:1100px">
+      <table id="productTable" style="min-width:720px">
         <thead id="colHeaders">
           <tr></tr>
         </thead>
@@ -2216,15 +2216,20 @@ function renderColHeaders(){
   if(!el) return;
   var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
   var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
-  var flexVals = {name:2,category:1,barcode:1,type:1,weight:1,unit:1,costNoVat:1,costWithVat:1,price:1,profit:1,margin:1};
   var html = '';
+  var visibleCount = 0;
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
       html += '<th data-col="' + col + '">' + (labels[col]||col) + '</th>';
+      visibleCount++;
     }
   });
   html += '<th style="width:130px;min-width:130px;text-align:right"></th>';
   el.querySelector('tr').innerHTML = html;
+  // Динамическая ширина таблицы: 150px на колонку + 220px на название + 140px на действия
+  var tableWidth = 220 + (visibleCount * 130) + 140;
+  var tbl = document.getElementById('productTable');
+  if(tbl) tbl.style.minWidth = Math.max(520, tableWidth) + 'px';
 }
 function toggleColsDropdown(e){
   e.stopPropagation();
