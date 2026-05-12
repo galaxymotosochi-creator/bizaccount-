@@ -1582,18 +1582,16 @@
       <div style="border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-bottom:.5rem;background:var(--body-bg)">
         <div style="font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.5rem">Товары в поставке</div>
         <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.5rem"></div>
-        <div class="form-row" style="gap:.35rem">
-          <div class="form-group" style="flex:3">
-            <select id="supAddProduct" style="font-size:.85rem;width:100%"><option value="">— выберите товар —</option></select>
+        <div class="form-row" style="gap:.35rem;flex-wrap:nowrap">
+          <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.45rem .55rem;font-size:.82rem;white-space:nowrap;flex-shrink:0">Добавить</button>
+          <div class="form-group" style="flex:3;min-width:0">
+            <select id="supAddProduct" style="font-size:.82rem;width:100%"><option value="">— выберите товар —</option></select>
           </div>
-          <div class="form-group" style="flex:1">
-            <input type="number" id="supAddQty" placeholder="Кол-во" value="1" min="1" step="any" style="font-size:.85rem;width:100%">
+          <div class="form-group" style="flex:1;min-width:0">
+            <input type="number" id="supAddQty" placeholder="Кол-во" value="1" min="1" step="any" style="font-size:.82rem;width:100%">
           </div>
-          <div class="form-group" style="flex:1">
-            <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="font-size:.85rem;width:100%">
-          </div>
-          <div style="display:flex;align-items:flex-end;padding-bottom:.2rem">
-            <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.45rem .65rem;font-size:.85rem">Добавить</button>
+          <div class="form-group" style="flex:1;min-width:0">
+            <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="font-size:.82rem;width:100%">
           </div>
         </div>
         <div id="supItemsTotal" style="text-align:right;font-size:.9rem;font-weight:600;padding-top:.35rem;border-top:1px solid var(--border);margin-top:.35rem"></div>
