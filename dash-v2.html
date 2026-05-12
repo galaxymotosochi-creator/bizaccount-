@@ -2121,15 +2121,18 @@ function renderCatList(filter){
 function toggleCat(name){
   if(selectedCats.has(name)) selectedCats.delete(name); else selectedCats.add(name);
   renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+  renderProductsPage();
 }
 function selectAllCats(){
   const list = JSON.parse(localStorage.getItem('prodCats88') || '[]');
   list.forEach(c => selectedCats.add(c.name));
   renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+  renderProductsPage();
 }
 function clearAllCats(){
   selectedCats.clear();
   renderCatList(document.querySelector('.cat-dd-search input')?.value || '');
+  renderProductsPage();
 }
 function filterCatList(val){
   renderCatList(val);
@@ -2272,6 +2275,7 @@ function renderProductsPage(){
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
   if(currentFilter !== 'all') products = products.filter(p => p.cat === currentFilter);
+  if(selectedCats.size > 0) products = products.filter(p => selectedCats.has(CAT_LABELS[p.cat] || p.cat || ''));
   if(q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q));
   const tbody = document.getElementById('productTableBody');
   if(!products.length){
