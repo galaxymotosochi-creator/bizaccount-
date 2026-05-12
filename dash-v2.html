@@ -215,6 +215,10 @@
 #colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #colHeaders th:first-child{text-align:left;padding-left:0}
 #productTableBody td:first-child{text-align:left;padding-left:0}
+/* Шапка инвентаризации — единый стиль с товарами */
+#invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#invColHeaders th:first-child{text-align:left;padding-left:0}
+#inventoryTableBody td:first-child{padding-left:0}
 /* Шапка поставок — единый стиль с товарами */
 #supplyColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #supplyColHeaders th:first-child{text-align:left;padding-left:0}
@@ -1007,15 +1011,27 @@
     <div class="page-section" id="page-inventory">
       <div class="page-header">
         <div>
-          <h1>Инвентаризация</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Инвентаризация</h1>
           <div class="sub">Сверка фактических остатков с учётными</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="startInventory()">+ Новая инвентаризация</button>
+          <button class="btn-green" onclick="startInventory()">+ Новая инвентаризация</button>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:28%">Товар</th><th style="width:16%">Учтено</th><th style="width:16%">Факт</th><th style="width:16%">Разница</th><th style="width:24%"></th></tr></thead><tbody id="inventoryTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table>
+          <thead id="invColHeaders">
+            <tr>
+              <th>Товар</th>
+              <th>Учтено</th>
+              <th>Факт</th>
+              <th>Разница</th>
+              <th style="width:130px"></th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody"></tbody>
+        </table>
       </div>
     </div>
     <!-- СКЛАДЫ -->
@@ -2602,6 +2618,156 @@ function copySupply(id){
   localStorage.setItem('supplies88', JSON.stringify(list));
   renderSuppliesPage();
 }
+// ================== ИНВЕНТАРИЗАЦИЯ ==================
+var editingInventoryId = null;
+function renderInventoryPage(){
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var tb = document.getElementById('inventoryTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">📋</div><p>Инвентаризаций пока нет. Нажмите «+ Новая инвентаризация»</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = list.map(function(inv){
+    var diffCount = inv.items.filter(function(it){ return it.actual !== it.expected; }).length;
+    return '<tr>' +
+      '<td style="text-align:left"><div class="prod-name">'+inv.number+'</div></td>' +
+      '<td style="font-size:.82rem;color:var(--muted)">'+(inv.date||'—')+'</td>' +
+      '<td><span class="prod-cat">'+diffCount+' шт.</span></td>' +
+      '<td><span class="num" style="color:'+(inv.totals.result>0?'#16a34a':(inv.totals.result<0?'#dc2626':'var(--muted)'))+'">'+(inv.totals.result>0?'+':'')+inv.totals.result.toLocaleString()+'₽</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="viewInventory('+inv.id+')">Открыть</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="deleteInventory('+inv.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+function startInventory(){
+  var now = new Date();
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var num = 'INV-' + String(list.length + 1).padStart(3, '0');
+  var products = JSON.parse(localStorage.getItem('products88') || '[]');
+  var stock = JSON.parse(localStorage.getItem('stock88') || '[]');
+  var items = products.filter(function(p){ return !p.hidden; }).map(function(p){
+    var stockItem = stock.find(function(s){ return s.prodId === p.id; });
+    return {
+      prodId: p.id,
+      name: p.name,
+      sku: p.sku || '',
+      cat: CAT_LABELS[p.cat] || p.cat || '',
+      expected: stockItem ? stockItem.qty : 0,
+      actual: stockItem ? stockItem.qty : 0,
+      cost: p.costWithVat || p.costNoVat || 0
+    };
+  });
+  var totalBefore = items.reduce(function(sum, it){ return sum + (it.expected * it.cost); }, 0);
+  var doc = {
+    id: Date.now(),
+    number: num,
+    date: now.toISOString().split('T')[0],
+    status: 'draft',
+    items: items,
+    totals: { totalBefore: totalBefore, totalAfter: totalBefore, shortage: 0, surplus: 0, result: 0 }
+  };
+  list.unshift(doc);
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  editingInventoryId = doc.id;
+  renderInventoryEditor(doc);
+}
+function renderInventoryEditor(doc){
+  var tb = document.getElementById('inventoryTableBody');
+  if(!tb) return;
+  tb.innerHTML = doc.items.map(function(it, idx){
+    var diff = it.actual - it.expected;
+    var diffSum = diff * it.cost;
+    return '<tr>' +
+      '<td style="text-align:left"><div class="prod-name">'+it.name+'</div><div class="prod-sku">'+(it.sku||'—')+'</div></td>' +
+      '<td><span class="num">'+it.expected+'</span></td>' +
+      '<td><input type="number" id="inv-actual-'+idx+'" value="'+it.actual+'" min="0" style="width:70px;text-align:center;padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.85rem" onchange="updateInvItem('+doc.id+','+idx+')"></td>' +
+      '<td><span class="num" style="color:'+(diff>0?'#16a34a':(diff<0?'#dc2626':'var(--muted)'))+'">'+(diff>0?'+':'')+diff+'</span></td>' +
+      '<td><span class="num" style="color:'+(diffSum>0?'#16a34a':(diffSum<0?'#dc2626':'var(--muted)'))+'">'+(diffSum>0?'+':'')+diffSum.toLocaleString()+'₽</span></td>' +
+    '</tr>';
+  }).join('') +
+  '<tr><td colspan="5" style="text-align:center;padding:1rem"><button class="btn-green" onclick="completeInventory('+doc.id+')" style="padding:.6rem 2rem">✅ Завершить инвентаризацию</button></td></tr>';
+}
+function updateInvItem(docId, idx){
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var doc = list.find(function(d){ return d.id === docId; });
+  if(!doc) return;
+  var val = parseInt(document.getElementById('inv-actual-'+idx).value) || 0;
+  doc.items[idx].actual = val;
+  recalcInvTotals(doc);
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  renderInventoryEditor(doc);
+}
+function recalcInvTotals(doc){
+  var totalBefore = 0, totalAfter = 0, shortage = 0, surplus = 0;
+  doc.items.forEach(function(it){
+    var costBefore = it.expected * it.cost;
+    var costAfter = it.actual * it.cost;
+    totalBefore += costBefore;
+    totalAfter += costAfter;
+    var diff = it.actual - it.expected;
+    if(diff < 0) shortage += Math.abs(diff) * it.cost;
+    if(diff > 0) surplus += diff * it.cost;
+  });
+  doc.totals = { totalBefore: totalBefore, totalAfter: totalAfter, shortage: shortage, surplus: surplus, result: totalAfter - totalBefore };
+}
+function completeInventory(docId){
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var doc = list.find(function(d){ return d.id === docId; });
+  if(!doc) return;
+  recalcInvTotals(doc);
+  // Показываем итог
+  var diffItems = doc.items.filter(function(it){ return it.actual !== it.expected; });
+  var msg = '📋 ИТОГ ИНВЕНТАРИЗАЦИИ '+doc.number+'\n\n';
+  msg += 'Только расхождения:\n';
+  diffItems.forEach(function(it){
+    var diff = it.actual - it.expected;
+    var sign = diff > 0 ? '+' : '';
+    msg += it.name + ': ' + sign + diff + ' шт (' + sign + (diff*it.cost).toLocaleString() + '₽)\n';
+  });
+  msg += '\nИтого расхождений: ' + doc.totals.shortage.toLocaleString() + '₽ (недостача) / ' + doc.totals.surplus.toLocaleString() + '₽ (излишек)';
+  msg += '\nРезультат: ' + (doc.totals.result > 0 ? '+' : '') + doc.totals.result.toLocaleString() + '₽';
+  msg += '\n\nСтоимость склада ДО: ' + doc.totals.totalBefore.toLocaleString() + '₽';
+  msg += '\nСтоимость склада ПОСЛЕ: ' + doc.totals.totalAfter.toLocaleString() + '₽';
+  if(!confirm(msg + '\n\nПровести инвентаризацию?')) return;
+  doc.status = 'completed';
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  renderInventoryPage();
+}
+function viewInventory(id){
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  var doc = list.find(function(d){ return d.id === id; });
+  if(!doc) return;
+  var tb = document.getElementById('inventoryTableBody');
+  if(!tb) return;
+  tb.innerHTML = doc.items.map(function(it){
+    var diff = it.actual - it.expected;
+    var diffSum = diff * it.cost;
+    var statusBadge = diff === 0 ? '<span style="color:#16a34a;font-size:.7rem">✓ OK</span>' : '<span style="color:'+(diff>0?'#16a34a':'#dc2626')+';font-size:.7rem">'+(diff>0?'+':'')+diff+' шт</span>';
+    return '<tr>' +
+      '<td style="text-align:left"><div class="prod-name">'+it.name+'</div><div class="prod-sku">'+(it.sku||'—')+'</div></td>' +
+      '<td><span class="num">'+it.expected+'</span></td>' +
+      '<td><span class="num">'+it.actual+'</span> '+statusBadge+'</td>' +
+      '<td><span class="num" style="color:'+(diff>0?'#16a34a':(diff<0?'#dc2626':'var(--muted)'))+'">'+(diff>0?'+':'')+diff+'</span></td>' +
+      '<td><span class="num" style="color:'+(diffSum>0?'#16a34a':(diffSum<0?'#dc2626':'var(--muted)'))+'">'+(diffSum>0?'+':'')+diffSum.toLocaleString()+'₽</span></td>' +
+    '</tr>';
+  }).join('');
+}
+function deleteInventory(id){
+  if(!confirm('Удалить инвентаризацию?')) return;
+  var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+  list = list.filter(function(d){ return d.id !== id; });
+  localStorage.setItem('inventory88', JSON.stringify(list));
+  renderInventoryPage();
+}
+
 function navigateTo(page){
   document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
