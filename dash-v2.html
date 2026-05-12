@@ -207,6 +207,9 @@
 .col-headers-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);white-space:nowrap}
 .col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
+/* Шапка товаров внутри thead */
+#colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#colHeaders th:first-child{text-align:left}
 /* Category dropdown */
 .cat-wrapper{position:relative;display:flex;align-items:center}
 .actions-group{display:flex;align-items:center;gap:10px;margin-left:12px}
@@ -801,22 +804,9 @@
     </div>
     <!-- Заголовки столбцов товаров -->
     <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <div class="col-headers" id="colHeaders">
-        <span class="col-h" style="flex:2" data-col="name">Название</span>
-        <span class="col-h" style="flex:1" data-col="category">Категория</span>
-        <span class="col-h" style="flex:1" data-col="costNoVat">Себес. без НДС</span>
-        <span class="col-h" style="flex:1" data-col="price">Цена</span>
-        <span class="col-h" style="flex:1" data-col="margin">Наценка</span>
-      </div>
       <table style="min-width:680px">
-        <thead style="display:none">
-          <tr>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>Цена</th>
-            <th>Ед.</th>
-            <th></th>
-          </tr>
+        <thead id="colHeaders">
+          <tr></tr>
         </thead>
         <tbody id="productTableBody">
         </tbody>
@@ -2214,21 +2204,17 @@ function closeAllDropdowns(){
 function renderColHeaders(){
   var el = document.getElementById('colHeaders');
   if(!el) return;
-  var existing = {};
-  el.querySelectorAll('.col-h').forEach(function(h){
-    var col = h.getAttribute('data-col');
-    if(col) existing[col] = h;
-  });
   var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
   var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
   var flexVals = {name:2,category:1,barcode:1,type:1,weight:1,unit:1,costNoVat:1,costWithVat:1,price:1,profit:1,margin:1};
   var html = '';
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
-      html += '<span class="col-h" style="flex:'+(flexVals[col]||1)+'" data-col="' + col + '">' + (labels[col]||col) + '</span>';
+      html += '<th data-col="' + col + '">' + (labels[col]||col) + '</th>';
     }
   });
-  el.innerHTML = html;
+  html += '<th style="width:130px;min-width:130px;text-align:right"></th>';
+  el.querySelector('tr').innerHTML = html;
 }
 function toggleColsDropdown(e){
   e.stopPropagation();
