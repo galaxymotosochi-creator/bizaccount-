@@ -2091,7 +2091,7 @@ function saveProduct(e){
   }
   localStorage.setItem('products88', JSON.stringify(list));
   closeProductModal();
-  setTimeout(function(){ renderProductsPage(); }, 50);
+  renderProductsPage();
   var t = document.getElementById('toast');
   if(t){ t.style.opacity='1'; t.style.transform='translateY(0)'; setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateY(10px)'; },2000); }
 }
@@ -2267,6 +2267,7 @@ document.addEventListener('click', function(e){
   }
 });
 function renderProductsPage(){
+  try {
   renderColHeaders();
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
@@ -2316,6 +2317,7 @@ function renderProductsPage(){
     '</td>';
     return '<tr'+(p.hidden?' style="opacity:.4;background:var(--body-bg)"':'')+'>' + cells + '</tr>';
   }).join('');
+} catch(e) { alert('Ошибка renderProductsPage: '+e.message); }
 }
 // Закрыть все меню ••• при клике вне
 document.addEventListener('click', function(e){
