@@ -2033,9 +2033,9 @@ function restoreProduct(){
   let list = JSON.parse(localStorage.getItem('products88') || '[]');
   list = list.map(p => p.id === id ? {...p, hidden: false} : p);
   localStorage.setItem('products88', JSON.stringify(list));
-  closeProductModal();
-  showToast();
   renderProductsPage();
+  showToast();
+  closeProductModal();
 }
 function saveProduct(e){
   e.preventDefault();
@@ -2090,8 +2090,8 @@ function saveProduct(e){
     });
   }
   localStorage.setItem('products88', JSON.stringify(list));
-  closeProductModal();
   renderProductsPage();
+  closeProductModal();
   var t = document.getElementById('toast');
   if(t){ t.style.opacity='1'; t.style.transform='translateY(0)'; setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateY(10px)'; },2000); }
 }
