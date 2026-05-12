@@ -1584,18 +1584,13 @@
         <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.5rem"></div>
         <div class="form-row" style="gap:.35rem;flex-wrap:nowrap">
           <div class="form-group" style="flex:1;min-width:0">
-            <select id="supAddProduct" style="font-size:.82rem;width:100%"><option value="">— выберите товар —</option></select>
-          </div>
-          <div class="form-group" style="flex:1;min-width:0">
-            <input type="number" id="supAddQty" placeholder="Количество" value="1" min="1" step="any" style="font-size:.82rem;width:100%">
-          </div>
-          <div class="form-group" style="flex:1;min-width:0">
-            <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="font-size:.82rem;width:100%">
-          </div>
-        </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:.25rem">
-          <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.35rem .7rem;font-size:.8rem">Добавить</button>
-        </div>
+      <div id="supItemsList" style="max-height:250px;overflow-y:auto;margin-bottom:.5rem"></div>
+      <div style="display:flex;gap:.3rem;flex-wrap:nowrap;align-items:center">
+        <select id="supAddProduct" style="flex:2;font-size:.75rem;padding:.25rem;border:1px solid var(--border);border-radius:4px"><option value="">Товар</option></select>
+        <input type="number" id="supAddQty" placeholder="Кол-во" min="1" step="any" style="flex:1;font-size:.75rem;padding:.25rem;border:1px solid var(--border);border-radius:4px;width:60px">
+        <input type="number" id="supAddCost" placeholder="Цена" min="0" step="0.01" style="flex:1;font-size:.75rem;padding:.25rem;border:1px solid var(--border);border-radius:4px;width:60px">
+        <button type="button" class="btn-green" onclick="addSupplyItem()" style="padding:.25rem .45rem;font-size:.72rem;white-space:nowrap;flex-shrink:0">Добавить</button>
+      </div>
         <div id="supItemsTotal" style="text-align:right;font-size:.9rem;font-weight:600;padding-top:.35rem;border-top:1px solid var(--border);margin-top:.35rem"></div>
       </div>
       <div class="form-row">
@@ -2648,8 +2643,8 @@ function addSupplyItem(){
   var prod = prods.find(function(p){ return p.id === prodId; });
   supTempItems.push({ prodId: prodId, name: prod ? prod.name : 'Товар', qty: qty, cost: cost });
   prodSel.value = '';
-  document.getElementById('supAddQty').value = 1;
-  document.getElementById('supAddCost').value = 0;
+  document.getElementById('supAddQty').value = '';
+  document.getElementById('supAddCost').value = '';
   renderSupplyItemsList();
 }
 function removeSupplyItem(idx){
