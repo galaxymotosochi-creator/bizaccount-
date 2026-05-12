@@ -653,7 +653,7 @@
     <div class="nav-group">
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5" fill="#8b5cf6"/><circle cx="18.5" cy="18.5" r="2.5" fill="#8b5cf6"/></svg></span> Склад<span class="arrow">&#9656;</span></a>
       <div class="nav-children">
-        <a class="nav-child" onclick="navigateTo('products')">Товары</a>
+        <a class="nav-child" onclick="navigateTo('products')">Товары и услуги</a>
         <a class="nav-child" onclick="navigateTo('categories')">Категории</a>
         <a class="nav-child" onclick="navigateTo('turnover')">Здоровье товаров</a>
         <a class="nav-child" onclick="navigateTo('stock')">Остатки</a>
@@ -771,8 +771,8 @@
     <div class="page-section" id="page-products">
       <div class="page-header">
         <div>
-          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Товары</h1>
-          <div class="sub">Управляйте товарами — добавляйте, редактируйте, ищите</div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Товары и услуги</h1>
+          <div class="sub">Управляйте — добавляйте, редактируйте, ищите</div>
         </div>
         <div class="page-actions">
           <button class="btn-green" onclick="openProductModal()">+ Добавить</button>
@@ -1075,7 +1075,7 @@
           <h1>Корзина</h1>
           <div class="sub">Скрытые товары — восстановите или удалите навсегда</div>
         </div>
-        <button class="btn btn-outline" onclick="navigateTo('products')" style="font-size:.8rem;gap:.3rem">← Назад к товарам</button>
+        <button class="btn btn-outline" onclick="navigateTo('products')" style="font-size:.8rem;gap:.3rem">← Назад к товарам и услугам</button>
       </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
         <table style="min-width:900px">
@@ -1364,13 +1364,20 @@
 <div class="modal-overlay" id="productModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeProductModal()">&times;</button>
-    <h2 id="modalTitle">Добавить товар</h2>
+    <h2 id="modalTitle">Добавить товар или услугу</h2>
     <div class="sub" id="modalSub">Заполните поля и нажмите Сохранить</div>
     <form id="productForm" onsubmit="saveProduct(event)">
       <input type="hidden" id="editProductId" value="">
       <div class="form-group">
         <label>Название *</label>
         <input type="text" id="prodName" placeholder="Например, Кирпич красный" required>
+      </div>
+      <div class="form-group">
+        <label>Вид</label>
+        <select id="prodType" onchange="onProdTypeChange()">
+          <option value="product">Товар</option>
+          <option value="service">Услуга</option>
+        </select>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1407,13 +1414,6 @@
         </div>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label>Тип</label>
-          <select id="prodType">
-            <option value="product">Товар</option>
-            <option value="service">Услуга</option>
-          </select>
-        </div>
         <div class="form-group">
           <label>Вес упаковки</label>
           <div style="display:flex;gap:.35rem">
@@ -2003,8 +2003,28 @@ function migrateOldCats(){
   });
 }
 migrateOldCats();
+function loadProdCats(){
+  var type = document.getElementById('prodType').value;
+  var list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  if(!list.length){
+    // Миграция если ещё старая структура
+    var prodCats = JSON.parse(localStorage.getItem('prodCats88') || '[]');
+    prodCats.forEach(function(c){ list.push({id: c.id, name: c.name, type: 'product'}); });
+    var svcCats = JSON.parse(localStorage.getItem('svcCats88') || '[]');
+    svcCats.forEach(function(c){ list.push({id: c.id + 100000, name: c.name, type: 'service'}); });
+    if(list.length) localStorage.setItem('allCats88', JSON.stringify(list));
+  }
+  var sel = document.getElementById('prodCat');
+  var filtered = list.filter(function(c){ return c.type === type; });
+  sel.innerHTML = '<option value="">— выберите —</option>' +
+    filtered.map(function(c){ return '<option value="'+c.name+'">'+c.name+'</option>'; }).join('');
+  if(!filtered.length) sel.innerHTML = '<option value="">— нет категорий —</option>';
+}
+function onProdTypeChange(){
+  loadProdCats();
+}
 function openProductModal(){
-  fillCatSelect('prodCat', 'prodCats88');
+  loadProdCats();
   document.getElementById('productModal').classList.add('active');
 }
 function calcProfit(){
@@ -2022,7 +2042,7 @@ function closeProductModal(){
   document.getElementById('productForm').reset();
   document.getElementById('prodQty').value = 1;
   document.getElementById('editProductId').value = '';
-  document.getElementById('modalTitle').textContent = 'Добавить товар';
+  document.getElementById('modalTitle').textContent = 'Добавить товар или услугу';
   document.getElementById('modalSub').textContent = 'Заполните поля и нажмите Сохранить';
 }
 function editProduct(id){
@@ -2037,6 +2057,7 @@ function editProduct(id){
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodBarcode').value = p.barcode || '';
   document.getElementById('prodType').value = p.type || 'product';
+  loadProdCats();
   document.getElementById('prodWeight').value = p.weight || 0;
   document.getElementById('prodWeightUnit').value = p.weightUnit || 'кг';
   document.getElementById('prodCostNoVat').value = p.costNoVat || 0;
