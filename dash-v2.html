@@ -208,9 +208,10 @@
 .col-headers{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;margin-bottom:2px;border-bottom:1px solid var(--border);white-space:nowrap}
 .col-h{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.15rem .5rem .15rem .25rem;flex-shrink:0;min-width:100px}
 /* Выравнивание левого края для категорий */
-#prodCatTableBody td:first-child, #svcCatTableBody td:first-child{padding-left:0}
+#catTableBody td:first-child{padding-left:0}
+#catColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#catColHeaders th:first-child{text-align:left;padding-left:0}
 #supplyTableBody td:first-child{padding-left:0}
-.product-table .col-headers .col-h:first-child{padding-left:0}
 /* Шапка товаров внутри thead */
 #colHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #colHeaders th:first-child{text-align:left;padding-left:0}
@@ -653,7 +654,7 @@
       <a class="nav-parent" onclick="toggleGroup(this)"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-linecap="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polyline points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5" fill="#8b5cf6"/><circle cx="18.5" cy="18.5" r="2.5" fill="#8b5cf6"/></svg></span> Склад<span class="arrow">&#9656;</span></a>
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('products')">Товары</a>
-        <a class="nav-child" onclick="navigateTo('product-categories')">Категории</a>
+        <a class="nav-child" onclick="navigateTo('categories')">Категории</a>
         <a class="nav-child" onclick="navigateTo('turnover')">Здоровье товаров</a>
         <a class="nav-child" onclick="navigateTo('stock')">Остатки</a>
         <a class="nav-child" onclick="navigateTo('supplies')">Поставки</a>
@@ -1332,71 +1333,33 @@
         </table>
       </div>
     </div>
-    <div class="page-section" id="page-product-categories">
-      <!-- КАТЕГОРИИ ТОВАРОВ -->
+    <div class="page-section" id="page-categories">
+      <!-- КАТЕГОРИИ ТОВАРОВ И УСЛУГ -->
       <div class="page-header">
         <div>
-          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Категории товаров</h1>
-          <div class="sub">Управляйте категориями для товаров</div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Категории товаров и услуг</h1>
+          <div class="sub">Управляйте категориями</div>
         </div>
         <div class="page-actions">
-          <button onclick="navigateTo('trash')" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--primary);padding:2px;margin-right:4px">🗑️</button>
-          <button class="btn-green" onclick="openCatModal('product')">+ Добавить категорию</button>
+          <button class="btn-green" onclick="openCatModal()">+ Добавить категорию</button>
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
 
-      <div class="search-row">
-        <div class="search-input-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-field" placeholder="Быстрый поиск">
-        </div>
-      </div>
-
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <div class="col-headers">
-          <span class="col-h" style="flex:1" data-col="name">Название</span>
-          <span class="col-h" style="flex:1"></span>
-        </div>
-        <table style="min-width:600px">
-          <thead style="display:none">
+        <table style="min-width:500px">
+          <thead id="catColHeaders">
             <tr>
-              <th style="width:80%">Название</th>
-              <th style="width:20%"></th>
+              <th>Название</th>
+              <th>Вид</th>
+              <th style="width:130px"></th>
             </tr>
           </thead>
-          <tbody id="prodCatTableBody">
+          <tbody id="catTableBody">
           </tbody>
         </table>
       </div>
     </div>
-    <!-- КАТЕГОРИИ УСЛУГ -->
-    <div class="page-section" id="page-service-categories">
-      <div class="page-header">
-        <div>
-          <h1>Категории услуг</h1>
-          <div class="sub">Управляйте категориями для услуг</div>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="openCatModal('service')">+ Добавить категорию</button>
-        </div>
-      </div>
-      <div class="product-table">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:60%">Название</th>
-              <th style="width:25%">Услуг</th>
-              <th style="width:15%"></th>
-            </tr>
-          </thead>
-          <tbody id="svcCatTableBody">
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Модальное окно добавления товара -->
 <div class="modal-overlay" id="productModal">
   <div class="modal-box">
@@ -1846,10 +1809,16 @@
     <div class="sub" id="catModalSub">Введите название категории</div>
     <form id="catForm" onsubmit="saveCategory(event)">
       <input type="hidden" id="editCatId" value="">
-      <input type="hidden" id="catType" value="">
       <div class="form-group">
         <label>Название *</label>
         <input type="text" id="catName" placeholder="Например, Электроинструменты" required>
+      </div>
+      <div class="form-group">
+        <label>Вид</label>
+        <select id="catTypeSelect">
+          <option value="product">Товар</option>
+          <option value="service">Услуга</option>
+        </select>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeCatModal()">Отмена</button>
@@ -2958,8 +2927,7 @@ function navigateTo(page){
   if(page === 'products') renderProductsPage();
   if(page === 'services') renderServicesPage();
   if(page === 'dashboard') updateStats();
-  if(page === 'product-categories') renderCatPage('product');
-  if(page === 'service-categories') renderCatPage('service');
+  if(page === 'categories') renderCatPage();
   if(page === 'stock') renderStockPage();
   if(page === 'suppliers') renderSuppliersPage();
   if(page === 'supplies') renderSuppliesPage();
@@ -3230,8 +3198,7 @@ const ACTION_MENU_ITEMS = [
   {icon:'📊', label:'Статистика', action:"navigateTo('dashboard')"},
   {icon:'📦', label:'Товары', action:"navigateTo('products')"},
   {icon:'🛠️', label:'Услуги', action:"navigateTo('services')"},
-  {icon:'🏷️', label:'Категории товаров', action:"navigateTo('product-categories')"},
-  {icon:'🏷️', label:'Категории услуг', action:"navigateTo('service-categories')"},
+  {icon:'🏷️', label:'Категории', action:"navigateTo('categories')"},
   {icon:'👥', label:'Сотрудники', action:"alert('Сотрудники')"},
   {icon:'⚙️', label:'Настройки', action:"alert('Настройки')"}
 ];
@@ -3548,10 +3515,9 @@ function editStockPrice(id){
   tb.innerHTML = h;
 }
 // === КАТЕГОРИИ ===
-function openCatModal(type){
-  document.getElementById('catType').value = type;
-  document.getElementById('catModalTitle').textContent = 'Добавить категорию ' + (type === 'product' ? 'товаров' : 'услуг');
-  document.getElementById('catModalSub').textContent = 'Введите название новой категории';
+function openCatModal(){
+  document.getElementById('catModalTitle').textContent = 'Добавить категорию';
+  document.getElementById('catModalSub').textContent = 'Введите название и выберите вид';
   document.getElementById('catModal').classList.add('active');
 }
 function closeCatModal(){
@@ -3561,81 +3527,80 @@ function closeCatModal(){
 }
 function saveCategory(e){
   e.preventDefault();
-  const type = document.getElementById('catType').value;
   const editId = document.getElementById('editCatId').value;
   const name = document.getElementById('catName').value.trim();
   if(!name) return alert('Введите название');
-  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
-  let list = JSON.parse(localStorage.getItem(key) || '[]');
+  const type = document.getElementById('catTypeSelect').value;
+  let list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  // Миграция старых данных
+  if(!list.length) migrateOldCats();
+  list = JSON.parse(localStorage.getItem('allCats88') || '[]');
   if(editId){
-    const idx = list.findIndex(c => c.id === parseInt(editId));
-    if(idx >= 0) list[idx].name = name;
+    var idx = list.findIndex(function(c){ return c.id === parseInt(editId); });
+    if(idx >= 0){ list[idx].name = name; list[idx].type = type; }
   } else {
-    list.push({id: Date.now(), name});
+    list.push({id: Date.now(), name: name, type: type});
   }
-  localStorage.setItem(key, JSON.stringify(list));
+  localStorage.setItem('allCats88', JSON.stringify(list));
+  renderCatPage();
   closeCatModal();
-  renderCatPage(type);
+}
+function migrateOldCats(){
+  var list = [];
+  var prodCats = JSON.parse(localStorage.getItem('prodCats88') || '[]');
+  prodCats.forEach(function(c){ list.push({id: c.id, name: c.name, type: 'product'}); });
+  var svcCats = JSON.parse(localStorage.getItem('svcCats88') || '[]');
+  svcCats.forEach(function(c){ list.push({id: c.id + 100000, name: c.name, type: 'service'}); });
+  localStorage.setItem('allCats88', JSON.stringify(list));
 }
 function editCategory(type, id){
-  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
-  const list = JSON.parse(localStorage.getItem(key) || '[]');
-  const c = list.find(x => x.id === id);
+  var list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  if(!list.length) migrateOldCats();
+  list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  var c = list.find(function(x){ return x.id === id; });
   if(!c) return alert('Категория не найдена');
-  document.getElementById('catType').value = type;
   document.getElementById('editCatId').value = c.id;
   document.getElementById('catName').value = c.name;
+  document.getElementById('catTypeSelect').value = c.type || 'product';
   document.getElementById('catModalTitle').textContent = 'Редактировать категорию';
-  document.getElementById('catModalSub').textContent = 'Измените название категории';
+  document.getElementById('catModalSub').textContent = 'Измените название и вид';
   document.getElementById('catModal').classList.add('active');
 }
 function deleteCategory(type, id){
   if(!confirm('Удалить категорию?')) return;
-  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
-  let list = JSON.parse(localStorage.getItem(key) || '[]');
-  list = list.filter(c => c.id !== id);
-  localStorage.setItem(key, JSON.stringify(list));
-  renderCatPage(type);
+  var list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  if(!list.length) migrateOldCats();
+  list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  list = list.filter(function(c){ return c.id !== id; });
+  localStorage.setItem('allCats88', JSON.stringify(list));
+  renderCatPage();
 }
-function renderCatPage(type){
-  const key = type === 'product' ? 'prodCats88' : 'svcCats88';
-  const tblId = type === 'product' ? 'prodCatTableBody' : 'svcCatTableBody';
-  const itemsKey = type === 'product' ? 'products88' : 'services88';
-  const catField = type === 'product' ? 'prodCat' : 'servCat';
-  const CAT_MAP = type === 'product' ? CAT_LABELS : SVC_CAT;
-  
-  let lists = JSON.parse(localStorage.getItem(key) || '[]');
-  const items = JSON.parse(localStorage.getItem(itemsKey) || '[]');
-  
-  // Собираем уникальные категории из товаров/услуг
-  const usedCats = [...new Set(items.map(i => i.cat).filter(Boolean))];
-  let changed = false;
-  usedCats.forEach(c => {
-    if(!lists.find(x => x.name === (CAT_MAP[c]||c))){
-      lists.push({id: Date.now() + Math.random(), name: CAT_MAP[c]||c});
-      changed = true;
-    }
-  });
-  if(changed) localStorage.setItem(key, JSON.stringify(lists));
-  const tbody = document.getElementById(tblId);
-  if(!lists.length){
-    tbody.innerHTML = '<tr><td colspan="2"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
+function renderCatPage(){
+  var list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  if(!list.length) migrateOldCats();
+  list = JSON.parse(localStorage.getItem('allCats88') || '[]');
+  var tb = document.getElementById('catTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">🏷️</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = lists.map(c =>
-    '<tr>' +
+  tb.innerHTML = list.map(function(c){
+    var typeLabel = (c.type === 'service') ? 'Услуга' : 'Товар';
+    return '<tr>' +
       '<td><div class="prod-name" style="font-size:.85rem">'+c.name+'</div></td>' +
+      '<td><span class="prod-cat">'+typeLabel+'</span></td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        '<button class="act-btn prod-edit-btn" onclick="editCategory(\''+type+'\','+c.id+')">Ред.</button>' +
+        '<button class="act-btn prod-edit-btn" onclick="editCategory(\''+(c.type||'product')+'\','+c.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
-            '<button onclick="deleteCategory(\''+type+'\','+c.id+')" style="color:#dc3545">Удалить</button>' +
+            '<button onclick="deleteCategory(\''+(c.type||'product')+'\','+c.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
       '</td>' +
-    '</tr>'
-  ).join('');
+    '</tr>';
+  }).join('');
 }
 document.addEventListener('DOMContentLoaded', updateStats);
 </script>
