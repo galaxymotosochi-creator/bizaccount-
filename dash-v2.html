@@ -2625,6 +2625,8 @@ function renderInventoryPage(){
   editingInventoryId = null;
   var nb = document.getElementById('invNewBtn');
   var bb = document.getElementById('invBackBtn');
+  var invTh = document.getElementById('invColHeaders');
+  if(invTh) invTh.style.display = '';
   if(nb) nb.style.display = '';
   if(bb) bb.style.display = 'none';
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
@@ -2656,6 +2658,8 @@ function renderInventoryPage(){
 function startInventory(){
   var nb = document.getElementById('invNewBtn');
   var bb = document.getElementById('invBackBtn');
+  var invTh = document.getElementById('invColHeaders');
+  if(invTh) invTh.style.display = 'none';
   if(nb) nb.style.display = 'none';
   if(bb) bb.style.display = '';
   var now = new Date();
@@ -2695,7 +2699,7 @@ function renderInventoryEditor(doc){
   if(!tb) return;
   // Шапка документа — номер, дата, ответственный
   var headerHtml = '<tr><td colspan="5" style="padding:.5rem 0 1rem 0"><div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">';
-  headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">№</span><span style="font-size:1rem;font-weight:600">'+doc.number+'</span></div>';
+  headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">№</span><input type="text" id="invNumber" value="'+doc.number+'" onchange="updateInvMeta('+doc.id+')" style="padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.9rem;font-weight:600;max-width:120px"></div>';
   headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">Дата</span><input type="date" id="invDate" value="'+doc.date+'" onchange="updateInvMeta('+doc.id+')" style="padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.85rem"></div>';
   headerHtml += '<div style="display:flex;align-items:center;gap:.35rem"><span style="font-size:.78rem;color:var(--muted)">Ответственный</span><input type="text" id="invResponsible" value="'+(doc.responsible||'')+'" placeholder="ФИО" onchange="updateInvMeta('+doc.id+')" style="padding:.3rem;border:1px solid var(--border);border-radius:4px;font-size:.85rem;max-width:200px"></div>';
   headerHtml += '</div></td></tr>';
@@ -2721,6 +2725,8 @@ function updateInvMeta(docId){
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
   var doc = list.find(function(d){ return d.id === docId; });
   if(!doc) return;
+  var numEl = document.getElementById('invNumber');
+  if(numEl) doc.number = numEl.value.trim() || doc.number;
   doc.date = document.getElementById('invDate').value;
   doc.responsible = document.getElementById('invResponsible').value.trim();
   localStorage.setItem('inventory88', JSON.stringify(list));
@@ -2753,23 +2759,48 @@ function completeInventory(docId){
   var doc = list.find(function(d){ return d.id === docId; });
   if(!doc) return;
   recalcInvTotals(doc);
-  // Показываем итог
   var diffItems = doc.items.filter(function(it){ return it.actual !== it.expected; });
-  var msg = '📋 ИТОГ ИНВЕНТАРИЗАЦИИ '+doc.number+'\n\n';
-  msg += 'Только расхождения:\n';
-  diffItems.forEach(function(it){
-    var diff = it.actual - it.expected;
-    var sign = diff > 0 ? '+' : '';
-    msg += it.name + ': ' + sign + diff + ' шт (' + sign + (diff*it.cost).toLocaleString() + '₽)\n';
-  });
-  msg += '\nИтого расхождений: ' + doc.totals.shortage.toLocaleString() + '₽ (недостача) / ' + doc.totals.surplus.toLocaleString() + '₽ (излишек)';
-  msg += '\nРезультат: ' + (doc.totals.result > 0 ? '+' : '') + doc.totals.result.toLocaleString() + '₽';
-  msg += '\n\nСтоимость склада ДО: ' + doc.totals.totalBefore.toLocaleString() + '₽';
-  msg += '\nСтоимость склада ПОСЛЕ: ' + doc.totals.totalAfter.toLocaleString() + '₽';
-  if(!confirm(msg + '\n\nПровести инвентаризацию?')) return;
-  doc.status = 'completed';
-  localStorage.setItem('inventory88', JSON.stringify(list));
-  renderInventoryPage();
+  var t = doc.totals;
+  document.getElementById('invResultTitle').textContent = 'Итог инвентаризации ' + doc.number;
+  document.getElementById('invResultSub').textContent = (doc.date||'—') + (doc.responsible ? ' • ' + doc.responsible : '');
+  // Тело — только расхождения
+  var bodyHtml = '';
+  if(!diffItems.length){
+    bodyHtml = '<div style="text-align:center;padding:2rem;color:var(--muted)">✅ Расхождений нет. Все товары сошлись.</div>';
+  } else {
+    bodyHtml = '<table style="width:100%;font-size:.85rem;border-collapse:collapse"><thead><tr style="font-size:.72rem;color:var(--muted);text-transform:uppercase"><th style="text-align:left;padding:.35rem .3rem">Товар</th><th style="padding:.35rem .3rem">Кол-во</th><th style="padding:.35rem .3rem">Сумма</th></tr></thead><tbody>';
+    diffItems.forEach(function(it){
+      var diff = it.actual - it.expected;
+      var diffSum = diff * it.cost;
+      bodyHtml += '<tr><td style="padding:.3rem;text-align:left">'+it.name+'</td><td style="padding:.3rem;color:'+(diff>0?'#16a34a':'#dc2626')+'">'+(diff>0?'+':'')+diff+' шт</td><td style="padding:.3rem;color:'+(diffSum>0?'#16a34a':'#dc2626')+'">'+(diffSum>0?'+':'')+diffSum.toLocaleString()+'₽</td></tr>';
+    });
+    bodyHtml += '</tbody></table>';
+  }
+  document.getElementById('invResultBody').innerHTML = bodyHtml;
+  // Итоги
+  var totalsHtml = '<div style="display:flex;flex-direction:column;gap:.35rem;font-size:.85rem">';
+  totalsHtml += '<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Недостача:</span><span style="color:#dc2626">'+t.shortage.toLocaleString()+'₽</span></div>';
+  totalsHtml += '<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Излишек:</span><span style="color:#16a34a">'+t.surplus.toLocaleString()+'₽</span></div>';
+  totalsHtml += '<div style="display:flex;justify-content:space-between;font-weight:600;border-top:1px solid var(--border);padding-top:.35rem"><span>Результат:</span><span style="color:'+(t.result>0?'#16a34a':(t.result<0?'#dc2626':''))+'">'+(t.result>0?'+':'')+t.result.toLocaleString()+'₽</span></div>';
+  totalsHtml += '<div style="display:flex;justify-content:space-between;margin-top:.25rem"><span style="color:var(--muted)">Склад ДО:</span><span>'+t.totalBefore.toLocaleString()+'₽</span></div>';
+  totalsHtml += '<div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Склад ПОСЛЕ:</span><span>'+t.totalAfter.toLocaleString()+'₽</span></div>';
+  totalsHtml += '</div>';
+  document.getElementById('invResultTotals').innerHTML = totalsHtml;
+  // Кнопка подтверждения
+  var confirmBtn = document.getElementById('invConfirmBtn');
+  var newBtn = confirmBtn.cloneNode(true);
+  newBtn.onclick = function(){
+    doc.status = 'completed';
+    localStorage.setItem('inventory88', JSON.stringify(list));
+    closeInvResult();
+    renderInventoryPage();
+  };
+  confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+  // Показываем модалку
+  document.getElementById('invResultModal').classList.add('active');
+}
+function closeInvResult(){
+  document.getElementById('invResultModal').classList.remove('active');
 }
 function viewInventory(id){
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
@@ -2798,6 +2829,12 @@ function deleteInventory(id){
   renderInventoryPage();
 }
 function cancelInventoryEdit(){
+  if(editingInventoryId){
+    var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
+    list = list.filter(function(d){ return d.id !== editingInventoryId; });
+    localStorage.setItem('inventory88', JSON.stringify(list));
+  }
+  editingInventoryId = null;
   renderInventoryPage();
 }
 function navigateTo(page){
@@ -3491,6 +3528,20 @@ function renderCatPage(type){
 }
 document.addEventListener('DOMContentLoaded', updateStats);
 </script>
+<!-- Модалка итога инвентаризации -->
+<div class="modal-overlay" id="invResultModal" onclick="if(event.target===this)closeInvResult()">
+  <div class="modal-box" style="max-width:600px">
+    <button class="modal-close" onclick="closeInvResult()">&times;</button>
+    <h2 id="invResultTitle">Итог инвентаризации</h2>
+    <div class="sub" id="invResultSub"></div>
+    <div id="invResultBody" style="margin:1rem 0;max-height:400px;overflow-y:auto"></div>
+    <div id="invResultTotals" style="border-top:1px solid var(--border);padding-top:.75rem;margin-bottom:1rem"></div>
+    <div style="display:flex;gap:.75rem;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeInvResult()">← Отмена</button>
+      <button class="btn btn-primary" id="invConfirmBtn">Провести</button>
+    </div>
+  </div>
+</div>
 <!-- ПИН -->
 <div class="pin-overlay" id="pinOverlay">
   <div class="pin-box">
