@@ -2,6 +2,16 @@
   "version": 2,
   "public": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/dash-v2",
+      "destination": "/dash-v2.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
