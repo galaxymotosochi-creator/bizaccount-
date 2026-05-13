@@ -1247,31 +1247,11 @@
     <div class="page-section" id="page-transactions">
       <div class="page-header">
         <div>
-          <h1>Транзакции</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Транзакции</h1>
           <div class="sub">Все приходы и расходы в одном месте</div>
         </div>
-        <div class="page-actions" id="transFilterBar" style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <span class="filter-tab active" data-filter="all" onclick="setTransFilter('all',this)">Все</span>
-          <span class="filter-tab" data-filter="sale" onclick="setTransFilter('sale',this)">+ Продажи</span>
-          <span class="filter-tab" data-filter="supply" onclick="setTransFilter('supply',this)">− Поставки</span>
-          <span class="filter-tab" data-filter="writeoff" onclick="setTransFilter('writeoff',this)">− Списания</span>
-        </div>
       </div>
-      <div class="product-table">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:14%">Дата</th>
-              <th style="width:12%">Тип</th>
-              <th style="width:34%">Описание</th>
-              <th style="width:14%">Сумма</th>
-              <th style="width:14%">Баланс</th>
-              <th style="width:12%">Статус</th>
-            </tr>
-          </thead>
-          <tbody id="transTableBody"></tbody>
-        </table>
-      </div>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
     </div>
     <!-- ОБОРАЧИВАЕМОСТЬ -->
     <div class="page-section" id="page-turnover">
