@@ -4566,7 +4566,7 @@ function loadExpCatFilterItems(){
   custom.forEach(function(c){ cats.push({id:'custom_'+c.id, name:c.name}); });
   list.innerHTML = cats.map(function(c){
     var checked = expCatFilter === c.id;
-    return '<label class="tx-type-item" onclick="toggleExpCatFilter(''+c.id+'', this)">' +
+    return '<label class="tx-type-item" onclick="toggleExpCatFilter(\'' + c.id + '\', this)">' +
       '<span class="tx-type-cb'+(checked?' checked':'')+'">'+String.fromCharCode(10003)+'</span> ' +
       c.name +
     '</label>';
