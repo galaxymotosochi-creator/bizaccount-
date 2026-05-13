@@ -4607,29 +4607,11 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  var pdd = document.getElementById('periodDropdownTx');
-  if(pdd && pdd.classList.contains('open')){
-    if(!e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
-      pdd.classList.remove('open');
-    }
-  }
-  var exdd = document.getElementById('exportTxDropdown');
-  if(exdd && exdd.classList.contains('open')){
-    if(!e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){
-      exdd.classList.remove('open');
-    }
-  }
-  var txdd = document.getElementById('txTypeDropdown');
-  if(txdd && txdd.classList.contains('open')){
-    if(!e.target.closest('#txTypeBtn') && !e.target.closest('.tx-type-dropdown')){
-      txdd.classList.remove('open');
-    }
-  }
-  var expdd = document.getElementById('expCatDropdown');
-  if(expdd && expdd.classList.contains('open')){
-    if(!e.target.closest('#expCatBtn') && !e.target.closest('.exp-cat-dropdown')){
-      expdd.classList.remove('open');
-    }
+  var isInside = e.target.closest('.actions-group');
+  var inDD = e.target.closest('.tx-period-dropdown, .export-dropdown, .tx-type-dropdown, .exp-cat-dropdown');
+  var inBtn = e.target.closest('.text-btn');
+  if(!isInside || (!inDD && !inBtn)){
+    closeAllTxDropdowns();
   }
 });
 </script>
