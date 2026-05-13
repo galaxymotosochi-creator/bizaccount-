@@ -3327,6 +3327,66 @@ function renderWriteoffsPage(){
     '</tr>';
   }).join('');
 }
+function getExpCatList(){
+  return JSON.parse(localStorage.getItem('expCategories88') || '[]');
+}
+function saveExpCatList(list){
+  localStorage.setItem('expCategories88', JSON.stringify(list));
+}
+function loadExpCategories(){
+  var sel = document.getElementById('expCategory');
+  if(!sel) return;
+  var val = sel.value;
+  sel.innerHTML =
+    '<option value="other">Прочее</option>' +
+    '<option value="rent">Аренда</option>' +
+    '<option value="utilities">Коммунальные</option>' +
+    '<option value="salary">Зарплата</option>' +
+    '<option value="supplies">Канцтовары</option>' +
+    '<option value="marketing">Маркетинг</option>' +
+    '<option value="transport">Транспорт</option>';
+  var custom = getExpCatList();
+  custom.forEach(function(c){
+    var opt = document.createElement('option');
+    opt.value = 'custom_'+c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+  sel.value = val;
+}
+function openNewExpCat(){
+  var wrap = document.getElementById('expNewCatWrap');
+  var inp = document.getElementById('expNewCatInput');
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  if(wrap.style.display === 'block') inp.focus();
+}
+function addExpCat(){
+  var inp = document.getElementById('expNewCatInput');
+  var name = inp.value.trim();
+  if(!name) return alert('Введите название категории');
+  var list = getExpCatList();
+  if(list.some(function(c){ return c.name.toLowerCase() === name.toLowerCase(); })){
+    return alert('Такая категория уже есть');
+  }
+  list.push({id:Date.now(), name:name});
+  saveExpCatList(list);
+  inp.value = '';
+  document.getElementById('expNewCatWrap').style.display = 'none';
+  loadExpCategories();
+  var sel = document.getElementById('expCategory');
+  sel.value = 'custom_' + list[list.length-1].id;
+}
+function deleteExpCat(){
+  var sel = document.getElementById('expCategory');
+  var val = sel.value;
+  if(!val.startsWith('custom_')) return alert('Можно удалить только свои категории');
+  var id = parseInt(val.replace('custom_',''));
+  var list = getExpCatList();
+  list = list.filter(function(c){ return c.id !== id; });
+  saveExpCatList(list);
+  sel.value = 'other';
+  loadExpCategories();
+}
 function closeExpenseModal(){
   document.getElementById('expenseModal').classList.remove('active');
 }
