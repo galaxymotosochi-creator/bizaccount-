@@ -3838,8 +3838,8 @@ function showProDetail(p){
     '<div style="position:relative;flex-shrink:0;margin-left:.5rem">'+
     '<span onclick="togglePromoMenu(this)" style="font-size:1.1rem;cursor:pointer;color:var(--muted);padding:4px;border-radius:4px">\u22ee</span>'+
     '<div class="promo-menu-dropdown" id="promoMenu_'+p.id+'" style="display:none;position:absolute;top:100%;right:0;background:var(--white);border:1px solid var(--border);border-radius:.5rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.1);min-width:140px;padding:.25rem;z-index:10">'+
-    '<div class="promo-menu-item" onclick="openPromoModalEdit(\''+p.id+'\');closePromoMenu()" style="padding:.3rem .5rem;font-size:.78rem;cursor:pointer;border-radius:4px">\u270f\ufe0f Редактировать</div>'+
-    (isD?"":'<div class="promo-menu-item" onclick="deletePromo(\''+p.id+'\');closePromoMenu()" style="padding:.3rem .5rem;font-size:.78rem;cursor:pointer;border-radius:4px;color:#dc2626">\uD83D\uDDD1\ufe0f Удалить</div>')+
+    '<div class="promo-menu-item" onclick="openPromoModalEdit(\''+p.id+'\');closePromoMenus()" style="padding:.3rem .5rem;font-size:.78rem;cursor:pointer;border-radius:4px">\u270f\ufe0f Редактировать</div>'+
+    (isD?"":'<div class="promo-menu-item" onclick="deletePromo(\''+p.id+'\');closePromoMenus()" style="padding:.3rem .5rem;font-size:.78rem;cursor:pointer;border-radius:4px;color:#dc2626">\uD83D\uDDD1\ufe0f Удалить</div>')+
     '</div></div></div>';
 }
 
