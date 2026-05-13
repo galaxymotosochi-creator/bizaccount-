@@ -2719,10 +2719,7 @@ price: price,
       barcode: document.getElementById('prodBarcode').value.trim(),
       type: document.getElementById('prodType').value,
       weight: parseFloat(document.getElementById('prodWeight').value) || 0,
-      weightUnit: document.getElementById('prodWeightUnit').value,
-
-      profit: profit,
-      margin: margin
+      weightUnit: document.getElementById('prodWeightUnit').value
     };
   } else {
     // Создание — добавляем новый товар
@@ -2742,9 +2739,6 @@ price: price,
       weightUnit: document.getElementById('prodWeightUnit').value,
       costNoVat: costNoVat,
       costWithVat: costWithVat,
-      profit: profit,
-      margin: margin,
-      hidden: false
     });
   }
   localStorage.setItem('products88', JSON.stringify(list));
