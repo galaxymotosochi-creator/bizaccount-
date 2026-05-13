@@ -1778,16 +1778,6 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Себестоимость без НДС (₽)</label>
-          <input type="number" id="prodCostNoVat" placeholder="0" min="0" oninput="calcProfit()">
-        </div>
-        <div class="form-group">
-          <label>Себестоимость с НДС (₽)</label>
-          <input type="number" id="prodCostWithVat" placeholder="0" min="0" oninput="calcProfit()">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
           <label>Прибыль (₽)</label>
           <input type="text" id="prodProfit" placeholder="—" readonly style="background:var(--body-bg);color:var(--muted);font-weight:500">
         </div>
@@ -2646,9 +2636,7 @@ function openProductModal(){
 }
 function calcProfit(){
   var price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  var costNoVat = parseFloat(document.getElementById('prodCostNoVat').value) || 0;
-  var costWithVat = parseFloat(document.getElementById('prodCostWithVat').value) || 0;
-  var cost = costWithVat || costNoVat;
+  var cost = 0;
   var profit = price - cost;
   document.getElementById('prodProfit').value = profit > 0 ? profit.toFixed(2) : '0.00';
   var margin = cost > 0 ? (profit / cost * 100) : 0;
@@ -2677,8 +2665,7 @@ function editProduct(id){
   loadProdCats();
   document.getElementById('prodWeight').value = p.weight || 0;
   document.getElementById('prodWeightUnit').value = p.weightUnit || 'кг';
-  document.getElementById('prodCostNoVat').value = p.costNoVat || 0;
-  document.getElementById('prodCostWithVat').value = p.costWithVat || 0;
+
   if(typeof calcProfit === 'function') calcProfit();
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
@@ -2702,11 +2689,9 @@ function saveProduct(e){
   var name = document.getElementById('prodName').value.trim();
   if(!name) return alert('Введите название');
   var price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  var costNoVat = parseFloat(document.getElementById('prodCostNoVat').value) || 0;
-  var costWithVat = parseFloat(document.getElementById('prodCostWithVat').value) || 0;
-  var cost = costWithVat || costNoVat;
+  var cost = 0;
   var profit = price - cost;
-  var margin = cost > 0 ? (profit / cost * 100) : 0;
+  var margin = 0;
   var list = JSON.parse(localStorage.getItem('products88') || '[]');
   var editId = parseInt(document.getElementById('editProductId').value);
   if(editId){
@@ -2724,8 +2709,7 @@ function saveProduct(e){
       type: document.getElementById('prodType').value,
       weight: parseFloat(document.getElementById('prodWeight').value) || 0,
       weightUnit: document.getElementById('prodWeightUnit').value,
-      costNoVat: costNoVat,
-      costWithVat: costWithVat,
+
       profit: profit,
       margin: margin
     };
