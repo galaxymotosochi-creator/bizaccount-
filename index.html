@@ -70,14 +70,24 @@
   .period-custom-row input:focus{border-color:var(--primary)}
   .period-apply{display:block;width:100%;margin-top:.35rem;padding:.35rem;background:var(--primary);color:var(--white);border:none;border-radius:.35rem;font-size:.78rem;font-family:var(--font);cursor:pointer;font-weight:500}
   .period-apply:hover{background:var(--primary-dark)}
-  .tx-period-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);padding:.5rem;z-index:50;min-width:220px;display:none}
+  .tx-period-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
   .tx-period-dropdown.open{display:block}
-  .tx-period-dropdown .pd-title{font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem;padding:0 .3rem}
-  .tx-type-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);padding:.5rem;z-index:50;min-width:220px;display:none}
+  .tx-period-dropdown .pd-title{font-size:.78rem;color:var(--primary);cursor:default;font-family:var(--font);padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
+  .tx-period-dropdown .period-preset{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color);font-family:var(--font);border:none;background:none;width:100%;text-align:left;transition:all .08s}
+  .tx-period-dropdown .period-preset:hover{background:var(--primary-light)}
+  .tx-period-dropdown .period-preset.active{font-weight:600;color:var(--primary)}
+  .tx-period-dropdown .period-custom{margin-top:.25rem;padding-top:.25rem;border-top:1px solid var(--border)}
+  .tx-period-dropdown .period-custom-row{display:flex;gap:.35rem;align-items:center;margin-top:.3rem}
+  .tx-period-dropdown .period-custom-row label{font-size:.72rem;color:var(--muted);width:20px;flex-shrink:0}
+  .tx-period-dropdown .period-custom-row input{padding:.25rem .4rem;font-size:.78rem;font-family:var(--font);border:1px solid var(--border);border-radius:.35rem;outline:none;flex:1;min-width:0}
+  .tx-period-dropdown .period-custom-row input:focus{border-color:var(--primary)}
+  .tx-period-dropdown .period-apply{display:block;width:100%;margin-top:.35rem;padding:.35rem;background:var(--primary);color:var(--white);border:none;border-radius:6px;font-size:.78rem;font-family:var(--font);cursor:pointer;font-weight:500}
+  .tx-period-dropdown .period-apply:hover{opacity:.85}
+  .tx-type-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
   .tx-type-dropdown.open{display:block}
-  .tx-type-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.82rem;cursor:pointer;border-radius:.35rem;font-family:var(--font);color:var(--body-color);transition:all .08s}
-  .tx-type-item:hover{background:var(--primary-light);color:var(--primary)}
-  .tx-type-cb{width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .1s}
+  .tx-type-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color);font-family:var(--font)}
+  .tx-type-item:hover{background:var(--primary-light)}
+  .tx-type-cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
   .tx-type-cb.checked{border-color:var(--primary);background:var(--primary)}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
@@ -1325,7 +1335,7 @@
               Транзакция <span class="act-arrow">▼</span>
             </button>
             <div class="tx-type-dropdown" id="txTypeDropdown">
-              <div class="pd-title">Выберите тип транзакции:</div>
+              <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item">
                 <span class="tx-type-cb" data-type="sale" onclick="toggleTxTypeFilter('sale', this)"></span>
                 Продажа
