@@ -1789,15 +1789,25 @@
       </div>
       <div class="form-group">
         <label>Категория</label>
-        <select id="expCategory">
-          <option value="other">Прочее</option>
-          <option value="rent">Аренда</option>
-          <option value="utilities">Коммунальные</option>
-          <option value="salary">Зарплата</option>
-          <option value="supplies">Канцтовары</option>
-          <option value="marketing">Маркетинг</option>
-          <option value="transport">Транспорт</option>
-        </select>
+        <div style="display:flex;gap:.35rem;align-items:center">
+          <select id="expCategory" style="flex:1">
+            <option value="other">Прочее</option>
+            <option value="rent">Аренда</option>
+            <option value="utilities">Коммунальные</option>
+            <option value="salary">Зарплата</option>
+            <option value="supplies">Канцтовары</option>
+            <option value="marketing">Маркетинг</option>
+            <option value="transport">Транспорт</option>
+          </select>
+          <button type="button" class="btn btn-outline" onclick="openNewExpCat()" title="Добавить свою категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0">+</button>
+          <button type="button" class="btn btn-outline" onclick="deleteExpCat()" title="Удалить категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0;color:#dc3545;border-color:#dc3545">−</button>
+        </div>
+        <div id="expNewCatWrap" style="display:none;margin-top:.35rem">
+          <div style="display:flex;gap:.35rem;align-items:center">
+            <input type="text" id="expNewCatInput" placeholder="Название новой категории" style="flex:1;padding:.3rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)" onkeydown="if(event.key==='Enter'){event.preventDefault();addExpCat()}">
+            <button type="button" class="btn btn-primary" onclick="addExpCat()" style="padding:.35rem .6rem;font-size:.8rem">OK</button>
+          </div>
+        </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeExpenseModal()">Отмена</button>
@@ -3300,6 +3310,7 @@ function closeExpenseModal(){
   document.getElementById('expenseModal').classList.remove('active');
 }
 function openExpenseModal(){
+  loadExpCategories();
   document.getElementById('expDate').valueAsDate = new Date();
   document.getElementById('expenseModal').classList.add('active');
 }
@@ -3314,11 +3325,12 @@ function renderTransactionsPage(){
   tbody.innerHTML = expenses.map(function(e){
     var d = e.date ? e.date.split('-').reverse().join('.') : '—';
     var cats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
+    var catLabel = cats[e.category] || e.category || 'Прочее';
     return '<tr>' +
       '<td style="text-align:left;font-size:.8rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:left">'+e.name+'</td>' +
       '<td style="text-align:right;font-weight:500;color:#dc2626">−'+e.amount.toLocaleString()+'₽</td>' +
-      '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+(cats[e.category]||'Прочее')+'</td>' +
+      '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
     '</tr>';
   }).join('');
 }
@@ -3327,7 +3339,8 @@ function saveExpense(e){
   var name = document.getElementById('expName').value.trim();
   var amount = parseFloat(document.getElementById('expAmount').value);
   var date = document.getElementById('expDate').value;
-  var cat = document.getElementById('expCategory').value;
+  var catRaw = document.getElementById('expCategory').value;
+  var cat = catRaw.startsWith('custom_') ? document.querySelector('#expCategory option[value="'+catRaw+'"]').textContent : catRaw;
   if(!name || !amount) return;
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
   expenses.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, created:new Date().toISOString()});
