@@ -1078,18 +1078,16 @@
     </div>
     <!-- ОСТАТКИ -->
     <div class="page-section" id="page-stock">
-      <div class="stock-toolbar">
-        <div style="display:flex;align-items:center;gap:.5rem">
+      <div class="page-header">
+        <div>
           <h1 style="font-size:1.2rem;font-weight:600;margin:0">Остатки</h1>
-          <span class="stock-count" id="stockCount">0</span>
+          <div class="sub">Управление складом</div>
         </div>
-        <div style="display:flex;align-items:center;gap:.3rem">
-          <button class="stock-icon-btn">📊</button>
-          <button class="stock-icon-btn">📥</button>
-          <button class="stock-icon-btn">🖨</button>
-          <button class="stock-add-btn" onclick="openStockEntryModal()">Ввести остатки</button>
+        <div class="page-actions">
+          <button class="btn-green" onclick="openStockEntryModal()">+ Ввести остатки</button>
         </div>
       </div>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
       <div class="stock-filterbar">
         <div class="stock-search">
           <span style="font-size:.75rem;color:var(--muted)">🔍</span>
@@ -2320,32 +2318,99 @@
 <div class="modal-overlay" id="stockEntryModal" onclick="if(event.target===this)closeStockEntryModal()">
   <div class="modal-box">
     <button class="modal-close" onclick="closeStockEntryModal()">&times;</button>
-    <h2>Ввод начальных остатков</h2>
-    <div class="sub">Добавьте товары, которые уже есть на складе</div>
-    <div class="form-row">
-      <div class="form-group" style="flex:2">
-        <label>Товар</label>
-        <select id="seProduct"><option value="">— выберите товар —</option></select>
+    <h2>Добавить товар</h2>
+    <div class="sub">Введите новый товар и его остатки</div>
+    <form onsubmit="event.preventDefault();saveStockEntry()" style="margin-bottom:.5rem">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="seName" placeholder="Например, Кирпич красный" required>
       </div>
-      <div class="form-group" style="flex:1">
-        <label>Количество</label>
-        <input type="number" id="seQty" placeholder="1" value="1" min="1">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Вид</label>
+          <select id="seType">
+            <option value="product">Товар</option>
+            <option value="service">Услуга</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Категория</label>
+          <select id="seCat"></select>
+        </div>
       </div>
-      <div class="form-group" style="flex:1">
-        <label>Цена (₽)</label>
-        <input type="number" id="seCost" placeholder="0" min="0" step="0.01">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ед. измерения</label>
+          <select id="seUnit">
+            <option value="шт">шт</option>
+            <option value="кг">кг</option>
+            <option value="м">м</option>
+            <option value="л">л</option>
+            <option value="м²">м²</option>
+            <option value="м³">м³</option>
+            <option value="усл">услуга</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Количество *</label>
+          <input type="number" id="seQty" placeholder="1" min="1" required>
+        </div>
       </div>
-    </div>
-    <button type="button" class="btn btn-primary" onclick="addStockEntryItem()" style="width:100%;font-size:.82rem">Добавить в список</button>
-    <div id="seItemsList" style="margin:.5rem 0;max-height:200px;overflow-y:auto"></div>
-    <div id="seTotal" style="text-align:right;font-size:.85rem;color:var(--muted);margin-bottom:.5rem"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Вес упаковки</label>
+          <div style="display:flex;gap:.35rem">
+            <input type="number" id="seWeight" placeholder="0" min="0" step="0.1" style="flex:1">
+            <select id="seWeightUnit" style="width:70px;font-size:.78rem;padding:.3rem;border:1px solid var(--border);border-radius:5px">
+              <option value="г">г</option>
+              <option value="кг" selected>кг</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Вес товара</label>
+          <div style="display:flex;gap:.35rem">
+            <input type="number" id="seItemWeight" placeholder="0" min="0" step="0.1" style="flex:1">
+            <select id="seItemWeightUnit" style="width:70px;font-size:.78rem;padding:.3rem;border:1px solid var(--border);border-radius:5px">
+              <option value="г">г</option>
+              <option value="кг" selected>кг</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Артикул</label>
+          <input type="text" id="seSku" placeholder="Например, KR-001">
+        </div>
+        <div class="form-group">
+          <label>Штрихкод (EAN-13)</label>
+          <input type="text" id="seBarcode" placeholder="Например, 4601234567890">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Закупочная цена (₽)</label>
+          <input type="number" id="seCost" placeholder="0" min="0" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Розничная цена (₽)</label>
+          <input type="number" id="sePrice" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Оптовая цена (₽)</label>
+        <input type="number" id="seWholesale" placeholder="0" min="0">
+      </div>
+    </form>
+    <div id="seItemsList" style="margin-bottom:.35rem;max-height:150px;overflow-y:auto"></div>
+    <div id="seTotal" style="text-align:right;font-size:.78rem;color:var(--muted);margin-bottom:.5rem"></div>
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" onclick="closeStockEntryModal()">Отмена</button>
-      <button type="button" class="btn btn-primary" onclick="saveStockEntry()">Сохранить</button>
+      <button type="button" class="btn btn-primary" onclick="saveStockEntry()">Добавить в список</button>
     </div>
   </div>
-</div>
-<!-- Модальное окно должности -->
+</div><!-- Модальное окно должности -->
 <div class="modal-overlay" id="positionModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closePositionModal()">&times;</button>
@@ -3279,66 +3344,75 @@ function closeSupplyModal(){
 var seItems = [];
 function openStockEntryModal(){
   seItems = [];
-  var sel = document.getElementById("seProduct");
-  if(sel){
-    var prods = JSON.parse(localStorage.getItem("products88") || "[]");
-    sel.innerHTML = '<option value="">— выберите товар —</option>' +
-      prods.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('');
+  var nameEl = document.getElementById("seName");
+  if(nameEl){
+    nameEl.value = "";
+    document.getElementById("seQty").value = "1";
+    document.getElementById("seCost").value = "";
+    document.getElementById("sePrice").value = "";
+    document.getElementById("seWholesale").value = "";
+    document.getElementById("seSku").value = "";
+    document.getElementById("seBarcode").value = "";
+    document.getElementById("seWeight").value = "";
+    document.getElementById("seItemWeight").value = "";
   }
-  document.getElementById("seQty").value = 1;
-  document.getElementById("seCost").value = "";
   renderSEItems();
   document.getElementById("stockEntryModal").classList.add("active");
 }
 function closeStockEntryModal(){
   document.getElementById("stockEntryModal").classList.remove("active");
 }
-function addStockEntryItem(){
-  var prodId = parseInt(document.getElementById("seProduct").value);
-  if(!prodId) return alert("Выберите товар");
+function saveStockEntry(){
+  var name = document.getElementById("seName").value.trim();
+  if(!name) return alert("Введите название");
   var qty = parseFloat(document.getElementById("seQty").value) || 1;
   var cost = parseFloat(document.getElementById("seCost").value) || 0;
+  var price = parseFloat(document.getElementById("sePrice").value) || 0;
+  var wholesale = parseFloat(document.getElementById("seWholesale").value) || 0;
   var prods = JSON.parse(localStorage.getItem("products88") || "[]");
-  var prod = prods.find(function(p){ return p.id === prodId; });
-  if(!prod) return;
-  var existing = false;
-  seItems.forEach(function(it){ if(it.prodId === prodId){ it.qty += qty; if(cost) it.cost = cost; existing = true; }});
-  if(!existing) seItems.push({prodId: prodId, name: prod.name, qty: qty, cost: cost});
+  var p = {
+    id: Date.now(), name: name,
+    cat: document.getElementById("seCat").value,
+    type: document.getElementById("seType").value,
+    unit: document.getElementById("seUnit").value,
+    stock: qty, price: price, wholesale: wholesale,
+    costNoVat: cost, costWithVat: cost,
+    sku: document.getElementById("seSku").value.trim(),
+    barcode: document.getElementById("seBarcode").value.trim(),
+    weight: parseFloat(document.getElementById("seWeight").value) || 0,
+    weightUnit: document.getElementById("seWeightUnit").value,
+    itemWeight: parseFloat(document.getElementById("seItemWeight").value) || 0
+  };
+  prods.unshift(p);
+  localStorage.setItem("products88", JSON.stringify(prods));
+  seItems.push(p);
   renderSEItems();
+  document.getElementById("seName").value = "";
+  document.getElementById("seQty").value = "1";
+  document.getElementById("seCost").value = "";
+  document.getElementById("sePrice").value = "";
 }
 function renderSEItems(){
   var el = document.getElementById("seItemsList");
   var total = document.getElementById("seTotal");
   if(!el) return;
-  if(!seItems.length){ el.innerHTML = ""; if(total) total.textContent = ""; return; }
+  if(!seItems.length){ el.innerHTML = '<div style="font-size:.75rem;color:var(--muted);padding:.2rem">Список пуст</div>'; if(total) total.textContent = ""; return; }
   el.innerHTML = seItems.map(function(it, i){
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.35rem .4rem;border-bottom:1px solid var(--border);font-size:.78rem">'+
-      '<span>'+it.name+' <b>'+it.qty+'</b> шт × '+it.cost.toLocaleString()+"₽"+'</span>'+
-      '<span onclick="removeSEItem('+i+')" style="cursor:pointer;color:#dc2626;font-size:.8rem;padding:2px 6px">✕</span></div>';
+    var cs = it.costNoVat ? it.costNoVat.toLocaleString()+"₽" : "—";
+    var ps = it.price ? it.price.toLocaleString()+"₽" : "—";
+    return '<div style="display:flex;align-items:center;padding:.2rem .3rem;font-size:.72rem;border-bottom:1px solid var(--border)">'+
+      '<span style="flex:1"><b>'+it.name+'</b> x'+(it.stock||it.qty)+'</span>'+
+      '<span style="width:100px;text-align:right;color:var(--muted)">'+cs+'</span>'+
+      '<span style="width:80px;text-align:right;color:var(--muted)">'+ps+'</span>'+
+      '<span onclick="removeSEItem('+i+')" style="cursor:pointer;color:#dc2626;padding:1px 6px;font-size:.8rem">✕</span></div>';
   }).join('');
-  var sum = seItems.reduce(function(s,it){ return s + it.qty * it.cost; }, 0);
-  if(total) total.textContent = 'Итого: '+seItems.length+' позиций = '+sum.toLocaleString()+"₽";
+  if(total) total.textContent = 'Итого: '+seItems.length+' товаров';
 }
 function removeSEItem(idx){
   seItems.splice(idx, 1);
   renderSEItems();
 }
-function saveStockEntry(){
-  if(!seItems.length) return alert("Добавьте хотя бы один товар");
-  var prods = JSON.parse(localStorage.getItem("products88") || "[]");
-  seItems.forEach(function(it){
-    prods.forEach(function(p){
-      if(p.id === it.prodId){
-        p.stock = (p.stock||0) + it.qty;
-        if(it.cost > 0){ p.costNoVat = it.cost; p.costWithVat = it.cost; }
-      }
-    });
-  });
-  localStorage.setItem("products88", JSON.stringify(prods));
-  seItems = [];
-  closeStockEntryModal();
-  renderStockPage();
-}
+
 function saveSupply(e){
   e.preventDefault();
   if(!supTempItems.length) return alert('Добавьте хотя бы один товар');
