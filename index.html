@@ -1809,6 +1809,27 @@
           </div>
         </div>
       </div>
+      <div class="form-group">
+        <label>Счёт списания</label>
+        <div style="display:flex;flex-direction:column;gap:.35rem" id="accountsList">
+          <div class="exp-acc-row" data-acc="cash">
+            <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()">
+            <label for="accCash" style="flex:1;font-size:.82rem;cursor:pointer">Наличные</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCashAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+          <div class="exp-acc-row" data-acc="card">
+            <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()">
+            <label for="accCard" style="flex:1;font-size:.82rem;cursor:pointer">Карта</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCardAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+          <div class="exp-acc-row" data-acc="transfer">
+            <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()">
+            <label for="accTransfer" style="flex:1;font-size:.82rem;cursor:pointer">Перевод</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accTransferAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+        </div>
+        <div id="accTotalDisplay" style="text-align:right;font-size:.82rem;color:var(--muted);margin-top:.25rem">Сумма по счетам: <span id="accTotalSum" style="font-weight:600;color:var(--body-color)">0₽</span></div>
+      </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeExpenseModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Добавить</button>
@@ -3312,6 +3333,9 @@ function closeExpenseModal(){
 function openExpenseModal(){
   loadExpCategories();
   document.getElementById('expDate').valueAsDate = new Date();
+  document.querySelectorAll('.exp-acc-amount').forEach(function(i){ i.value = ''; });
+  document.querySelectorAll('.exp-acc-cb').forEach(function(c,i){ c.checked = i === 0; });
+  document.getElementById('accTotalSum').textContent = '0₽';
   document.getElementById('expenseModal').classList.add('active');
 }
 function renderTransactionsPage(){
@@ -3326,13 +3350,30 @@ function renderTransactionsPage(){
     var d = e.date ? e.date.split('-').reverse().join('.') : '—';
     var cats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
     var catLabel = cats[e.category] || e.category || 'Прочее';
+    var accStr = '';
+    if(e.accounts){
+      var accLabels = {cash:'Наличные',card:'Карта',transfer:'Перевод'};
+      accStr = Object.keys(e.accounts).map(function(k){ return (accLabels[k]||k)+': '+e.accounts[k].toLocaleString()+'₽'; }).join(', ');
+    }
     return '<tr>' +
       '<td style="text-align:left;font-size:.8rem;color:var(--muted)">'+d+'</td>' +
-      '<td style="text-align:left">'+e.name+'</td>' +
+      '<td style="text-align:left">'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
       '<td style="text-align:right;font-weight:500;color:#dc2626">−'+e.amount.toLocaleString()+'₽</td>' +
       '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
     '</tr>';
   }).join('');
+}
+function calcAccTotal(){
+  var rows = document.querySelectorAll('#accountsList .exp-acc-row');
+  var total = 0;
+  rows.forEach(function(r){
+    var cb = r.querySelector('.exp-acc-cb');
+    var inp = r.querySelector('.exp-acc-amount');
+    if(cb.checked && inp.value){
+      total += parseFloat(inp.value) || 0;
+    }
+  });
+  document.getElementById('accTotalSum').textContent = total.toLocaleString()+'₽';
 }
 function saveExpense(e){
   e.preventDefault();
@@ -3341,9 +3382,29 @@ function saveExpense(e){
   var date = document.getElementById('expDate').value;
   var catRaw = document.getElementById('expCategory').value;
   var cat = catRaw.startsWith('custom_') ? document.querySelector('#expCategory option[value="'+catRaw+'"]').textContent : catRaw;
-  if(!name || !amount) return;
+  if(!name || !amount){ alert('Заполните название и сумму'); return; }
+  var accounts = {};
+  var accTotal = 0;
+  document.querySelectorAll('#accountsList .exp-acc-row').forEach(function(r){
+    var cb = r.querySelector('.exp-acc-cb');
+    var inp = r.querySelector('.exp-acc-amount');
+    if(cb.checked && inp.value){
+      var val = parseFloat(inp.value) || 0;
+      if(val > 0){
+        accounts[r.dataset.acc] = val;
+        accTotal += val;
+      }
+    }
+  });
+  if(Object.keys(accounts).length === 0){
+    alert('Выберите хотя бы один счёт и укажите сумму');
+    return;
+  }
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
-  expenses.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, created:new Date().toISOString()});
+  expenses.push({
+    id:Date.now(), name:name, amount:amount, date:date, category:cat,
+    accounts:accounts, created:new Date().toISOString()
+  });
   localStorage.setItem('expenses88', JSON.stringify(expenses));
   closeExpenseModal();
   document.getElementById('expName').value = '';
