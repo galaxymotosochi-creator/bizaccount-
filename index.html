@@ -75,7 +75,7 @@
   .period-apply:hover{background:var(--primary-dark)}
   .tx-period-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
   .tx-period-dropdown.open{display:block}
-  .tx-period-dropdown .pd-title,.tx-type-dropdown .pd-title,.exp-cat-dropdown .pd-title{font-size:.78rem;color:var(--primary);cursor:default;font-family:var(--font);padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
+  .tx-period-dropdown .pd-title,.tx-type-dropdown .pd-title,.exp-cat-dropdown .pd-title,.inc-cat-dropdown .pd-title{font-size:.78rem;color:var(--primary);cursor:default;font-family:var(--font);padding:.35rem .5rem .5rem;border-bottom:1px solid var(--border);margin-bottom:.25rem}
   .tx-period-dropdown .period-preset{display:flex;align-items:center;gap:.5rem;padding:.3rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color);font-family:var(--font);border:none;background:none;width:100%;text-align:left}
   .tx-period-dropdown .period-preset:hover{background:var(--primary-light)}
   .tx-period-dropdown .period-preset.active{font-weight:600;color:var(--primary)}
@@ -94,6 +94,8 @@
   .tx-type-cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
   .exp-cat-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
   .exp-cat-dropdown.open{display:block}
+  .inc-cat-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
+  .inc-cat-dropdown.open{display:block}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.35rem;position:relative}
@@ -122,8 +124,11 @@
   .stock-icon-btn:hover{border-color:var(--primary);color:var(--primary)}
   .stock-add-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .8rem;background:#16a34a;color:#fff;border:none;border-radius:5px;font-size:.78rem;cursor:pointer;font-family:var(--font);font-weight:500}
   .stock-add-btn:hover{opacity:.9}
-.btn-green{display:inline-flex;align-items:center;gap:.3rem;padding:.6rem .95rem;background:#16a34a;color:#fff;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;font-family:var(--font);font-weight:500;transition:all .12s}
+.btn-green,.btn-red{display:inline-flex;align-items:center;gap:.3rem;padding:.6rem .95rem;color:#fff;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;font-family:var(--font);font-weight:500;transition:all .12s}
+.btn-green{background:#16a34a}
 .btn-green:hover{opacity:.9}
+.btn-red{background:#dc2626}
+.btn-red:hover{opacity:.9}
   .stock-filterbar{display:flex;align-items:center;gap:.5rem;padding:.3rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:.5rem;flex-wrap:wrap}
   .stock-search{display:flex;align-items:center;gap:.3rem;padding:.2rem .5rem;border:1px solid var(--border);border-radius:5px;background:var(--white)}
   .stock-search input{border:none;outline:none;font-family:var(--font);font-size:.78rem;padding:.2rem 0;width:140px;background:transparent}
@@ -1276,22 +1281,23 @@
           <div class="sub">Все приходы и расходы в одном месте</div>
         </div>
         <div class="page-actions">
-          <button class="btn-green" onclick="openExpenseModal()">+ Добавить расход</button>
+          <button class="btn-red" onclick="openExpenseModal()">+ Расход</button>
+          <button class="btn-green" onclick="openIncomeModal()">+ Доход</button>
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0">
         <div style="flex:1;min-width:120px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:1px solid #86efac;border-radius:10px;padding:.65rem .75rem">
           <div style="font-size:.65rem;color:#166534;font-weight:600;text-transform:uppercase">Выручка</div>
-          <div style="font-size:1.1rem;font-weight:700;color:#14532d;margin-top:.1rem">0₽</div>
+          <div id="txRevenue" style="font-size:1.1rem;font-weight:700;color:#14532d;margin-top:.1rem">0₽</div>
         </div>
         <div style="flex:1;min-width:120px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:1px solid #f9a8d4;border-radius:10px;padding:.65rem .75rem">
           <div style="font-size:.65rem;color:#9d174d;font-weight:600;text-transform:uppercase">Расходы</div>
-          <div style="font-size:1.1rem;font-weight:700;color:#831843;margin-top:.1rem">0₽</div>
+          <div id="txExpenses" style="font-size:1.1rem;font-weight:700;color:#831843;margin-top:.1rem">0₽</div>
         </div>
         <div style="flex:1;min-width:120px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border:1px solid #93c5fd;border-radius:10px;padding:.65rem .75rem">
           <div style="font-size:.65rem;color:#1e40af;font-weight:600;text-transform:uppercase">Прибыль</div>
-          <div style="font-size:1.1rem;font-weight:700;color:#1e3a8a;margin-top:.1rem">0₽</div>
+          <div id="txProfit" style="font-size:1.1rem;font-weight:700;color:#1e3a8a;margin-top:.1rem">0₽</div>
         </div>
         <div style="flex:1;min-width:120px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:10px;padding:.65rem .75rem">
           <div style="font-size:.65rem;color:#92400e;font-weight:600;text-transform:uppercase">Средний чек</div>
@@ -1370,6 +1376,15 @@
             <div class="exp-cat-dropdown" id="expCatDropdown">
               <div class="pd-title">Категория расхода</div>
               <div id="expCatList"></div>
+            </div>
+          </div>
+          <div class="inc-cat-wrapper" style="position:relative">
+            <button class="text-btn" onclick="toggleIncCatDropdown(event)" id="incCatBtn">
+              Доходы <span class="act-arrow">▼</span>
+            </button>
+            <div class="inc-cat-dropdown" id="incCatDropdown">
+              <div class="pd-title">Категория дохода</div>
+              <div id="incCatList"></div>
             </div>
           </div>
         </div>
@@ -1779,7 +1794,75 @@
   </div>
 </div>
 <!-- Модальное окно списания -->
-<div class="modal-overlay" id="expenseModal" onclick="if(event.target===this)closeExpenseModal()">
+<div class="modal-overlay" id="incomeModal" onclick="if(event.target===this)closeIncomeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeIncomeModal()">&times;</button>
+    <h2>Добавить доход</h2>
+    <div class="sub">Запишите новый доход</div>
+    <form onsubmit="saveIncome(event)">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="incName" placeholder="Например: инвестиции, партнёрские, проценты" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Сумма (₽) *</label>
+          <input type="number" id="incAmount" placeholder="0" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Дата</label>
+          <input type="date" id="incDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Категория</label>
+        <div style="display:flex;gap:.35rem;align-items:center">
+          <select id="incCategory" style="flex:1">
+            <option value="other">Прочее</option>
+            <option value="investment">Инвестиции</option>
+            <option value="partners">Партнёрские</option>
+            <option value="interest">Проценты</option>
+            <option value="sale_other">Прочие продажи</option>
+          </select>
+          <button type="button" class="btn btn-outline" onclick="openNewIncCat()" title="Добавить свою категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0">+</button>
+          <button type="button" class="btn btn-outline" onclick="deleteIncCat()" title="Удалить категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0;color:#dc3545;border-color:#dc3545">−</button>
+        </div>
+        <div id="incNewCatWrap" style="display:none;margin-top:.35rem">
+          <div style="display:flex;gap:.35rem;align-items:center">
+            <input type="text" id="incNewCatInput" placeholder="Название новой категории" style="flex:1;padding:.3rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)" onkeydown="if(event.key==='Enter'){event.preventDefault();addIncCat()}">
+            <button type="button" class="btn btn-primary" onclick="addIncCat()" style="padding:.35rem .6rem;font-size:.8rem">OK</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Счёт зачисления</label>
+        <div style="display:flex;flex-direction:column;gap:.35rem" id="incAccountsList">
+          <div class="exp-acc-row" data-acc="cash">
+            <input type="checkbox" class="exp-acc-cb" id="incCash" checked onchange="calcIncTotal()">
+            <label for="incCash" style="flex:1;font-size:.82rem;cursor:pointer">Наличные</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incCashAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+          <div class="exp-acc-row" data-acc="card">
+            <input type="checkbox" class="exp-acc-cb" id="incCard" onchange="calcIncTotal()">
+            <label for="incCard" style="flex:1;font-size:.82rem;cursor:pointer">Карта</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incCardAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+          <div class="exp-acc-row" data-acc="transfer">
+            <input type="checkbox" class="exp-acc-cb" id="incTransfer" onchange="calcIncTotal()">
+            <label for="incTransfer" style="flex:1;font-size:.82rem;cursor:pointer">Перевод</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incTransferAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+          </div>
+        </div>
+        <div style="text-align:right;font-size:.82rem;color:var(--muted);margin-top:.25rem">Сумма по счетам: <span id="incTotalSum" style="font-weight:600;color:var(--body-color)">0₽</span></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeIncomeModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   <div class="modal-box">
     <button class="modal-close" onclick="closeExpenseModal()">&times;</button>
     <h2>Добавить расход</h2>
@@ -3339,8 +3422,81 @@ function renderWriteoffsPage(){
     '</tr>';
   }).join('');
 }
-function getExpCatList(){
-  return JSON.parse(localStorage.getItem('expCategories88') || '[]');
+function calcIncTotal(){
+  var rows = document.querySelectorAll('#incAccountsList .exp-acc-row');
+  var total = 0;
+  rows.forEach(function(r){
+    var cb = r.querySelector('.exp-acc-cb');
+    var inp = r.querySelector('.exp-acc-amount');
+    if(cb.checked && inp.value) total += parseFloat(inp.value) || 0;
+  });
+  document.getElementById('incTotalSum').textContent = total.toLocaleString()+'₽';
+}
+function getIncCatList(){ return JSON.parse(localStorage.getItem('incCategories88') || '[]'); }
+function saveIncCatList(list){ localStorage.setItem('incCategories88', JSON.stringify(list)); }
+function loadIncCategories(){
+  var sel = document.getElementById('incCategory');
+  if(!sel) return;
+  var val = sel.value;
+  sel.innerHTML = '<option value="other">Прочее</option><option value="investment">Инвестиции</option><option value="partners">Партнёрские</option><option value="interest">Проценты</option><option value="sale_other">Прочие продажи</option>';
+  var custom = getIncCatList();
+  custom.forEach(function(c){ var opt = document.createElement('option'); opt.value = 'custom_'+c.id; opt.textContent = c.name; sel.appendChild(opt); });
+  sel.value = val;
+}
+function openNewIncCat(){
+  var w = document.getElementById('incNewCatWrap'), i = document.getElementById('incNewCatInput');
+  w.style.display = w.style.display === 'none' ? 'block' : 'none';
+  if(w.style.display === 'block') i.focus();
+}
+function addIncCat(){
+  var i = document.getElementById('incNewCatInput'), n = i.value.trim();
+  if(!n) return alert('Введите название');
+  var l = getIncCatList();
+  if(l.some(function(c){ return c.name.toLowerCase() === n.toLowerCase(); })) return alert('Уже есть');
+  l.push({id:Date.now(), name:n});
+  saveIncCatList(l); i.value = '';
+  document.getElementById('incNewCatWrap').style.display = 'none';
+  loadIncCategories();
+  document.getElementById('incCategory').value = 'custom_' + l[l.length-1].id;
+}
+function deleteIncCat(){
+  var s = document.getElementById('incCategory'), v = s.value;
+  if(!v.startsWith('custom_')) return alert('Можно удалить только свои');
+  var id = parseInt(v.replace('custom_','')), l = getIncCatList().filter(function(c){ return c.id !== id; });
+  saveIncCatList(l); s.value = 'other'; loadIncCategories();
+}
+function closeIncomeModal(){ document.getElementById('incomeModal').classList.remove('active'); }
+function openIncomeModal(){
+  loadIncCategories();
+  document.getElementById('incDate').valueAsDate = new Date();
+  document.querySelectorAll('#incAccountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
+  document.querySelectorAll('#incAccountsList .exp-acc-cb').forEach(function(c,i){ c.checked = i === 0; });
+  document.getElementById('incTotalSum').textContent = '0₽';
+  document.getElementById('incomeModal').classList.add('active');
+}
+function saveIncome(e){
+  e.preventDefault();
+  var name = document.getElementById('incName').value.trim();
+  var amount = parseFloat(document.getElementById('incAmount').value);
+  var date = document.getElementById('incDate').value;
+  var catRaw = document.getElementById('incCategory').value;
+  var cat = catRaw.startsWith('custom_') ? document.querySelector('#incCategory option[value="'+catRaw+'"]').textContent : catRaw;
+  if(!name || !amount) return alert('Заполните название и сумму');
+  var accounts = {};
+  document.querySelectorAll('#incAccountsList .exp-acc-row').forEach(function(r){
+    var cb = r.querySelector('.exp-acc-cb'), inp = r.querySelector('.exp-acc-amount');
+    if(cb.checked && inp.value){ var val = parseFloat(inp.value) || 0; if(val > 0) accounts[r.dataset.acc] = val; }
+  });
+  if(!Object.keys(accounts).length) return alert('Выберите счёт');
+  var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
+  list.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
+  localStorage.setItem('incomes88', JSON.stringify(list));
+  closeIncomeModal();
+  document.getElementById('incName').value = '';
+  document.getElementById('incAmount').value = '';
+  renderTransactionsPage();
+}
+function getExpCatList(){ return JSON.parse(localStorage.getItem('expCategories88') || '[]');
 }
 function saveExpCatList(list){
   localStorage.setItem('expCategories88', JSON.stringify(list));
@@ -3412,25 +3568,44 @@ function openExpenseModal(){
 }
 function renderTransactionsPage(){
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
+  var incomes = JSON.parse(localStorage.getItem('incomes88') || '[]');
+  // Update metrics
+  var totalExp = expenses.reduce(function(s,e){ return s + e.amount; }, 0);
+  var totalInc = incomes.reduce(function(s,e){ return s + e.amount; }, 0);
+  var revEl = document.getElementById('txRevenue');
+  var expEl = document.getElementById('txExpenses');
+  var prfEl = document.getElementById('txProfit');
+  if(revEl) revEl.textContent = totalInc.toLocaleString()+'₽';
+  if(expEl) expEl.textContent = totalExp.toLocaleString()+'₽';
+  if(prfEl) prfEl.textContent = (totalInc - totalExp).toLocaleString()+'₽';
+  // Table
   var tbody = document.getElementById('expenseTableBody');
   if(!tbody) return;
-  if(!expenses.length){
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">💸</div><p>Расходов пока нет. Нажмите «+ Добавить расход»</p></div></td></tr>';
+  var allItems = [];
+  expenses.forEach(function(e){ allItems.push({type:'expense', data:e}); });
+  incomes.forEach(function(e){ allItems.push({type:'income', data:e}); });
+  allItems.sort(function(a,b){ return (b.data.date||'') > (a.data.date||'') ? 1 : -1; });
+  if(!allItems.length){
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">💰</div><p>Записей пока нет</p></div></td></tr>';
     return;
   }
-  tbody.innerHTML = expenses.map(function(e){
+  var expCats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
+  var incCats = {investment:'Инвестиции',partners:'Партнёрские',interest:'Проценты',sale_other:'Прочие продажи',other:'Прочее'};
+  tbody.innerHTML = allItems.map(function(item){
+    var e = item.data;
     var d = e.date ? e.date.split('-').reverse().join('.') : '—';
-    var cats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
-    var catLabel = cats[e.category] || e.category || 'Прочее';
+    var catLabel = item.type === 'expense' ? (expCats[e.category]||e.category||'Прочее') : (incCats[e.category]||e.category||'Прочее');
     var accStr = '';
     if(e.accounts){
       var accLabels = {cash:'Наличные',card:'Карта',transfer:'Перевод'};
       accStr = Object.keys(e.accounts).map(function(k){ return (accLabels[k]||k)+': '+e.accounts[k].toLocaleString()+'₽'; }).join(', ');
     }
+    var color = item.type === 'expense' ? '#dc2626' : '#16a34a';
+    var prefix = item.type === 'expense' ? '−' : '+';
     return '<tr>' +
       '<td style="text-align:left;font-size:.8rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:left">'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
-      '<td style="text-align:right;font-weight:500;color:#dc2626">−'+e.amount.toLocaleString()+'₽</td>' +
+      '<td style="text-align:right;font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
       '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
     '</tr>';
   }).join('');
@@ -4525,6 +4700,7 @@ function closeAllTxDropdowns(){
   document.getElementById('exportTxDropdown')?.classList.remove('open');
   document.getElementById('txTypeDropdown')?.classList.remove('open');
   document.getElementById('expCatDropdown')?.classList.remove('open');
+  document.getElementById('incCatDropdown')?.classList.remove('open');
 }
 function togglePeriodDropdownTx(e){
   e.stopPropagation();
@@ -4603,6 +4779,45 @@ function toggleTxTypeFilter(type, el){
   }
   filterTransactions();
 }
+var incCatFilter = null;
+function toggleIncCatDropdown(e){
+  e.stopPropagation();
+  closeAllTxDropdowns();
+  loadIncCatFilterItems();
+  document.getElementById('incCatDropdown').classList.toggle('open');
+}
+function loadIncCatFilterItems(){
+  var list = document.getElementById('incCatList');
+  if(!list) return;
+  var cats = [
+    {id:'other', name:'Прочее'},
+    {id:'investment', name:'Инвестиции'},
+    {id:'partners', name:'Партнёрские'},
+    {id:'interest', name:'Проценты'},
+    {id:'sale_other', name:'Прочие продажи'}
+  ];
+  var custom = JSON.parse(localStorage.getItem('incCategories88') || '[]');
+  custom.forEach(function(c){ cats.push({id:'custom_'+c.id, name:c.name}); });
+  list.innerHTML = cats.map(function(c){
+    var checked = incCatFilter === c.id;
+    return '<label class="tx-type-item" onclick="toggleIncCatFilter(\'' + c.id + '\', this)">' +
+      '<span class="tx-type-cb'+(checked?' checked':'')+'">'+String.fromCharCode(10003)+'</span> ' +
+      c.name +
+    '</label>';
+  }).join('');
+}
+function toggleIncCatFilter(id, el){
+  var cb = el.querySelector('.tx-type-cb');
+  if(incCatFilter === id){
+    incCatFilter = null;
+    cb.classList.remove('checked');
+  } else {
+    document.querySelectorAll('#incCatList .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+    incCatFilter = id;
+    cb.classList.add('checked');
+  }
+  filterTransactions();
+}
 function filterTransactions(){
   renderTransactionsPage();
 }
@@ -4623,6 +4838,10 @@ document.addEventListener('click', function(e){
   var expdd = document.getElementById('expCatDropdown');
   if(expdd && expdd.classList.contains('open') && !e.target.closest('.exp-cat-dropdown') && !e.target.closest('#expCatBtn')){
     expdd.classList.remove('open');
+  }
+  var incdd = document.getElementById('incCatDropdown');
+  if(incdd && incdd.classList.contains('open') && !e.target.closest('.inc-cat-dropdown') && !e.target.closest('#incCatBtn')){
+    incdd.classList.remove('open');
   }
 });
 </script>
