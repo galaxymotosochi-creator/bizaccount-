@@ -3331,7 +3331,7 @@ function renderClientsPage(){
     var grpColor = groupColors[c.group] || '#6b7280';
     var grpBadge = c.group ? '<span style="font-size:.65rem;color:'+grpColor+';font-weight:600;margin-left:.35rem">['+grp+']</span>' : '';
     return '<tr>' +
-      '<td style="text-align:left"><div class="prod-name">'+c.name+grpBadge+'</div>'+(c.email?'<div class="prod-sku">'+c.email+'</div>':'')+'</td>' +
+      '<td style="text-align:left"><div class="prod-name"><span style="color:var(--primary);cursor:pointer;border-bottom:1px dashed var(--primary)" onclick="viewClient('+c.id+')">'+c.name+'</span>'+grpBadge+'</div>'+(c.email?'<div class="prod-sku">'+c.email+'</div>':'')+'</td>' +
       '<td style="font-size:.82rem">'+(c.phone||'—')+'</td>' +
       '<td>'+(c.purchases||0)+'</td>' +
       '<td><span class="num">'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></td>' +
@@ -3410,6 +3410,28 @@ function editClient(id){
   document.getElementById('clientModalTitle').textContent = 'Редактировать клиента';
   document.querySelector('#clientModal .sub').textContent = 'Измените данные';
   document.getElementById('clientModal').classList.add('active');
+}
+function viewClient(id){
+  var list = JSON.parse(localStorage.getItem('clients88') || '[]');
+  var c = list.find(function(x){ return x.id === id; });
+  if(!c) return;
+  var grp = c.group || '';
+  if(groupLabels[grp]) grp = groupLabels[grp];
+  var bday = c.birthday ? new Date(c.birthday).toLocaleDateString('ru-RU') : '—';
+  var body = '<div style="margin-bottom:.75rem">' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Телефон:</span> <span>'+(c.phone||'—')+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Email:</span> <span>'+(c.email||'—')+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Группа:</span> <span>'+(grp||'—')+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">День рождения:</span> <span>'+bday+'</span></div>' +
+    '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Покупок:</span> <span>'+(c.purchases||0)+'</span></div>' +
+    '<div style="margin-bottom:0"><span style="color:var(--muted)">На сумму:</span> <span>'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></div>' +
+    (c.comment ? '<div style="margin-top:.5rem;padding:.5rem;background:var(--body-bg);border-radius:6px;font-size:.85rem"><span style="color:var(--muted)">Комментарий:</span><br>'+c.comment+'</div>' : '') +
+  '</div>';
+  document.getElementById('invResultTitle').textContent = c.name;
+  document.getElementById('invResultSub').textContent = grp || '';
+  document.getElementById('invResultBody').innerHTML = body;
+  document.getElementById('invResultTotals').innerHTML = '';
+  document.getElementById('invResultModal').classList.add('active');
 }
 function deleteClient(id){
   if(!confirm('Удалить клиента?')) return;
