@@ -540,7 +540,11 @@
   .emp-card .ec-badge.green{background:#dcfce7;color:#166534}
   .emp-card .ec-badge.gray{background:#f1f3f5;color:var(--muted)}
   .emp-card .ec-badge.yellow{background:#fef3c7;color:#92400e}
-  .emp-card .ec-menu{position:absolute;top:6px;right:8px;font-size:1rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}  .emp-card.fired{opacity:.5;filter:grayscale(1);position:relative}
+  .emp-card .ec-menu{position:absolute;top:6px;right:8px;font-size:1rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}
+  .emp-switch{width:36px;height:20px;background:#e5e7eb;border-radius:10px;position:relative;cursor:pointer;transition:all .2s;flex-shrink:0}
+  .emp-switch.on{background:var(--primary)}
+  .emp-switch-knob{width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .emp-switch.on .emp-switch-knob{left:18px}  .emp-card.fired{opacity:.5;filter:grayscale(1);position:relative}
   .emp-card.fired .ec-avatar{opacity:.6}
   .emp-card.fired .ec-name{color:var(--muted)}
   .emp-card.fired .ec-row .val{color:var(--muted)}
@@ -2267,20 +2271,16 @@
         </div>
       </div>
       <div class="form-group">
-        <label>Оклад</label>
-        <div style="display:flex;gap:.35rem;align-items:center">
-          <input type="number" id="empSalary" placeholder="0" min="0" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
-          <label style="display:flex;align-items:center;gap:.3rem;font-size:.72rem;cursor:pointer;flex-shrink:0;user-select:none">
-            <input type="checkbox" id="empRateToggle" onchange="toggleEmpRate()" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
-            Сдельная
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          <span>Оклад</span>
+          <label style="display:flex;align-items:center;gap:.35rem;font-size:.72rem;cursor:pointer;user-select:none">
+            <span style="color:var(--muted)">Сдельная</span>
+            <div class="emp-switch" id="empSwitch" onclick="toggleEmpRate()">
+              <div class="emp-switch-knob" id="empSwitchKnob"></div>
+            </div>
           </label>
-        </div>
-        <div id="empRateFields" style="display:none;margin-top:.35rem">
-          <div style="display:flex;gap:.35rem">
-            <input type="number" id="empRatePct" placeholder="% от продаж" min="0" step="0.1" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
-            <input type="number" id="empRateFix" placeholder="Ставка за смену" min="0" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
-          </div>
-        </div>
+        </label>
+        <input type="number" id="empSalary" placeholder="0" min="0" style="width:100%;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -4678,7 +4678,8 @@ function navigateTo(page){
 }
 
 function toggleEmpRate(){
-  document.getElementById("empRateFields").style.display = document.getElementById("empRateToggle").checked ? "block" : "none";
+  var sw = document.getElementById("empSwitch");
+  sw.classList.toggle("on");
 }
 function generatePin(){
   document.getElementById("empPin").value = String(1000 + Math.floor(Math.random() * 9000));
@@ -4702,7 +4703,7 @@ function renderEmployeesPage(){
     var init = (e.name||"?")[0].toUpperCase();
     var posL = {cashier:"Кассир",admin:"Админ",manager:"Менеджер"};
     var pinStr = e.pin && e.pin.toString().length === 4 ? e.pin : "нет";
-    var salStr = (e.salary?e.salary.toLocaleString()+"₽":"—") + (e.ratePct||e.rateFix?" + "+(e.ratePct?e.ratePct+"%":"")+(e.rateFix?" "+e.rateFix+"₽/см":""):"");
+    var salStr = (e.salary?e.salary.toLocaleString()+"₽":"—"); if(e.ratePct||e.rateFix) salStr += " + сдельная";
     var empSales = sales.filter(function(s){ return s.empId == e.id; });
     var rev = empSales.reduce(function(ss,s){ return ss + (s.total||0); }, 0);
     var checks = empSales.length;
