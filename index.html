@@ -1281,7 +1281,6 @@
         <div class="actions-group">
           <div style="position:relative">
             <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx" style="gap:5px">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               Период <span class="act-arrow">▼</span>
             </button>
             <div class="tx-period-dropdown" id="periodDropdownTx">
@@ -4222,7 +4221,6 @@ function setPeriodTx(period, label, btnEl){
   document.querySelectorAll('#periodDropdownTx .period-preset').forEach(b => b.classList.remove('active'));
   btnEl.classList.add('active');
   document.getElementById('periodTriggerTx').innerHTML =
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
     label + ' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
 }
@@ -4234,7 +4232,6 @@ function applyCustomPeriodTx(){
   window._txCustomFrom = from;
   window._txCustomTo = to;
   document.getElementById('periodTriggerTx').innerHTML =
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
     from.split('-').reverse().join('.')+' — '+to.split('-').reverse().join('.')+' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
 }
@@ -4258,13 +4255,19 @@ function confirmExportTx(){
   closeExportTxDropdown();
   exportToExcel();
 }
-/* Закрытие по клику вне */
+/* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  if(!e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
-    document.getElementById('periodDropdownTx')?.classList.remove('open');
+  var pdd = document.getElementById('periodDropdownTx');
+  if(pdd && pdd.classList.contains('open')){
+    if(!e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
+      pdd.classList.remove('open');
+    }
   }
-  if(!e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){
-    document.getElementById('exportTxDropdown')?.classList.remove('open');
+  var exdd = document.getElementById('exportTxDropdown');
+  if(exdd && exdd.classList.contains('open')){
+    if(!e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){
+      exdd.classList.remove('open');
+    }
   }
 });
 </script>
