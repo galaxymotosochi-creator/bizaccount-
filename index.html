@@ -1087,7 +1087,7 @@
           <button class="stock-icon-btn">📊</button>
           <button class="stock-icon-btn">📥</button>
           <button class="stock-icon-btn">🖨</button>
-          <button class="stock-add-btn" onclick="openProductModal()">+ Добавить</button>
+          <button class="stock-add-btn" onclick="openStockEntryModal()">Ввести остатки</button>
         </div>
       </div>
       <div class="stock-filterbar">
@@ -2316,6 +2316,35 @@
     </form>
   </div>
 </div>
+<!-- Модальное окно ввода остатков -->
+<div class="modal-overlay" id="stockEntryModal" onclick="if(event.target===this)closeStockEntryModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeStockEntryModal()">&times;</button>
+    <h2>Ввод начальных остатков</h2>
+    <div class="sub">Добавьте товары, которые уже есть на складе</div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label>Товар</label>
+        <select id="seProduct"><option value="">— выберите товар —</option></select>
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>Количество</label>
+        <input type="number" id="seQty" placeholder="1" value="1" min="1">
+      </div>
+      <div class="form-group" style="flex:1">
+        <label>Цена (₽)</label>
+        <input type="number" id="seCost" placeholder="0" min="0" step="0.01">
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="addStockEntryItem()" style="width:100%;font-size:.82rem">Добавить в список</button>
+    <div id="seItemsList" style="margin:.5rem 0;max-height:200px;overflow-y:auto"></div>
+    <div id="seTotal" style="text-align:right;font-size:.85rem;color:var(--muted);margin-bottom:.5rem"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" onclick="closeStockEntryModal()">Отмена</button>
+      <button type="button" class="btn btn-primary" onclick="saveStockEntry()">Сохранить</button>
+    </div>
+  </div>
+</div>
 <!-- Модальное окно должности -->
 <div class="modal-overlay" id="positionModal">
   <div class="modal-box">
@@ -3245,6 +3274,70 @@ function closeSupplyModal(){
   document.getElementById('supModalTitle').textContent = 'Новая поставка';
   document.getElementById('supModalSub').textContent = 'Добавьте товары в накладную';
   renderSupplyItemsList();
+}
+
+var seItems = [];
+function openStockEntryModal(){
+  seItems = [];
+  var sel = document.getElementById("seProduct");
+  if(sel){
+    var prods = JSON.parse(localStorage.getItem("products88") || "[]");
+    sel.innerHTML = '<option value="">— выберите товар —</option>' +
+      prods.map(function(p){ return '<option value="'+p.id+'">'+p.name+'</option>'; }).join('');
+  }
+  document.getElementById("seQty").value = 1;
+  document.getElementById("seCost").value = "";
+  renderSEItems();
+  document.getElementById("stockEntryModal").classList.add("active");
+}
+function closeStockEntryModal(){
+  document.getElementById("stockEntryModal").classList.remove("active");
+}
+function addStockEntryItem(){
+  var prodId = parseInt(document.getElementById("seProduct").value);
+  if(!prodId) return alert("Выберите товар");
+  var qty = parseFloat(document.getElementById("seQty").value) || 1;
+  var cost = parseFloat(document.getElementById("seCost").value) || 0;
+  var prods = JSON.parse(localStorage.getItem("products88") || "[]");
+  var prod = prods.find(function(p){ return p.id === prodId; });
+  if(!prod) return;
+  var existing = false;
+  seItems.forEach(function(it){ if(it.prodId === prodId){ it.qty += qty; if(cost) it.cost = cost; existing = true; }});
+  if(!existing) seItems.push({prodId: prodId, name: prod.name, qty: qty, cost: cost});
+  renderSEItems();
+}
+function renderSEItems(){
+  var el = document.getElementById("seItemsList");
+  var total = document.getElementById("seTotal");
+  if(!el) return;
+  if(!seItems.length){ el.innerHTML = ""; if(total) total.textContent = ""; return; }
+  el.innerHTML = seItems.map(function(it, i){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.35rem .4rem;border-bottom:1px solid var(--border);font-size:.78rem">'+
+      '<span>'+it.name+' <b>'+it.qty+'</b> шт × '+it.cost.toLocaleString()+"₽"+'</span>'+
+      '<span onclick="removeSEItem('+i+')" style="cursor:pointer;color:#dc2626;font-size:.8rem;padding:2px 6px">✕</span></div>';
+  }).join('');
+  var sum = seItems.reduce(function(s,it){ return s + it.qty * it.cost; }, 0);
+  if(total) total.textContent = 'Итого: '+seItems.length+' позиций = '+sum.toLocaleString()+"₽";
+}
+function removeSEItem(idx){
+  seItems.splice(idx, 1);
+  renderSEItems();
+}
+function saveStockEntry(){
+  if(!seItems.length) return alert("Добавьте хотя бы один товар");
+  var prods = JSON.parse(localStorage.getItem("products88") || "[]");
+  seItems.forEach(function(it){
+    prods.forEach(function(p){
+      if(p.id === it.prodId){
+        p.stock = (p.stock||0) + it.qty;
+        if(it.cost > 0){ p.costNoVat = it.cost; p.costWithVat = it.cost; }
+      }
+    });
+  });
+  localStorage.setItem("products88", JSON.stringify(prods));
+  seItems = [];
+  closeStockEntryModal();
+  renderStockPage();
 }
 function saveSupply(e){
   e.preventDefault();
