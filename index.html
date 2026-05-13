@@ -3816,8 +3816,7 @@ function selectProDay(d){
   var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
   var dayPromos = [];
   promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) dayPromos.push(p);});
-  if(dayPromos.length === 1){ showProDetail(dayPromos[0]); return; }
-  if(dayPromos.length > 1){ showDayPopup(d, dayPromos); return; }
+  if(dayPromos.length > 0){ showDayPopup(d, dayPromos); return; }
   var pi = null;
   promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) pi=p;});
   if(pi) showProDetail(pi);
