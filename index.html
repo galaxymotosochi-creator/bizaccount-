@@ -545,6 +545,25 @@
   .emp-menu-dropdown{position:absolute;background:var(--white);border:1px solid var(--border);border-radius:.5rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.1);min-width:130px;padding:.25rem;z-index:10;display:none}
   .emp-menu-item{padding:.3rem .5rem;font-size:.75rem;cursor:pointer;border-radius:4px;font-family:var(--font);color:var(--body-color)}
   .emp-menu-item:hover{background:var(--primary-light)}
+  .emp-calendar-wrap{background:var(--white);border:1px solid var(--border);border-radius:.85rem;padding:.75rem .65rem;margin:.5rem 0;max-width:380px}
+  .emp-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+  .emp-cal-month{font-size:.82rem;font-weight:600;color:var(--body-color)}
+  .emp-cal-nav{background:none;border:1px solid var(--border);border-radius:50%;width:26px;height:26px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .12s}
+  .emp-cal-nav:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .emp-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.7rem;margin-bottom:.35rem}
+  .emp-cal-grid .wd{font-size:.58rem;color:var(--muted);font-weight:600;padding-bottom:.25rem;text-transform:uppercase}
+  .emp-cal-grid .day{padding:.3rem .1rem;border-radius:6px;cursor:pointer;position:relative;transition:all .1s;color:var(--body-color)}
+  .emp-cal-grid .day:hover{background:#f1f3f5}
+  .emp-cal-grid .day.other{color:#ccc;cursor:default}
+  .emp-cal-grid .day.other:hover{background:none}
+  .emp-cal-grid .day.today{font-weight:600;color:var(--primary)}
+  .emp-cal-grid .day .emp-count{font-size:.5rem;color:var(--primary);margin-top:1px}
+  .emp-day-popup{background:var(--white);border:1px solid var(--border);border-radius:.65rem;padding:.6rem .7rem;margin-top:.35rem;max-width:380px}
+  .emp-day-popup .edp-title{font-size:.72rem;font-weight:600;color:var(--body-color);margin-bottom:.35rem}
+  .emp-day-item{display:flex;align-items:center;gap:.4rem;padding:.25rem .35rem;font-size:.72rem;cursor:pointer;border-radius:4px;transition:all .1s}
+  .emp-day-item:hover{background:var(--primary-light)}
+  .emp-day-cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.5rem;color:transparent;cursor:pointer}
+  .emp-day-cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
   @media(max-width:500px){.emp-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem}}
 
   .shift-detail .sd-row.bold{font-weight:600;border-top:1px solid var(--border);padding-top:.3rem;margin-top:.1rem}
@@ -4726,14 +4745,38 @@ function toggleEmpDay(dateStr){
   if(!emps.length) return;
   var schedule = JSON.parse(localStorage.getItem("empSchedule88") || "{}");
   var dayEmps = schedule[dateStr] || [];
-  if(dayEmps.length > 0){
-    delete schedule[dateStr];
-  } else {
-    schedule[dateStr] = emps.map(function(e){ return e.id; });
-  }
+  // Show a popup below the calendar to select employees
+  var existing = document.getElementById("empDayPopup");
+  if(existing && existing.dataset.date === dateStr){ existing.remove(); return; }
+  // Remove previous popup
+  var old = document.getElementById("empDayPopup");
+  if(old) old.remove();
+  var wrap = document.getElementById("empCalWrap");
+  if(!wrap) return;
+  var div = document.createElement("div");
+  div.id = "empDayPopup";
+  div.dataset.date = dateStr;
+  div.className = "emp-day-popup";
+  div.innerHTML = '<div class="edp-title">Сотрудники на ' + dateStr.split("-").reverse().join(".") + '</div>' +
+    emps.map(function(e){
+      var checked = dayEmps.indexOf(e.id) >= 0;
+      return '<div class="emp-day-item" onclick="toggleEmpOnDay(\''+dateStr+'\','+e.id+')">' +
+        '<span class="emp-day-cb'+(checked?" checked":"")+'">✓</span> ' + e.name + '</div>';
+    }).join("");
+  wrap.appendChild(div);
+}
+function toggleEmpOnDay(dateStr, empId){
+  var schedule = JSON.parse(localStorage.getItem("empSchedule88") || "{}");
+  var dayEmps = schedule[dateStr] || [];
+  var idx = dayEmps.indexOf(empId);
+  if(idx >= 0){ dayEmps.splice(idx, 1); } else { dayEmps.push(empId); }
+  if(dayEmps.length){ schedule[dateStr] = dayEmps; } else { delete schedule[dateStr]; }
   localStorage.setItem("empSchedule88", JSON.stringify(schedule));
   empSchedule = schedule;
+  // Refresh both the calendar and the popup
   renderEmpCalendar();
+  var popup = document.getElementById("empDayPopup");
+  if(popup) toggleEmpDay(dateStr);
 }
 function toggleEmpMnu(el){
   document.querySelectorAll(".emp-menu-dropdown").forEach(function(d){d.style.display="none";});
