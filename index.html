@@ -87,8 +87,8 @@
   .tx-type-dropdown.open{display:block}
   .tx-type-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.8rem;cursor:pointer;border-radius:4px;color:var(--body-color);font-family:var(--font)}
   .tx-type-item:hover{background:var(--primary-light)}
-  .tx-type-cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
-  .tx-type-cb.checked{border-color:var(--primary);background:var(--primary)}
+  .tx-type-cb{width:14px;height:14px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;color:transparent;cursor:pointer}
+  .tx-type-cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.35rem;position:relative}
@@ -1337,19 +1337,19 @@
             <div class="tx-type-dropdown" id="txTypeDropdown">
               <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="sale" onclick="toggleTxTypeFilter('sale', this)"></span>
+                <span class="tx-type-cb" data-type="sale" onclick="toggleTxTypeFilter('sale', this)">✓</span>
                 Продажа
               </label>
               <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="supply" onclick="toggleTxTypeFilter('supply', this)"></span>
+                <span class="tx-type-cb" data-type="supply" onclick="toggleTxTypeFilter('supply', this)">✓</span>
                 Поставка
               </label>
               <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="writeoff" onclick="toggleTxTypeFilter('writeoff', this)"></span>
+                <span class="tx-type-cb" data-type="writeoff" onclick="toggleTxTypeFilter('writeoff', this)">✓</span>
                 Списание
               </label>
               <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="expense" onclick="toggleTxTypeFilter('expense', this)"></span>
+                <span class="tx-type-cb" data-type="expense" onclick="toggleTxTypeFilter('expense', this)">✓</span>
                 Расход
               </label>
             </div>
