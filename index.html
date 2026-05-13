@@ -689,7 +689,7 @@
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('settings-general')">Общие</a>
         <a class="nav-child" onclick="navigateTo('venues')">Заведения</a>
-        <a class="nav-child" onclick="navigateTo('registers')">Кассы</a>
+        <a class="nav-child" onclick="navigateTo('registers')">Касса</a>
       </div>
     </div>
   </nav>
@@ -1199,15 +1199,22 @@
     <div class="page-section" id="page-registers">
       <div class="page-header">
         <div>
-          <h1>Кассы</h1>
-          <div class="sub">Рабочие места и смены</div>
-        </div>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="openRegisterModal()">+ Добавить кассу</button>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Касса</h1>
+          <div class="sub">Приём платежей и управление продажами</div>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:25%">Название</th><th style="width:20%">Код</th><th style="width:20%">Баланс</th><th style="width:20%">Заведение</th><th style="width:15%"></th></tr></thead><tbody id="registerTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div style="display:flex;gap:1.5rem;padding:2rem 0;flex-wrap:wrap;justify-content:center">
+        <div onclick="openShiftNow()" style="flex:1;min-width:280px;max-width:400px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)" onmouseover="this.style.borderColor='var(--primary)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
+          <div style="font-size:2.5rem;margin-bottom:.75rem">🔓</div>
+          <div style="font-size:1.1rem;font-weight:600;margin-bottom:.25rem">Открыть кассу</div>
+          <div style="font-size:.85rem;color:var(--muted)">Полноценный режим кассира со сменой, ПИН-кодом и печатью чека</div>
+        </div>
+        <div onclick="openQuickSale()" style="flex:1;min-width:280px;max-width:400px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)" onmouseover="this.style.borderColor='#16a34a';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
+          <div style="font-size:2.5rem;margin-bottom:.75rem">⚡</div>
+          <div style="font-size:1.1rem;font-weight:600;margin-bottom:.25rem">Быстрая продажа</div>
+          <div style="font-size:.85rem;color:var(--muted)">Быстро выбить чек без открытия смены — для админа и менеджеров</div>
+        </div>
       </div>
     </div>
     <!-- ЗАВЕДЕНИЯ -->
@@ -4177,6 +4184,49 @@ document.addEventListener('DOMContentLoaded', updateStats);
     </div>
   </div>
 </div>
+<!-- Модальное окно быстрой продажи -->
+<div class="modal-overlay" id="quickSaleModal" onclick="if(event.target===this)closeQuickSale()">
+  <div class="modal-box" style="max-width:550px">
+    <button class="modal-close" onclick="closeQuickSale()">&times;</button>
+    <h2 style="font-size:1.1rem">⚡ Быстрая продажа</h2>
+    <div class="sub" style="margin-bottom:.5rem">Чек без открытия смены</div>
+    <form id="qsForm" onsubmit="event.preventDefault();confirmQuickSale()">
+      <div class="form-group">
+        <label>Клиент</label>
+        <select id="qsClient"><option value="">— без клиента —</option></select>
+      </div>
+      <div style="display:flex;gap:.35rem;flex-wrap:nowrap">
+        <select id="qsProduct" style="flex:2;font-size:.82rem;padding:.3rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font)"><option value="">— товар —</option></select>
+        <input type="number" id="qsQty" placeholder="Кол-во" value="1" min="1" step="any" style="flex:1;font-size:.82rem;padding:.3rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font);width:60px">
+        <input type="number" id="qsPrice" placeholder="Цена" min="0" step="0.01" style="flex:1;font-size:.82rem;padding:.3rem;border:1px solid var(--border);border-radius:5px;font-family:var(--font);width:60px">
+        <button type="button" onclick="addQuickSaleItem()" style="padding:.3rem .5rem;background:#16a34a;color:#fff;border:none;border-radius:5px;font-size:.75rem;cursor:pointer;white-space:nowrap">+</button>
+      </div>
+      <div id="qsItemsList" style="max-height:200px;overflow-y:auto;margin:.5rem 0"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-top:1px solid var(--border);font-size:.9rem;font-weight:600">
+        <span>Итого:</span>
+        <span id="qsTotal">0.00₽</span>
+      </div>
+      <div class="form-row" style="margin-top:.35rem">
+        <div class="form-group">
+          <label>Оплата</label>
+          <select id="qsPayment">
+            <option value="cash">💵 Наличные</option>
+            <option value="card">💳 Карта</option>
+            <option value="transfer">💳 Безнал</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Сотрудник</label>
+          <input type="text" value="Юлия Валерьевна" disabled style="font-size:.85rem;padding:.3rem;border:1px solid var(--border);border-radius:5px;background:var(--body-bg)">
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem">
+        <button type="button" class="btn btn-outline" onclick="closeQuickSale()">Отмена</button>
+        <button type="submit" class="btn btn-primary">✅ Провести</button>
+      </div>
+    </form>
+  </div>
+</div>
 <!-- ПИН -->
 <div class="pin-overlay" id="pinOverlay">
   <div class="pin-box">
@@ -4344,6 +4394,86 @@ function checkOpenShift(){
   } else {
     openShiftNow();
   }
+}
+var quickSaleItems = [];
+function openQuickSale(){
+  quickSaleItems = [];
+  renderQuickSaleItems();
+  document.getElementById('quickSaleModal').classList.add('active');
+}
+function addQuickSaleItem(){
+  var sel = document.getElementById('qsProduct');
+  var prodId = parseInt(sel.value);
+  if(!prodId) return alert('Выберите товар');
+  var qty = parseFloat(document.getElementById('qsQty').value) || 1;
+  var price = parseFloat(document.getElementById('qsPrice').value) || 0;
+  var prods = JSON.parse(localStorage.getItem('products88') || '[]');
+  var prod = prods.find(function(p){ return p.id === prodId; });
+  quickSaleItems.push({ prodId: prodId, name: prod ? prod.name : 'Товар', qty: qty, cost: price });
+  sel.value = ''; document.getElementById('qsQty').value = 1; document.getElementById('qsPrice').value = '';
+  renderQuickSaleItems();
+}
+function removeQuickSaleItem(idx){
+  quickSaleItems.splice(idx, 1);
+  renderQuickSaleItems();
+}
+function renderQuickSaleItems(){
+  var el = document.getElementById('qsItemsList');
+  var totalEl = document.getElementById('qsTotal');
+  if(!el) return;
+  if(!quickSaleItems.length){
+    el.innerHTML = '<div style="text-align:center;padding:.5rem;color:var(--muted);font-size:.82rem">Товары не добавлены</div>';
+    if(totalEl) totalEl.textContent = '';
+    return;
+  }
+  el.innerHTML = quickSaleItems.map(function(it, idx){
+    var sum = it.qty * it.cost;
+    return '<div style="display:flex;align-items:center;gap:.35rem;padding:.25rem .3rem;border-bottom:1px solid var(--border);font-size:.85rem">' +
+      '<span style="flex:2;font-weight:500">'+it.name+'</span>' +
+      '<span style="flex:1;text-align:center">'+it.qty+' x '+it.cost.toFixed(2)+'</span>' +
+      '<span style="flex:1;text-align:right;font-weight:500">'+sum.toFixed(2)+'₽</span>' +
+      '<button type="button" onclick="removeQuickSaleItem('+idx+')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:1rem">✕</button>' +
+    '</div>';
+  }).join('');
+  var totalSum = quickSaleItems.reduce(function(acc, it){ return acc + it.qty * it.cost; }, 0);
+  if(totalEl) totalEl.textContent = totalSum.toFixed(2) + '₽';
+}
+function closeQuickSale(){
+  document.getElementById('quickSaleModal').classList.remove('active');
+  quickSaleItems = [];
+}
+function confirmQuickSale(){
+  if(!quickSaleItems.length) return alert('Добавьте товары');
+  var clientSel = document.getElementById('qsClient');
+  var clientId = parseInt(clientSel.value) || null;
+  var payment = document.getElementById('qsPayment').value;
+  var total = quickSaleItems.reduce(function(acc, it){ return acc + it.qty * it.cost; }, 0);
+  var sale = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('ru-RU'),
+    time: new Date().toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'}),
+    items: quickSaleItems.slice(),
+    total: total,
+    payment: payment,
+    clientId: clientId,
+    employee: 'Юлия Валерьевна',
+    shiftId: null
+  };
+  var list = JSON.parse(localStorage.getItem('sales88') || '[]');
+  list.unshift(sale);
+  localStorage.setItem('sales88', JSON.stringify(list));
+  // Обновляем статистику клиента
+  if(clientId){
+    var clients = JSON.parse(localStorage.getItem('clients88') || '[]');
+    var cl = clients.find(function(c){ return c.id === clientId; });
+    if(cl){
+      cl.purchases = (cl.purchases||0) + 1;
+      cl.total = (cl.total||0) + total;
+      localStorage.setItem('clients88', JSON.stringify(clients));
+    }
+  }
+  closeQuickSale();
+  showToast('Чек проведён: ' + total.toFixed(2) + '₽');
 }
 function openShiftNow(){
   document.getElementById("shiftOverlay").classList.add("open");
