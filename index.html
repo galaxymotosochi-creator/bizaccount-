@@ -2270,17 +2270,26 @@
           <select id="empVenue"></select>
         </div>
       </div>
-      <div class="form-group">
-        <label style="display:flex;align-items:center;justify-content:space-between">
-          <span>Оклад</span>
-          <label style="display:flex;align-items:center;gap:.35rem;font-size:.72rem;cursor:pointer;user-select:none">
-            <span style="color:var(--muted)">Сдельная</span>
-            <div class="emp-switch" id="empSwitch" onclick="toggleEmpRate()">
-              <div class="emp-switch-knob" id="empSwitchKnob"></div>
-            </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:.5rem">
+            Оклад
+            <label style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;cursor:pointer;user-select:none;font-weight:400;color:var(--muted)">
+              <div class="emp-switch" id="empSwitch" onclick="toggleEmpRate()">
+                <div class="emp-switch-knob" id="empSwitchKnob"></div>
+              </div>
+              Сдельная
+            </label>
           </label>
-        </label>
-        <input type="number" id="empSalary" placeholder="0" min="0" style="width:100%;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
+          <input type="number" id="empSalary" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Процент</label>
+          <div style="display:flex;align-items:center;gap:.25rem">
+            <input type="number" id="empRatePct" placeholder="0" min="0" step="0.1">
+            <span style="font-size:.85rem;color:var(--muted);flex-shrink:0">%</span>
+          </div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
