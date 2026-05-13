@@ -1353,12 +1353,15 @@
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
-      <div class="emp-metrics">
-        <div class="emp-metric"><div class="em-lbl">Всего</div><div id="empTotal" class="em-val">0</div></div>
-        <div class="emp-metric"><div class="em-lbl">ФОТ</div><div id="empFot" class="em-val">0₽</div></div>
-        <div class="emp-metric" style="cursor:pointer"><div class="em-lbl">Период</div><div id="empPeriod" class="em-val" style="color:var(--primary);font-size:.72rem">Все время</div></div>
-      </div>
       <div class="emp-grid" id="empGrid"></div>
+      <div class="emp-calendar-wrap" id="empCalWrap">
+        <div class="emp-cal-header">
+          <button class="emp-cal-nav" onclick="switchEmpMonth(-1)">&lsaquo;</button>
+          <div class="emp-cal-month" id="empCalMonth">Май 2026</div>
+          <button class="emp-cal-nav" onclick="switchEmpMonth(1)">&rsaquo;</button>
+        </div>
+        <div class="emp-cal-grid" id="empCalGrid"></div>
+      </div>
       <div class="empty-products" id="empEmpty">
         <div class="big-icon">👥</div>
         <p>Сотрудников пока нет</p>
@@ -4642,43 +4645,77 @@ function renderEmployeesPage(){
   var empty = document.getElementById("empEmpty");
   if(!emps.length){grid.innerHTML="";if(empty)empty.style.display="block";return;}
   if(empty) empty.style.display="none";
-  var salaryAll = JSON.parse(localStorage.getItem("salary88") || "[]");
-  var fot = 0;
-  emps.forEach(function(e){
-    var es = salaryAll.filter(function(s){return s.empId == e.id;});
-    e._sal = es.reduce(function(ss,s){return ss+(s.total||0)+(s.salary||0)-(s.deduct||0);},0);
-    fot += e._sal;
-  });
-  document.getElementById("empTotal").textContent = emps.length;
-  document.getElementById("empFot").textContent = fot.toLocaleString()+"\u20bd";
   var colors = ["#6366f1","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444","#14b8a6","#8b5cf6","#f97316","#06b6d4"];
   grid.innerHTML = emps.map(function(e,i){
     var init = (e.name||"?")[0].toUpperCase();
-    var hp = e.pin && e.pin.toString().length === 4;
-    var st = e.status||"active";
-    var stL = {active:"\u041d\u0430 \u0441\u043c\u0435\u043d\u0435",off:"\u041d\u0435 \u043d\u0430 \u0441\u043c\u0435\u043d\u0435",vacation:"\u0412 \u043e\u0442\u043f\u0443\u0441\u043a\u0435"};
-    var posL = {cashier:"\u041a\u0430\u0441\u0441\u0438\u0440",admin:"\u0410\u0434\u043c\u0438\u043d",manager:"\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440"};
-    var bc = hp?"green":"gray";
-    var sc = st==="active"?"green":(st==="vacation"?"yellow":"gray");
+    var posL = {cashier:"Кассир",admin:"Админ",manager:"Менеджер"};
+    var pinStr = e.pin && e.pin.toString().length === 4 ? e.pin : "нет";
+    var salStr = e.payType==="rate"?(e.ratePct?e.ratePct+"% ":"")+(e.rateFix?e.rateFix+"₽/см":"сдельная"):(e.salary?e.salary.toLocaleString()+"₽":"—");
     return '<div class="emp-card">'+
-      '<div class="ec-menu" onclick="toggleEmpMnu(this)" data-id="'+e.id+'">\u22ee</div>'+
-      '<div class="emp-menu-dropdown" style="top:30px;right:8px">'+
-      '<div class="emp-menu-item" onclick="editEmp('+e.id+')">\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c</div>'+
-      '<div class="emp-menu-item" onclick="deleteEmp('+e.id+')" style="color:#dc2626">\u0423\u0432\u043e\u043b\u0438\u0442\u044c</div></div>'+
+      '<div class="ec-menu" onclick="event.stopPropagation();toggleEmpMnu(this)" data-id="'+e.id+'">⋮</div>'+
+      '<div class="emp-menu-dropdown" style="top:24px;right:8px">'+
+      '<div class="emp-menu-item" onclick="editEmp('+e.id+')">Редактировать</div>'+
+      '<div class="emp-menu-item" onclick="deleteEmp('+e.id+')" style="color:#dc2626">Уволить</div></div>'+
+      '<div class="ec-top">'+
       '<div class="ec-avatar" style="background:'+colors[i%colors.length]+'">'+init+'</div>'+
-      '<div class="ec-name">'+e.name+'</div>'+
-      '<div class="ec-pos">'+(posL[e.position]||e.position||"\u2014")+'</div>'+
-      '<div><span class="ec-badge '+bc+'">'+(hp?"\u2705 \u041f\u0438\u043d \u0435\u0441\u0442\u044c":"\u274c \u0411\u0435\u0437 \u043f\u0438\u043d\u0430")+'</span></div>'+
-      '<div><span class="ec-badge '+sc+'">'+(stL[st]||st)+'</span></div>'+
-      '<div class="ec-row">\uD83D\uDCB0 '+(e.payType==="rate"?(e.ratePct?e.ratePct+"% ":"")+(e.rateFix?e.rateFix+"\u20bd/\u0441\u043c":"\u0441\u0434\u0435\u043b\u044c\u043d\u0430\u044f"):(e.salary?e.salary.toLocaleString()+"\u20bd":"\u0431\u0435\u0437 \u043e\u043a\u043b\u0430\u0434\u0430"))+'</div>'+
+      '<div class="ec-info"><div class="ec-name">'+e.name+'</div><div class="ec-pos">'+(posL[e.position]||e.position||"—")+'</div></div></div>'+
+      '<div class="ec-row"><span class="lbl">Тел.:</span><span class="val">'+(e.phone||"—")+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Долж.:</span><span class="val">'+(posL[e.position]||e.position||"—")+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Пин:</span><span class="val">'+pinStr+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Оклад:</span><span class="val">'+salStr+'</span></div>'+
       '</div>';
   }).join("");
-}
-function setPayType(t){
+  renderEmpCalendar();
+}function setPayType(t){
   document.querySelectorAll(".emp-toggle span").forEach(function(s){s.classList.remove("active");});
   document.getElementById("pt"+(t==="salary"?"Sal":"Rate")).classList.add("active");
   document.getElementById("paySalRow").style.display = t==="salary"?"block":"none";
   document.getElementById("payRateRow").style.display = t==="rate"?"block":"none";
+}
+var empCalDate = new Date();
+var empSchedule = JSON.parse(localStorage.getItem("empSchedule88") || "{}");
+function renderEmpCalendar(){
+  var grid = document.getElementById("empCalGrid");
+  if(!grid) return;
+  var y = empCalDate.getFullYear(), m = empCalDate.getMonth();
+  document.getElementById("empCalMonth").textContent = new Date(y,m).toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
+  var fd = new Date(y,m,1).getDay(); if(fd===0) fd=7; fd--;
+  var dim = new Date(y,m+1,0).getDate();
+  var pmd = new Date(y,m,0).getDate();
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  var h = '<div class="wd">ПН</div><div class="wd">ВТ</div><div class="wd">СР</div><div class="wd">ЧТ</div><div class="wd">ПТ</div><div class="wd">СБ</div><div class="wd">ВС</div>';
+  var td = new Date(), ts = td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
+  for(var i=fd-1;i>=0;i--) h += '<div class="day other">'+(pmd-i)+'</div>';
+  for(var d=1;d<=dim;d++){
+    var ds = y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    var cls = "day";
+    if(ds===ts) cls += " today";
+    var dayEmps = empSchedule[ds] || [];
+    if(dayEmps.length > 0) cls += " has-emp";
+    h += '<div class="'+cls+'" onclick="toggleEmpDay(\''+ds+'\')" data-date="'+ds+'">'+
+      d+'<div class="emp-count">'+(dayEmps.length>0?dayEmps.length+" чел":"")+'</div></div>';
+  }
+  var rem = (7 - (fd+dim)%7) % 7;
+  for(var i=1;i<=rem;i++) h += '<div class="day other">'+i+'</div>';
+  grid.innerHTML = h;
+}
+function switchEmpMonth(dir){
+  empCalDate.setMonth(empCalDate.getMonth()+dir);
+  renderEmpCalendar();
+}
+function toggleEmpDay(dateStr){
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  if(!emps.length) return;
+  var schedule = JSON.parse(localStorage.getItem("empSchedule88") || "{}");
+  var dayEmps = schedule[dateStr] || [];
+  if(dayEmps.length > 0){
+    delete schedule[dateStr];
+  } else {
+    schedule[dateStr] = emps.map(function(e){ return e.id; });
+  }
+  localStorage.setItem("empSchedule88", JSON.stringify(schedule));
+  empSchedule = schedule;
+  renderEmpCalendar();
 }
 function toggleEmpMnu(el){
   document.querySelectorAll(".emp-menu-dropdown").forEach(function(d){d.style.display="none";});
