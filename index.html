@@ -1282,7 +1282,7 @@
           <div style="position:relative">
             <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx" style="gap:5px">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Выберите период <span class="act-arrow">▼</span>
+              Период <span class="act-arrow">▼</span>
             </button>
             <div class="tx-period-dropdown" id="periodDropdownTx">
               <div class="pd-title">Период</div>
@@ -1291,11 +1291,21 @@
               <button class="period-preset" onclick="setPeriodTx('week', 'Эта неделя', this)">Эта неделя</button>
               <button class="period-preset" onclick="setPeriodTx('month', 'Этот месяц', this)">Этот месяц</button>
               <button class="period-preset" onclick="setPeriodTx('all', 'Всё время', this)">Всё время</button>
+              <div class="period-custom">
+                <div class="pd-title">Свой период</div>
+                <div class="period-custom-row">
+                  <label>с</label><input type="date" id="periodFromTx">
+                </div>
+                <div class="period-custom-row">
+                  <label>по</label><input type="date" id="periodToTx">
+                </div>
+                <button class="period-apply" onclick="applyCustomPeriodTx()">Применить</button>
+              </div>
             </div>
           </div>
           <div class="export-wrapper">
             <button class="text-btn" onclick="toggleExportTxDropdown(event)" id="exportTxBtn">
-              Экспорт в Excel <span class="act-arrow">▼</span>
+              Скачать <span class="act-arrow">▼</span>
             </button>
             <div class="export-dropdown" id="exportTxDropdown">
               <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
@@ -4207,9 +4217,6 @@ document.addEventListener('DOMContentLoaded', updateStats);
 
 /* Транзакции — период */
 let currentTxPeriod = 'today';
-function togglePeriodDropdownTx(){
-  document.getElementById('periodDropdownTx').classList.toggle('open');
-}
 function setPeriodTx(period, label, btnEl){
   currentTxPeriod = period;
   document.querySelectorAll('#periodDropdownTx .period-preset').forEach(b => b.classList.remove('active'));
@@ -4219,19 +4226,29 @@ function setPeriodTx(period, label, btnEl){
     label + ' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
 }
-/* Закрытие по клику вне */
-document.addEventListener('click', function(e){
-  const dd = document.getElementById('periodDropdownTx');
-  if(dd && dd.classList.contains('open') && !e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
-    dd.classList.remove('open');
-  }
-  const expTx = document.getElementById('exportTxDropdown');
-  if(expTx && expTx.classList.contains('open') && !e.target.closest('.export-wrapper')){
-    expTx.classList.remove('open');
-  }
-});
+function applyCustomPeriodTx(){
+  const from = document.getElementById('periodFromTx').value;
+  const to = document.getElementById('periodToTx').value;
+  if(!from || !to) return alert('Выберите обе даты');
+  currentTxPeriod = 'custom';
+  window._txCustomFrom = from;
+  window._txCustomTo = to;
+  document.getElementById('periodTriggerTx').innerHTML =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
+    from.split('-').reverse().join('.')+' — '+to.split('-').reverse().join('.')+' <span class="act-arrow">▼</span>';
+  document.getElementById('periodDropdownTx').classList.remove('open');
+}
+function closeAllTxDropdowns(){
+  document.getElementById('periodDropdownTx')?.classList.remove('open');
+  document.getElementById('exportTxDropdown')?.classList.remove('open');
+}
+function togglePeriodDropdownTx(){
+  closeAllTxDropdowns();
+  document.getElementById('periodDropdownTx').classList.toggle('open');
+}
 function toggleExportTxDropdown(e){
   e.stopPropagation();
+  closeAllTxDropdowns();
   document.getElementById('exportTxDropdown').classList.toggle('open');
 }
 function closeExportTxDropdown(){
@@ -4241,6 +4258,15 @@ function confirmExportTx(){
   closeExportTxDropdown();
   exportToExcel();
 }
+/* Закрытие по клику вне */
+document.addEventListener('click', function(e){
+  if(!e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
+    document.getElementById('periodDropdownTx')?.classList.remove('open');
+  }
+  if(!e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){
+    document.getElementById('exportTxDropdown')?.classList.remove('open');
+  }
+});
 </script>
 <!-- Модалка итога инвентаризации -->
 <div class="modal-overlay" id="invResultModal" onclick="if(event.target===this)closeInvResult()">
