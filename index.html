@@ -2402,28 +2402,28 @@
   </div>
 </div>
 <!-- Модальное окно акции -->
-<div class="modal-overlay" id="promoModal">
+<div class="modal-overlay" id="promoModal" onclick="if(event.target===this)closePromoModal()">
   <div class="modal-box">
     <button class="modal-close" onclick="closePromoModal()">&times;</button>
     <h2 id="promoModalTitle">Добавить акцию</h2>
-    <div class="sub">Укажите параметры акции</div>
+    <div class="sub">Настройте новую акцию</div>
     <form id="promoForm" onsubmit="savePromo(event)">
       <input type="hidden" id="editPromoId" value="">
       <div class="form-group">
         <label>Название *</label>
-        <input type="text" id="proName" placeholder="Новогодняя распродажа" required>
+        <input type="text" id="proName" placeholder="Например: Новогодняя распродажа" required oninput="updatePromoPreview()">
       </div>
       <div class="form-row">
         <div class="form-group">
           <label>Скидка (%)</label>
-          <input type="number" id="proDiscount" placeholder="10" min="0" max="100">
+          <input type="number" id="proDiscount" placeholder="10" min="0" max="100" oninput="updatePromoPreview()">
         </div>
         <div class="form-group">
           <label>Статус</label>
           <select id="proStatus">
-            <option value="active">Активна</option>
-            <option value="planned">Планируется</option>
-            <option value="ended">Завершена</option>
+            <option value="active">🟢 Активна</option>
+            <option value="planned">🟡 Планируется</option>
+            <option value="ended">⚪ Завершена</option>
           </select>
         </div>
       </div>
@@ -2439,11 +2439,21 @@
       </div>
       <div class="form-group">
         <label>Описание</label>
-        <textarea id="proDesc" placeholder="Условия акции..."></textarea>
+        <textarea id="proDesc" placeholder="Условия акции, детали, примечания..." rows="2"></textarea>
+      </div>
+      <div class="promo-modal-preview" id="promoPreview" style="margin-bottom:.75rem">
+        <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:.35rem">Предпросмотр карточки</div>
+        <div style="display:flex;align-items:center;gap:.75rem;background:#f8f9fa;border-radius:.75rem;padding:.75rem">
+          <div style="font-size:2rem">&#x1f525;</div>
+          <div>
+            <div id="promoPreviewName" style="font-weight:600;font-size:.85rem">Новая акция</div>
+            <div id="promoPreviewDesc" style="font-size:.75rem;color:var(--muted)">Скидка 10%</div>
+          </div>
+        </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closePromoModal()">Отмена</button>
-        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <button type="submit" class="btn btn-primary">🔥 Создать акцию</button>
       </div>
     </form>
   </div>
@@ -3823,13 +3833,79 @@ function showProDetail(p){
     '<div class="promo-timer">'+tr+'</div>'+
     '<div class="promo-progress"><div class="promo-progress-bar" style="width:'+pct+'%;background:'+p.color+'"></div></div>'+
     '<div style="font-size:.82rem;color:var(--body-color);margin:.5rem 0">'+p.desc+'</div>'+
-    (!PRO_D.some(function(d){return d.id===p.id;})?'<div class="loy-detail-actions"><button class="btn btn-outline">\u270f\ufe0f Редактировать</button></div>':'')+
+    '<div class="loy-detail-actions"><button class="btn btn-outline" onclick="openPromoModal(\'' + p.id + '\')">\u270f\ufe0f Редактировать</button>' + (!PRO_D.some(function(d){return d.id===p.id;})?'<button class="btn btn-outline" style="color:#dc2626;border-color:#dc2626" onclick="deletePromo(\'' + p.id + '\')">\uD83D\uDDD1\ufe0f Удалить</button>':'') + '</div>'+
   '</div>';
 }
 function switchPromoMonth(dir){proCalDate.setMonth(proCalDate.getMonth()+dir);renderProCal();}
-function openPromoModal(){}
-function closePromoModal(){}
-function savePromo(e){e.preventDefault();}
+function updatePromoPreview(){
+  var n = document.getElementById('proName').value || 'Новая акция';
+  var d = document.getElementById('proDiscount').value;
+  document.getElementById('promoPreviewName').textContent = n;
+  document.getElementById('promoPreviewDesc').textContent = d ? 'Скидка '+d+'%' : 'Без скидки';
+}
+function openPromoModal(p){
+  if(p){
+    document.getElementById('editPromoId').value = p.id;
+    document.getElementById('proName').value = p.name;
+    document.getElementById('proDiscount').value = p.discount;
+    document.getElementById('proStatus').value = p.status;
+    document.getElementById('proStart').value = p.start;
+    document.getElementById('proEnd').value = p.end;
+    document.getElementById('proDesc').value = p.desc || '';
+    document.getElementById('promoModalTitle').textContent = 'Редактировать акцию';
+  } else {
+    document.getElementById('editPromoId').value = '';
+    document.getElementById('proName').value = '';
+    document.getElementById('proDiscount').value = '';
+    document.getElementById('proStatus').value = 'active';
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('proStart').value = today;
+    document.getElementById('proEnd').value = '';
+    document.getElementById('proDesc').value = '';
+    document.getElementById('promoModalTitle').textContent = 'Добавить акцию';
+  }
+  updatePromoPreview();
+  document.getElementById('promoModal').classList.add('active');
+}
+function closePromoModal(){ document.getElementById('promoModal').classList.remove('active'); }
+function openPromoModalEdit(id){
+  var ap = getPromos();
+  var p = null;
+  ap.forEach(function(x){ if(x.id == id || x.id === id) p = x; });
+  if(p) openPromoModal(p);
+}
+function deletePromo(id){
+  if(!confirm('Удалить акцию?')) return;
+  var ap = JSON.parse(localStorage.getItem('promos88')||'[]');
+  ap = ap.filter(function(x){ return x.id != id && x.id !== id; });
+  localStorage.setItem('promos88', JSON.stringify(ap));
+  renderPromosPage();
+}
+function savePromo(e){
+  e.preventDefault();
+  var id = document.getElementById('editPromoId').value;
+  var name = document.getElementById('proName').value.trim();
+  var discount = parseFloat(document.getElementById('proDiscount').value) || 0;
+  var status = document.getElementById('proStatus').value;
+  var start = document.getElementById('proStart').value;
+  var end = document.getElementById('proEnd').value;
+  var desc = document.getElementById('proDesc').value.trim() || ('Скидка '+discount+'%');
+  if(!name) return alert('Введите название акции');
+  if(!start) return alert('Укажите дату начала');
+  if(!end) return alert('Укажите дату окончания');
+  var allPro = JSON.parse(localStorage.getItem('promos88') || '[]');
+  if(id){
+    var found = false;
+    allPro.forEach(function(p){ if(p.id == id) { p.name=name; p.discount=discount; p.status=status; p.start=start; p.end=end; p.desc=desc; found=true; }});
+    if(!found) return alert('Акция не найдена');
+  } else {
+    allPro.push({id:Date.now(), name:name, discount:discount, status:status, start:start, end:end, desc:desc, color:'#1983dd'});
+  }
+  localStorage.setItem('promos88', JSON.stringify(allPro));
+  closePromoModal();
+  renderPromosPage();
+}
+
 function getExpCatList(){ return JSON.parse(localStorage.getItem('expCategories88') || '[]');
 }
 function saveExpCatList(list){
