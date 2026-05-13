@@ -3696,7 +3696,7 @@ function selectLoyCard(i) {
     '<div class="loy-detail-item"><div class="lbl">Выручка</div><div class="val">0₽</div></div></div>'+
     '<div style="font-size:.82rem;color:var(--body-color);margin-bottom:.5rem">'+p.desc+'</div>'+
     (isD?'<div style="font-size:.8rem;color:var(--muted);padding:.5rem 0">Эта программа предустановлена системой</div>':
-    '<div class="loy-detail-actions"><button class="btn btn-outline" onclick="editLoyalty('+i+')">✏️ Редактировать</button><button class="btn btn-outline" onclick="deleteLoyalty('+i+')" style="color:#dc2626;border-color:#dc2626">🗑️ Удалить</button></div>');
+    '<div class="loy-detail-actions"><button class="btn btn-outline" onclick="editLoyalty('+i+')">Редактировать</button><button class="btn btn-outline" onclick="deleteLoyalty('+i+')" style="color:#dc2626;border-color:#dc2626">🗑️ Удалить</button></div>');
 }
 function scrollLoyalty(d){var ap=LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));var i=loyIdx+d;if(i<0)i=ap.length-1;if(i>=ap.length)i=0;selectLoyCard(i);}
 /* LOV end */
