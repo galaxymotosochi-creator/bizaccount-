@@ -3429,7 +3429,7 @@ function viewClient(id){
     '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">День рождения:</span> <span>'+bday+'</span></div>' +
     '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Покупок:</span> <span>'+(c.purchases||0)+'</span></div>' +
     '<div style="margin-bottom:0"><span style="color:var(--muted)">На сумму:</span> <span>'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></div>' +
-    '<div style="margin-top:.5rem;padding:.5rem;background:var(--body-bg);border-radius:6px;font-size:.85rem"><span style="color:var(--muted)">Комментарий:</span><br>'+(c.comment||'—')+'</div>' +
+    '<div style="margin-top:.5rem"><span style="color:var(--muted)">Комментарий:</span><br><span>'+(c.comment||'—')+'</span></div>' +
   '</div>' +
   '<div style="font-size:.78rem;font-weight:600;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);margin-bottom:.35rem">История покупок</div>' +
   (clientSales.length === 0 ?
@@ -4171,7 +4171,7 @@ document.addEventListener('DOMContentLoaded', updateStats);
     <div class="sub" id="invResultSub"></div>
     <div id="invResultBody" style="margin:1rem 0;max-height:400px;overflow-y:auto"></div>
     <div id="invResultTotals" style="border-top:1px solid var(--border);padding-top:.75rem;margin-bottom:1rem"></div>
-    <div style="display:flex;gap:.75rem;justify-content:flex-end">
+    <div class="modal-actions" style="display:flex;gap:.75rem;justify-content:flex-end">
       <button class="btn btn-outline" onclick="closeInvResult()">← Отмена</button>
       <button class="btn btn-primary" id="invConfirmBtn">Провести</button>
     </div>
