@@ -525,7 +525,28 @@
   .shift-detail-item{background:#f8f9fa;border-radius:.45rem;padding:.3rem .45rem}
   .shift-detail-item .lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;font-weight:600}
   .shift-detail-item .val{font-size:.8rem;font-weight:600;color:var(--body-color);margin-top:.02rem}
-  .shift-detail .sd-row{display:flex;justify-content:space-between;padding:.2rem 0;font-size:.75rem}
+  .shift-detail .sd-row{display:flex;justify-content:space-between;padding:.2rem 0;font-size:.75rem}  .emp-metrics{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
+  .emp-metric{flex:1;min-width:80px;background:var(--white);border:1px solid var(--border);border-radius:.65rem;padding:.4rem .5rem;text-align:center}
+  .emp-metric .em-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;font-weight:600}
+  .emp-metric .em-val{font-size:.85rem;font-weight:700;color:var(--body-color);margin-top:.05rem}
+  .emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:.65rem;margin:.5rem 0}
+  .emp-card{background:var(--white);border:1px solid var(--border);border-radius:.85rem;padding:.75rem .7rem;cursor:pointer;transition:all .2s;position:relative;text-align:center}
+  .emp-card:hover{transform:translateY(-2px);box-shadow:0 .35rem 1rem rgba(0,0,0,.08)}
+  .emp-card .ec-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:600;color:#fff;margin:0 auto .35rem}
+  .emp-card .ec-name{font-size:.82rem;font-weight:600;color:var(--body-color)}
+  .emp-card .ec-pos{font-size:.68rem;color:var(--muted);margin-bottom:.2rem}
+  .emp-card .ec-row{font-size:.62rem;color:var(--muted);margin-bottom:.08rem}
+  .emp-card .ec-badge{display:inline-block;font-size:.58rem;padding:.06rem .35rem;border-radius:8px;font-weight:600;margin-top:.08rem}
+  .emp-card .ec-badge.green{background:#dcfce7;color:#166534}
+  .emp-card .ec-badge.gray{background:#f1f3f5;color:var(--muted)}
+  .emp-card .ec-badge.yellow{background:#fef3c7;color:#92400e}
+  .emp-card .ec-menu{position:absolute;top:6px;right:8px;font-size:1rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}
+  .emp-card .ec-menu:hover{background:#f1f3f5}
+  .emp-menu-dropdown{position:absolute;background:var(--white);border:1px solid var(--border);border-radius:.5rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.1);min-width:130px;padding:.25rem;z-index:10;display:none}
+  .emp-menu-item{padding:.3rem .5rem;font-size:.75rem;cursor:pointer;border-radius:4px;font-family:var(--font);color:var(--body-color)}
+  .emp-menu-item:hover{background:var(--primary-light)}
+  @media(max-width:500px){.emp-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem}}
+
   .shift-detail .sd-row.bold{font-weight:600;border-top:1px solid var(--border);padding-top:.3rem;margin-top:.1rem}
   @media(max-width:500px){.shift-card{min-width:150px;max-width:170px;padding:.55rem}}
   .shift-time{font-size:.85rem;color:var(--muted);margin-bottom:1rem;padding:.4rem;background:var(--body-bg);border-radius:8px}
@@ -1324,15 +1345,23 @@
     <div class="page-section" id="page-employees">
       <div class="page-header">
         <div>
-          <h1>Сотрудники</h1>
-          <div class="sub">Управляйте персоналом и доступом к системе</div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Сотрудники</h1>
+          <div class="sub">Управляйте своим персоналом</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openEmployeeModal()">+ Добавить сотрудника</button>
+          <button class="btn-green" onclick="openEmployeeModal()">+ Добавить</button>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:28%">ФИО</th><th style="width:18%">Телефон</th><th style="width:18%">Должность</th><th style="width:12%">Статус</th><th style="width:12%">Пин</th><th style="width:12%"></th></tr></thead><tbody id="employeeTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="emp-metrics">
+        <div class="emp-metric"><div class="em-lbl">Всего</div><div id="empTotal" class="em-val">0</div></div>
+        <div class="emp-metric"><div class="em-lbl">ФОТ</div><div id="empFot" class="em-val">0₽</div></div>
+        <div class="emp-metric" style="cursor:pointer"><div class="em-lbl">Период</div><div id="empPeriod" class="em-val" style="color:var(--primary);font-size:.72rem">Все время</div></div>
+      </div>
+      <div class="emp-grid" id="empGrid"></div>
+      <div class="empty-products" id="empEmpty">
+        <div class="big-icon">👥</div>
+        <p>Сотрудников пока нет</p>
       </div>
     </div>
     <!-- ДОЛЖНОСТИ -->
@@ -4590,7 +4619,74 @@ function navigateTo(page){
   if(page === 'transactions') renderTransactionsPage();
   if(page === 'turnover') renderTurnoverPage();
   if(page === 'salary') renderSalaryPage();
-  if(page === 'employees') renderEmployeesPage();
+  
+function renderEmployeesPage(){
+  var grid = document.getElementById("empGrid");
+  if(!grid) return;
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  var empty = document.getElementById("empEmpty");
+  if(!emps.length){grid.innerHTML="";if(empty)empty.style.display="block";return;}
+  if(empty) empty.style.display="none";
+  var salaryAll = JSON.parse(localStorage.getItem("salary88") || "[]");
+  var fot = 0;
+  emps.forEach(function(e){
+    var es = salaryAll.filter(function(s){return s.empId == e.id;});
+    e._sal = es.reduce(function(ss,s){return ss+(s.total||0)+(s.salary||0)-(s.deduct||0);},0);
+    fot += e._sal;
+  });
+  document.getElementById("empTotal").textContent = emps.length;
+  document.getElementById("empFot").textContent = fot.toLocaleString()+"\u20bd";
+  var colors = ["#6366f1","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444","#14b8a6","#8b5cf6","#f97316","#06b6d4"];
+  grid.innerHTML = emps.map(function(e,i){
+    var init = (e.name||"?")[0].toUpperCase();
+    var hp = e.pin && e.pin.toString().length === 4;
+    var st = e.status||"active";
+    var stL = {active:"\u041d\u0430 \u0441\u043c\u0435\u043d\u0435",off:"\u041d\u0435 \u043d\u0430 \u0441\u043c\u0435\u043d\u0435",vacation:"\u0412 \u043e\u0442\u043f\u0443\u0441\u043a\u0435"};
+    var posL = {cashier:"\u041a\u0430\u0441\u0441\u0438\u0440",admin:"\u0410\u0434\u043c\u0438\u043d",manager:"\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440"};
+    var bc = hp?"green":"gray";
+    var sc = st==="active"?"green":(st==="vacation"?"yellow":"gray");
+    return '<div class="emp-card">'+
+      '<div class="ec-menu" onclick="toggleEmpMnu(this)" data-id="'+e.id+'">\u22ee</div>'+
+      '<div class="emp-menu-dropdown" style="top:30px;right:8px">'+
+      '<div class="emp-menu-item" onclick="editEmp('+e.id+')">\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c</div>'+
+      '<div class="emp-menu-item" onclick="deleteEmp('+e.id+')" style="color:#dc2626">\u0423\u0432\u043e\u043b\u0438\u0442\u044c</div></div>'+
+      '<div class="ec-avatar" style="background:'+colors[i%colors.length]+'">'+init+'</div>'+
+      '<div class="ec-name">'+e.name+'</div>'+
+      '<div class="ec-pos">'+(posL[e.position]||e.position||"\u2014")+'</div>'+
+      '<div><span class="ec-badge '+bc+'">'+(hp?"\u2705 \u041f\u0438\u043d \u0435\u0441\u0442\u044c":"\u274c \u0411\u0435\u0437 \u043f\u0438\u043d\u0430")+'</span></div>'+
+      '<div><span class="ec-badge '+sc+'">'+(stL[st]||st)+'</span></div>'+
+      '<div class="ec-row">\uD83D\uDCB0 '+(e.salary?e.salary.toLocaleString()+"\u20bd":"\u0431\u0435\u0437 \u043e\u043a\u043b\u0430\u0434\u0430")+'</div>'+
+      '</div>';
+  }).join("");
+}
+function toggleEmpMnu(el){
+  document.querySelectorAll(".emp-menu-dropdown").forEach(function(d){d.style.display="none";});
+  var dd = el.nextElementSibling;
+  if(dd) dd.style.display = "block";
+}
+function editEmp(id){
+  var emps = JSON.parse(localStorage.getItem("employees88")||"[]");
+  var e = emps.find(function(x){return x.id==id;});
+  if(!e) return;
+  document.getElementById("editEmpId").value = e.id;
+  document.getElementById("empName").value = e.name||"";
+  document.getElementById("empPhone").value = e.phone||"";
+  document.getElementById("empPosition").value = e.position||"";
+  document.getElementById("empPin").value = e.pin||"";
+  document.getElementById("empStatus").value = e.status||"active";
+  document.getElementById("empSalary").value = e.salary||"";
+  document.getElementById("empBirthday").value = e.birthday||"";
+  document.getElementById("empModalTitle").textContent = "\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430";
+  document.getElementById("employeeModal").classList.add("active");
+}
+function deleteEmp(id){
+  if(!confirm("\u0423\u0432\u043e\u043b\u0438\u0442\u044c \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430?")) return;
+  var list = JSON.parse(localStorage.getItem("employees88")||"[]");
+  list = list.filter(function(x){return x.id!=id;});
+  localStorage.setItem("employees88",JSON.stringify(list));
+  renderEmployeesPage();
+}
+if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
   if(page === 'registers') return;
   if(page === 'venues') renderVenuesPage();
@@ -4600,6 +4696,40 @@ function navigateTo(page){
 }
 // === СТРАНИЦА УСЛУГ ===
 let svcFilter = 'all';
+function openEmployeeModal(){
+  document.getElementById("employeeForm").reset();
+  document.getElementById("editEmpId").value = "";
+  document.getElementById("empModalTitle").textContent = "Добавить сотрудника";
+  document.getElementById("employeeModal").classList.add("active");
+}
+function closeEmployeeModal(){
+  document.getElementById("employeeModal").classList.remove("active");
+}
+function saveEmployee(e){
+  e.preventDefault();
+  var name = document.getElementById("empName").value.trim();
+  if(!name) return alert("Введите ФИО");
+  var phone = document.getElementById("empPhone").value;
+  var position = document.getElementById("empPosition").value;
+  var pin = document.getElementById("empPin").value;
+  var status = document.getElementById("empStatus").value;
+  var salary = parseFloat(document.getElementById("empSalary").value) || 0;
+  var birthday = document.getElementById("empBirthday").value || "";
+  var id = document.getElementById("editEmpId").value;
+  var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  if(id){
+    var idx = emps.findIndex(function(x){ return x.id == id; });
+    if(idx >= 0){
+      emps[idx] = {id: parseInt(id) || id, name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", salary:salary, birthday:birthday};
+    }
+  } else {
+    emps.push({id:Date.now(), name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", salary:salary, birthday:birthday});
+  }
+  localStorage.setItem("employees88", JSON.stringify(emps));
+  closeEmployeeModal();
+  renderEmployeesPage();
+}
+
 function setServiceFilter(f){
   svcFilter = f;
   document.querySelectorAll('#serviceFilterTabs .filter-tab').forEach(t => t.classList.remove('active'));
