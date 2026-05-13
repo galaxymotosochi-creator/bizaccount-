@@ -2267,18 +2267,18 @@
         </div>
       </div>
       <div class="form-group">
-        <label style="display:flex;align-items:center;justify-content:space-between">
-          <span>Оплата</span>
-          <div class="emp-toggle">
-            <span class="active" onclick="setPayType('salary')" id="ptSal">Оклад</span>
-            <span onclick="setPayType('rate')" id="ptRate">Сдельная</span>
-          </div>
-        </label>
-        <div id="paySalRow"><input type="number" id="empSalary" placeholder="Сумма оклада" min="0" style="width:100%;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)"></div>
-        <div id="payRateRow" style="display:none">
+        <label>Оклад</label>
+        <div style="display:flex;gap:.35rem;align-items:center">
+          <input type="number" id="empSalary" placeholder="0" min="0" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
+          <label style="display:flex;align-items:center;gap:.3rem;font-size:.72rem;cursor:pointer;flex-shrink:0;user-select:none">
+            <input type="checkbox" id="empRateToggle" onchange="toggleEmpRate()" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
+            Сдельная
+          </label>
+        </div>
+        <div id="empRateFields" style="display:none;margin-top:.35rem">
           <div style="display:flex;gap:.35rem">
             <input type="number" id="empRatePct" placeholder="% от продаж" min="0" step="0.1" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
-            <input type="number" id="empRateFix" placeholder="За смену" min="0" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
+            <input type="number" id="empRateFix" placeholder="Ставка за смену" min="0" style="flex:1;padding:.35rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)">
           </div>
         </div>
       </div>
@@ -4677,6 +4677,9 @@ function navigateTo(page){
   if(page === 'salary') renderSalaryPage();
 }
 
+function toggleEmpRate(){
+  document.getElementById("empRateFields").style.display = document.getElementById("empRateToggle").checked ? "block" : "none";
+}
 function generatePin(){
   document.getElementById("empPin").value = String(1000 + Math.floor(Math.random() * 9000));
 }
@@ -4699,7 +4702,7 @@ function renderEmployeesPage(){
     var init = (e.name||"?")[0].toUpperCase();
     var posL = {cashier:"Кассир",admin:"Админ",manager:"Менеджер"};
     var pinStr = e.pin && e.pin.toString().length === 4 ? e.pin : "нет";
-    var salStr = e.payType==="rate"?(e.ratePct?e.ratePct+"% ":"")+(e.rateFix?e.rateFix+"₽/см":"сдельная"):(e.salary?e.salary.toLocaleString()+"₽":"—");
+    var salStr = (e.salary?e.salary.toLocaleString()+"₽":"—") + (e.ratePct||e.rateFix?" + "+(e.ratePct?e.ratePct+"%":"")+(e.rateFix?" "+e.rateFix+"₽/см":""):"");
     var empSales = sales.filter(function(s){ return s.empId == e.id; });
     var rev = empSales.reduce(function(ss,s){ return ss + (s.total||0); }, 0);
     var checks = empSales.length;
@@ -4816,10 +4819,12 @@ function editEmp(id){
   document.getElementById("empStatus").value = e.status||"active";
   document.getElementById("empEmail").value = e.email||"";
   document.getElementById("empHireDate").value = e.hireDate||"";
+  var hasRate = e.ratePct > 0 || e.rateFix > 0;
+  document.getElementById("empRateToggle").checked = hasRate;
+  document.getElementById("empRateFields").style.display = hasRate ? "block" : "none";
   document.getElementById("empSalary").value = e.salary||"";
   document.getElementById("empRatePct").value = e.ratePct||"";
   document.getElementById("empRateFix").value = e.rateFix||"";
-  if(e.payType === "rate") setPayType("rate"); else setPayType("salary");
   document.getElementById("empBirthday").value = e.birthday||"";
   document.getElementById("empModalTitle").textContent = "\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430";
   document.getElementById("employeeModal").classList.add("active");
@@ -4874,7 +4879,6 @@ function saveEmployee(e){
   var position = document.getElementById("empPosition").value;
   var pin = document.getElementById("empPin").value;
   var status = document.getElementById("empStatus").value;
-  var payType = document.getElementById("ptSal").classList.contains("active") ? "salary" : "rate";
   var salary = payType==="salary" ? (parseFloat(document.getElementById("empSalary").value) || 0) : 0;
   var ratePct = payType==="rate" ? (parseFloat(document.getElementById("empRatePct").value) || 0) : 0;
   var rateFix = payType==="rate" ? (parseFloat(document.getElementById("empRateFix").value) || 0) : 0;
@@ -4884,10 +4888,10 @@ function saveEmployee(e){
   if(id){
     var idx = emps.findIndex(function(x){ return x.id == id; });
     if(idx >= 0){
-      emps[idx] = {id: parseInt(id) || id, name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""};
+      emps[idx] = {id: parseInt(id) || id, name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""};
     }
   } else {
-    emps.push({id:Date.now(), name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""});
+    emps.push({id:Date.now(), name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""});
   }
   localStorage.setItem("employees88", JSON.stringify(emps));
   closeEmployeeModal();
