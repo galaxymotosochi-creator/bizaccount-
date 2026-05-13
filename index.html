@@ -1304,6 +1304,21 @@
           <div style="font-size:1.1rem;font-weight:700;color:#78350f;margin-top:.1rem">0₽</div>
         </div>
       </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0">
+        <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;width:100%;font-weight:600">Баланс счетов</div>
+        <div style="flex:1;min-width:100px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem">
+          <div style="font-size:.6rem;color:#92400e;font-weight:600;text-transform:uppercase">💰 Наличные</div>
+          <div id="txAccCash" style="font-size:.9rem;font-weight:700;color:var(--body-color);margin-top:.1rem">0₽</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem">
+          <div style="font-size:.6rem;color:#1e40af;font-weight:600;text-transform:uppercase">💳 Карта</div>
+          <div id="txAccCard" style="font-size:.9rem;font-weight:700;color:var(--body-color);margin-top:.1rem">0₽</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem">
+          <div style="font-size:.6rem;color:#6366f1;font-weight:600;text-transform:uppercase">📲 Перевод</div>
+          <div id="txAccTransfer" style="font-size:.9rem;font-weight:700;color:var(--body-color);margin-top:.1rem">0₽</div>
+        </div>
+      </div>
       <div class="search-row">
         <div class="search-input-wrap">
           <span class="search-icon">🔍</span>
@@ -3579,6 +3594,23 @@ function renderTransactionsPage(){
   if(revEl) revEl.textContent = totalInc.toLocaleString()+'₽';
   if(expEl) expEl.textContent = totalExp.toLocaleString()+'₽';
   if(prfEl) prfEl.textContent = (totalInc - totalExp).toLocaleString()+'₽';
+  // Update account balances
+  var accBal = {cash:0, card:0, transfer:0};
+  expenses.forEach(function(e){
+    if(e.accounts) Object.keys(e.accounts).forEach(function(k){ accBal[k] = (accBal[k]||0) - e.accounts[k]; });
+  });
+  incomes.forEach(function(e){
+    if(e.accounts) Object.keys(e.accounts).forEach(function(k){ accBal[k] = (accBal[k]||0) + e.accounts[k]; });
+  });
+  var accLabels = {cash:'txAccCash', card:'txAccCard', transfer:'txAccTransfer'};
+  Object.keys(accLabels).forEach(function(k){
+    var el = document.getElementById(accLabels[k]);
+    if(el){
+      var val = accBal[k] || 0;
+      el.textContent = val.toLocaleString()+'₽';
+      el.style.color = val < 0 ? '#dc2626' : 'var(--body-color)';
+    }
+  });
   // Table
   var tbody = document.getElementById('expenseTableBody');
   if(!tbody) return;
