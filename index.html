@@ -1719,31 +1719,17 @@
         <label>Название *</label>
         <input type="text" id="prodName" placeholder="Например, Кирпич красный" required>
       </div>
-      <div class="form-group">
-        <label>Вид</label>
-        <select id="prodType" onchange="onProdTypeChange()">
-          <option value="product">Товар</option>
-          <option value="service">Услуга</option>
-        </select>
-      </div>
       <div class="form-row">
+        <div class="form-group">
+          <label>Вид</label>
+          <select id="prodType" onchange="onProdTypeChange()">
+            <option value="product">Товар</option>
+            <option value="service">Услуга</option>
+          </select>
+        </div>
         <div class="form-group">
           <label>Категория</label>
           <select id="prodCat"></select>
-        </div>
-        <div class="form-group">
-          <label>Розничная цена (₽)</label>
-          <input type="number" id="prodPrice" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Артикул</label>
-          <input type="text" id="prodSku" placeholder="Например, KR-001">
-        </div>
-        <div class="form-group">
-          <label>Штрихкод (EAN-13)</label>
-          <input type="text" id="prodBarcode" placeholder="Например, 4601234567890">
         </div>
       </div>
       <div class="form-row">
@@ -1759,6 +1745,10 @@
             <option value="усл">услуга</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>Срок годности</label>
+          <input type="date" id="prodExpiry">
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1770,13 +1760,34 @@
               <option value="кг" selected>кг</option>
               <option value="мг">мг</option>
               <option value="т">т</option>
-              <option value="мл">мл</option>
-              <option value="л">л</option>
             </select>
           </div>
         </div>
+        <div class="form-group">
+          <label>Вес товара</label>
+          <input type="number" id="prodItemWeight" placeholder="0" min="0" step="0.1">
+        </div>
       </div>
-
+      <div class="form-row">
+        <div class="form-group">
+          <label>Артикул</label>
+          <input type="text" id="prodSku" placeholder="Например, KR-001">
+        </div>
+        <div class="form-group">
+          <label>Штрихкод (EAN-13)</label>
+          <input type="text" id="prodBarcode" placeholder="Например, 4601234567890">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Розничная цена (₽)</label>
+          <input type="number" id="prodPrice" placeholder="0" min="0">
+        </div>
+        <div class="form-group">
+          <label>Оптовая цена (₽)</label>
+          <input type="number" id="prodWholesale" placeholder="0" min="0">
+        </div>
+      </div>
       <div class="form-group">
         <label>Описание</label>
         <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
@@ -2623,6 +2634,9 @@ function onProdTypeChange(){
 }
 function openProductModal(){
   loadProdCats();
+  document.getElementById('prodWholesale').value = '';
+  document.getElementById('prodItemWeight').value = '';
+  document.getElementById('prodExpiry').value = '';
   document.getElementById('productModal').classList.add('active');
 }
 
@@ -2642,6 +2656,9 @@ function editProduct(id){
   document.getElementById('prodName').value = p.name;
   document.getElementById('prodCat').value = p.cat;
   document.getElementById('prodPrice').value = p.price;
+  document.getElementById('prodWholesale').value = p.wholesale || '';
+  document.getElementById('prodItemWeight').value = p.itemWeight || '';
+  document.getElementById('prodExpiry').value = p.expiry || '';
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodBarcode').value = p.barcode || '';
@@ -2672,9 +2689,9 @@ function saveProduct(e){
   var name = document.getElementById('prodName').value.trim();
   if(!name) return alert('Введите название');
   var price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  var cost = 0;
-  var profit = price - cost;
-  var margin = 0;
+  var wholesale = parseFloat(document.getElementById('prodWholesale').value) || 0;
+  var itemWeight = parseFloat(document.getElementById('prodItemWeight').value) || 0;
+  var expiry = document.getElementById('prodExpiry').value || '';
   var list = JSON.parse(localStorage.getItem('products88') || '[]');
   var editId = parseInt(document.getElementById('editProductId').value);
   if(editId){
@@ -2685,7 +2702,10 @@ function saveProduct(e){
       ...list[idx],
       name: name,
       cat: document.getElementById('prodCat').value,
-      price: price,
+price: price,
+      wholesale: wholesale,
+      itemWeight: itemWeight,
+      expiry: expiry,
       unit: document.getElementById('prodUnit').value,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
@@ -2702,7 +2722,10 @@ function saveProduct(e){
       id: Date.now(),
       name: name,
       cat: document.getElementById('prodCat').value,
-      price: price,
+price: price,
+      wholesale: wholesale,
+      itemWeight: itemWeight,
+      expiry: expiry,
       unit: document.getElementById('prodUnit').value,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
