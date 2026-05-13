@@ -4890,8 +4890,8 @@ function saveEmployee(e){
   var pin = document.getElementById("empPin").value;
   var status = document.getElementById("empStatus").value;
   var salary = payType==="salary" ? (parseFloat(document.getElementById("empSalary").value) || 0) : 0;
-  var ratePct = payType==="rate" ? (parseFloat(document.getElementById("empRatePct").value) || 0) : 0;
-  var rateFix = payType==="rate" ? (parseFloat(document.getElementById("empRateFix").value) || 0) : 0;
+  var ratePct = parseFloat(document.getElementById("empRatePct").value) || 0;
+  var rateFix = 0;
   var birthday = document.getElementById("empBirthday").value || "";
   var id = document.getElementById("editEmpId").value;
   var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
