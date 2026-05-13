@@ -3443,6 +3443,8 @@ function viewClient(id){
   document.getElementById('invResultSub').textContent = grp || '';
   document.getElementById('invResultBody').innerHTML = body;
   document.getElementById('invResultTotals').innerHTML = '';
+  var btns = document.querySelectorAll('#invResultModal .modal-actions button');
+  btns.forEach(function(b){ b.style.display = 'none'; });
   document.getElementById('invResultModal').classList.add('active');
 }
 function deleteClient(id){
