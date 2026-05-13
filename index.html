@@ -2430,14 +2430,6 @@
           <label>Скидка (%)</label>
           <input type="number" id="proDiscount" placeholder="10" min="0" max="100" oninput="updatePromoPreview()">
         </div>
-        <div class="form-group">
-          <label>Статус</label>
-          <select id="proStatus">
-            <option value="active">🟢 Активна</option>
-            <option value="planned">🟡 Планируется</option>
-            <option value="ended">⚪ Завершена</option>
-          </select>
-        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -3786,7 +3778,12 @@ function closeLoyaltyModal(){
 var PRO_D = [];
 var promos = [];
 var proCalDate = new Date();
-function getPromos(){ return PRO_D.concat(JSON.parse(localStorage.getItem("promos88")||"[]")); }
+function getPromos(){
+  var list = JSON.parse(localStorage.getItem("promos88")||"[]");
+  list.forEach(function(p){ p.status = autoPromoStatus(p); });
+  localStorage.setItem("promos88", JSON.stringify(list));
+  return PRO_D.concat(list);
+}
 function renderPromosPage(){ promos = getPromos(); renderProCal(); }
 function renderProCal(){
   var g = document.getElementById("promoCalGrid"); if(!g) return;
@@ -3817,9 +3814,44 @@ function renderProCal(){
 function selectProDay(d){
   var y=proCalDate.getFullYear(),m=proCalDate.getMonth();
   var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  var dayPromos = [];
+  promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) dayPromos.push(p);});
+  if(dayPromos.length === 1){ showProDetail(dayPromos[0]); return; }
+  if(dayPromos.length > 1){ showDayPopup(d, dayPromos); return; }
   var pi = null;
   promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) pi=p;});
   if(pi) showProDetail(pi);
+}
+function showDayPopup(dd, proms){
+  var overlay = document.getElementById("dayPopupOverlay");
+  if(!overlay){
+    overlay = document.createElement("div");
+    overlay.id = "dayPopupOverlay";
+    overlay.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.3)";
+    overlay.onclick = function(e){ if(e.target===overlay) closeDayPopup(); };
+    document.body.appendChild(overlay);
+  }
+  var y=proCalDate.getFullYear(),m=proCalDate.getMonth();
+  var sl = {active:"Активна",planned:"Планируется",ended:"Завершена"};
+  overlay.innerHTML = '<div style="background:var(--white);border-radius:1rem;padding:1.25rem;max-width:360px;width:90vw;box-shadow:0 1rem 3rem rgba(0,0,0,.2)">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">'+
+    '<div style="font-weight:600;font-size:.9rem">'+dd+'.'+(m+1)+'.'+y+'</div>'+
+    '<span onclick="closeDayPopup()" style="font-size:1.2rem;cursor:pointer;color:var(--muted)">x</span></div>'+
+    proms.map(function(p){
+      var sd=p.start.split("-").reverse().join(".");
+      var ed=p.end.split("-").reverse().join(".");
+      return '<div class="day-popup-item" onclick="closeDayPopup();showProDetailFromList('+p.id+')">'+
+        '<div style="display:flex;align-items:center;gap:.5rem">'+
+        '<span class="promo-status '+p.status+'" style="font-size:.6rem">'+(sl[p.status]||"")+'</span>'+
+        '<span style="font-weight:600;font-size:.82rem;flex:1">'+p.name+'</span>'+
+        '<span style="font-weight:600;font-size:.82rem;color:var(--body-color)">'+p.discount+'%</span></div>'+
+        '<div style="font-size:.7rem;color:var(--muted);margin-top:.15rem">'+sd+'-'+ed+'</div></div>';
+    }).join('')+'</div>';
+  overlay.style.display = "flex";
+}
+function closeDayPopup(){
+  var el = document.getElementById("dayPopupOverlay");
+  if(el) el.style.display = "none";
 }
 function showProDetail(p){
   document.getElementById("promoDetailEmpty").style.display="none";
@@ -3860,6 +3892,16 @@ function togglePromoMenu(el){
 }
 function closePromoMenus(){
   document.querySelectorAll(".promo-menu-dropdown").forEach(function(d){ d.style.display = "none"; });
+}
+
+function autoPromoStatus(p){
+  var now = new Date();
+  var start = new Date(p.start);
+  var end = new Date(p.end);
+  end.setHours(23,59,59,999);
+  if(now < start) return "planned";
+  if(now > end) return "ended";
+  return "active";
 }
 function renderPromoList(){
   var list = document.getElementById("promoList");
@@ -3918,7 +3960,6 @@ function openPromoModal(p){
     document.getElementById('editPromoId').value = '';
     document.getElementById('proName').value = '';
     document.getElementById('proDiscount').value = '';
-    document.getElementById('proStatus').value = 'active';
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('proStart').value = today;
     document.getElementById('proEnd').value = '';
@@ -3947,7 +3988,6 @@ function savePromo(e){
   var id = document.getElementById('editPromoId').value;
   var name = document.getElementById('proName').value.trim();
   var discount = parseFloat(document.getElementById('proDiscount').value) || 0;
-  var status = document.getElementById('proStatus').value;
   var start = document.getElementById('proStart').value;
   var end = document.getElementById('proEnd').value;
   var desc = document.getElementById('proDesc').value.trim() || ('Скидка '+discount+'%');
@@ -3960,7 +4000,7 @@ function savePromo(e){
     allPro.forEach(function(p){ if(p.id == id) { p.name=name; p.discount=discount; p.status=status; p.start=start; p.end=end; p.desc=desc; found=true; }});
     if(!found) return alert('Акция не найдена');
   } else {
-    allPro.push({id:Date.now(), name:name, discount:discount, status:status, start:start, end:end, desc:desc, color:'#1983dd'});
+    allPro.push({id:Date.now(), name:name, discount:discount, start:start, end:end, desc:desc, color:'#1983dd'});
   }
   localStorage.setItem('promos88', JSON.stringify(allPro));
   closePromoModal();
