@@ -3510,7 +3510,7 @@ function navigateTo(page){
   if(page === 'salary') renderSalaryPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'positions') renderPositionsPage();
-  if(page === 'registers') renderRegistersPage();
+  if(page === 'registers') return;
   if(page === 'venues') renderVenuesPage();
   document.querySelectorAll('.nav-child').forEach(i => {
     if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
