@@ -3641,7 +3641,80 @@ function selectLoyCard(i) {
 }
 function scrollLoyalty(d){var ap=LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));var i=loyIdx+d;if(i<0)i=ap.length-1;if(i>=ap.length)i=0;selectLoyCard(i);}
 /* LOV end */
-
+var LOY_EMOJIS = ['🎯','🏆','💎','🥇','🚀','🎁','💝','✨','🔥','👑','🛡️','🍀'];
+function pickEmoji(el){
+  document.querySelectorAll('.loy-emoji').forEach(function(e){e.classList.remove('selected');});
+  el.classList.add('selected');
+  document.getElementById('loyIcon').value = el.textContent.trim();
+  updateLoyPreview();
+}
+function updateLoyPreview(){
+  var icon = document.getElementById('loyIcon').value;
+  var name = document.getElementById('loyName').value || 'Новая программа';
+  var disc = document.getElementById('loyDiscount').value;
+  document.getElementById('loyPreviewIcon').textContent = icon;
+  document.getElementById('loyPreviewName').textContent = name;
+  document.getElementById('loyPreviewDesc').textContent = disc ? 'Скидка '+disc+'%' : 'Без скидки';
+}
+function openLoyaltyModal(){
+  var emojis = document.querySelectorAll('.loy-emoji');
+  emojis.forEach(function(e,i){e.classList.toggle('selected',i===0);});
+  document.getElementById('loyIcon').value = LOY_EMOJIS[0];
+  document.getElementById('loyName').value = '';
+  document.getElementById('loyDiscount').value = '';
+  document.getElementById('loyCondition').value = '';
+  document.getElementById('loyDesc').value = '';
+  document.getElementById('loyType').value = 'constant';
+  document.getElementById('editLoyaltyId').value = '';
+  document.getElementById('loyaltyModalTitle').textContent = 'Добавить программу';
+  updateLoyPreview();
+  document.getElementById('loyaltyModal').classList.add('active');
+}
+function saveLoyalty(e){
+  e.preventDefault();
+  var name = document.getElementById('loyName').value.trim();
+  var icon = document.getElementById('loyIcon').value;
+  var type = document.getElementById('loyType').value;
+  var discount = parseFloat(document.getElementById('loyDiscount').value) || 0;
+  var condition = parseFloat(document.getElementById('loyCondition').value) || 0;
+  var desc = document.getElementById('loyDesc').value.trim() || ('Скидка ' + (discount||'постоянная') + (condition ? ' от '+condition.toLocaleString()+'₽' : ''));
+  if(!name) return alert('Введите название');
+  var allProgs = JSON.parse(localStorage.getItem('loyalty88') || '[]');
+  allProgs.push({
+    id:Date.now(), icon:icon, name:name, type:type, discount:discount, condition:condition, desc:desc,
+    color:'#1983dd', bg:'#eaf5ff'
+  });
+  localStorage.setItem('loyalty88', JSON.stringify(allProgs));
+  closeLoyaltyModal();
+  renderLoyaltyPage();
+}
+function editLoyalty(idx){
+  var allProgs = JSON.parse(localStorage.getItem('loyalty88') || '[]');
+  var p = allProgs[idx - 3];
+  if(!p) return;
+  document.getElementById('loyIcon').value = p.icon;
+  document.getElementById('loyName').value = p.name;
+  document.getElementById('loyType').value = p.type;
+  document.getElementById('loyDiscount').value = p.discount;
+  document.getElementById('loyCondition').value = p.condition;
+  document.getElementById('loyDesc').value = p.desc;
+  document.getElementById('editLoyaltyId').value = p.id;
+  document.getElementById('loyaltyModalTitle').textContent = 'Редактировать программу';
+  document.querySelectorAll('.loy-emoji').forEach(function(e){e.classList.toggle('selected', e.textContent.trim() === p.icon);});
+  updateLoyPreview();
+  document.getElementById('loyaltyModal').classList.add('active');
+}
+function deleteLoyalty(idx){
+  var allProgs = JSON.parse(localStorage.getItem('loyalty88') || '[]');
+  var p = allProgs[idx - 3];
+  if(!p || !confirm('Удалить программу "'+p.name+'"?')) return;
+  allProgs = allProgs.filter(function(x){return x.id !== p.id;});
+  localStorage.setItem('loyalty88', JSON.stringify(allProgs));
+  renderLoyaltyPage();
+}
+function closeLoyaltyModal(){
+  document.getElementById('loyaltyModal').classList.remove('active');
+}
 function getExpCatList(){ return JSON.parse(localStorage.getItem('expCategories88') || '[]');
 }
 function saveExpCatList(list){
