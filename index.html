@@ -1291,16 +1291,6 @@
               <button class="period-preset" onclick="setPeriodTx('week', 'Эта неделя', this)">Эта неделя</button>
               <button class="period-preset" onclick="setPeriodTx('month', 'Этот месяц', this)">Этот месяц</button>
               <button class="period-preset" onclick="setPeriodTx('all', 'Всё время', this)">Всё время</button>
-              <div class="period-custom">
-                <div class="pd-title">Свой период</div>
-                <div class="period-custom-row">
-                  <label>с</label><input type="date" id="periodFromTx">
-                </div>
-                <div class="period-custom-row">
-                  <label>по</label><input type="date" id="periodToTx">
-                </div>
-                <button class="period-apply" onclick="applyCustomPeriodTx()">Применить</button>
-              </div>
             </div>
           </div>
         </div>
@@ -4215,18 +4205,6 @@ function setPeriodTx(period, label, btnEl){
   document.getElementById('periodTriggerTx').innerHTML =
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
     label + ' <span class="act-arrow">▼</span>';
-  document.getElementById('periodDropdownTx').classList.remove('open');
-}
-function applyCustomPeriodTx(){
-  const from = document.getElementById('periodFromTx').value;
-  const to = document.getElementById('periodToTx').value;
-  if(!from || !to) return alert('Выберите обе даты');
-  currentTxPeriod = 'custom';
-  window._txCustomFrom = from;
-  window._txCustomTo = to;
-  document.getElementById('periodTriggerTx').innerHTML =
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
-    from.split('-').reverse().join('.')+' — '+to.split('-').reverse().join('.')+' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
 }
 /* Закрытие по клику вне */
