@@ -4845,16 +4845,16 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  var pdd = document.getElementById('periodDropdownTx');
-  if(pdd && !e.target.closest('.tx-period-wrapper')) pdd.classList.remove('open');
-  var exdd = document.getElementById('exportTxDropdown');
-  if(exdd && !e.target.closest('.export-wrapper')) exdd.classList.remove('open');
-  var txdd = document.getElementById('txTypeDropdown');
-  if(txdd && !e.target.closest('.tx-type-wrapper')) txdd.classList.remove('open');
-  var expdd = document.getElementById('expCatDropdown');
-  if(expdd && !e.target.closest('.exp-cat-wrapper')) expdd.classList.remove('open');
-  var incdd = document.getElementById('incCatDropdown');
-  if(incdd && !e.target.closest('.inc-cat-wrapper')) incdd.classList.remove('open');
+  const pdd = document.getElementById('periodDropdownTx');
+  const exdd = document.getElementById('exportTxDropdown');
+  const txdd = document.getElementById('txTypeDropdown');
+  const expdd = document.getElementById('expCatDropdown');
+  const incdd = document.getElementById('incCatDropdown');
+  if(pdd && !e.target.closest('.search-row')){ pdd.classList.remove('open'); }
+  if(exdd && !e.target.closest('.export-wrapper')){ exdd.classList.remove('open'); }
+  if(txdd && !e.target.closest('.tx-type-wrapper')){ txdd.classList.remove('open'); }
+  if(expdd && !e.target.closest('.exp-cat-wrapper')){ expdd.classList.remove('open'); }
+  if(incdd && !e.target.closest('.inc-cat-wrapper')){ incdd.classList.remove('open'); }
 });
 </script>
 <!-- Модалка итога инвентаризации -->
