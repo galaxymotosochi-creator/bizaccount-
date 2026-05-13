@@ -263,8 +263,9 @@
 /* Category dropdown */
 .cat-wrapper{position:relative;display:flex;align-items:center}
 .actions-group{display:flex;align-items:center;gap:10px;margin-left:12px}
-.text-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0}
+.text-btn{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--primary);font-size:.82rem;font-weight:500;font-family:var(--font);border:none;background:none;padding:0;flex-shrink:0;line-height:1}
 .text-btn:hover{opacity:.8}
+.search-row .text-btn{height:34px;padding:0 .35rem}
 .export-wrapper{position:relative;display:flex;align-items:center}
 .act-arrow{font-size:.6rem;transition:transform .15s}
 .act-arrow.open{transform:rotate(180deg)}
@@ -1304,7 +1305,7 @@
         </div>
         <div class="actions-group">
           <div style="position:relative">
-            <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx" style="gap:5px">
+            <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx">
               Период <span class="act-arrow">▼</span>
             </button>
             <div class="tx-period-dropdown" id="periodDropdownTx">
