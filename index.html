@@ -2223,6 +2223,16 @@
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label>Почта</label>
+          <input type="email" id="empEmail" placeholder="ivan@example.com">
+        </div>
+        <div class="form-group">
+          <label>Дата трудоустройства</label>
+          <input type="date" id="empHireDate">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label>Должность</label>
           <select id="empPosition"></select>
         </div>
@@ -2250,7 +2260,10 @@
       <div class="form-row">
         <div class="form-group">
           <label>Пин-код (4 цифры)</label>
-          <input type="number" id="empPin" placeholder="1234" min="0" max="9999">
+          <div style="display:flex;gap:.35rem">
+            <input type="number" id="empPin" placeholder="1234" min="0" max="9999" style="flex:1">
+            <button type="button" class="btn btn-outline" onclick="generatePin()" style="font-size:.72rem;padding:.2rem .45rem;flex-shrink:0">Сгенерировать</button>
+          </div>
         </div>
         <div class="form-group">
           <label>Статус</label>
@@ -4638,6 +4651,10 @@ function navigateTo(page){
   if(page === 'turnover') renderTurnoverPage();
   if(page === 'salary') renderSalaryPage();
   
+
+function generatePin(){
+  document.getElementById("empPin").value = String(1000 + Math.floor(Math.random() * 9000));
+}
 function renderEmployeesPage(){
   var grid = document.getElementById("empGrid");
   if(!grid) return;
@@ -4661,6 +4678,7 @@ function renderEmployeesPage(){
       '<div class="ec-info"><div class="ec-name">'+e.name+'</div><div class="ec-pos">'+(posL[e.position]||e.position||"—")+'</div></div></div>'+
       '<div class="ec-row"><span class="lbl">Тел.:</span><span class="val">'+(e.phone||"—")+'</span></div>'+
       '<div class="ec-row"><span class="lbl">Долж.:</span><span class="val">'+(posL[e.position]||e.position||"—")+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Эл.почта:</span><span class="val">'+(e.email||"—")+'</span></div>'+
       '<div class="ec-row"><span class="lbl">Пин:</span><span class="val">'+pinStr+'</span></div>'+
       '<div class="ec-row"><span class="lbl">Оклад:</span><span class="val">'+salStr+'</span></div>'+
       '</div>';
@@ -4732,6 +4750,8 @@ function editEmp(id){
   document.getElementById("empPosition").value = e.position||"";
   document.getElementById("empPin").value = e.pin||"";
   document.getElementById("empStatus").value = e.status||"active";
+  document.getElementById("empEmail").value = e.email||"";
+  document.getElementById("empHireDate").value = e.hireDate||"";
   document.getElementById("empSalary").value = e.salary||"";
   document.getElementById("empRatePct").value = e.ratePct||"";
   document.getElementById("empRateFix").value = e.rateFix||"";
@@ -4784,10 +4804,10 @@ function saveEmployee(e){
   if(id){
     var idx = emps.findIndex(function(x){ return x.id == id; });
     if(idx >= 0){
-      emps[idx] = {id: parseInt(id) || id, name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""};
+      emps[idx] = {id: parseInt(id) || id, name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""};
     }
   } else {
-    emps.push({id:Date.now(), name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""});
+    emps.push({id:Date.now(), name:name, phone:phone||"", position:position||"", pin:pin||"", status:status||"active", email:email||"", hireDate:hireDate||"", payType:payType||"salary", salary:salary||0, ratePct:ratePct||0, rateFix:rateFix||0, birthday:birthday||""});
   }
   localStorage.setItem("employees88", JSON.stringify(emps));
   closeEmployeeModal();
