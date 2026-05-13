@@ -1293,6 +1293,18 @@
               <button class="period-preset" onclick="setPeriodTx('all', 'Всё время', this)">Всё время</button>
             </div>
           </div>
+          <div class="export-wrapper">
+            <button class="text-btn" onclick="toggleExportTxDropdown(event)" id="exportTxBtn">
+              Экспорт в Excel <span class="act-arrow">▼</span>
+            </button>
+            <div class="export-dropdown" id="exportTxDropdown">
+              <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
+              <div class="export-dd-actions">
+                <span class="export-dd-btn" onclick="confirmExportTx()">Да</span>
+                <span class="export-dd-btn export-dd-cancel" onclick="closeExportTxDropdown()">Нет</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4213,7 +4225,22 @@ document.addEventListener('click', function(e){
   if(dd && dd.classList.contains('open') && !e.target.closest('#periodTriggerTx') && !e.target.closest('.tx-period-dropdown')){
     dd.classList.remove('open');
   }
+  const expTx = document.getElementById('exportTxDropdown');
+  if(expTx && expTx.classList.contains('open') && !e.target.closest('.export-wrapper')){
+    expTx.classList.remove('open');
+  }
 });
+function toggleExportTxDropdown(e){
+  e.stopPropagation();
+  document.getElementById('exportTxDropdown').classList.toggle('open');
+}
+function closeExportTxDropdown(){
+  document.getElementById('exportTxDropdown').classList.remove('open');
+}
+function confirmExportTx(){
+  closeExportTxDropdown();
+  exportToExcel();
+}
 </script>
 <!-- Модалка итога инвентаризации -->
 <div class="modal-overlay" id="invResultModal" onclick="if(event.target===this)closeInvResult()">
