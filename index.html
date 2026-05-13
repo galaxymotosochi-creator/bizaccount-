@@ -117,6 +117,35 @@
   .loy-detail-item .lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;font-weight:600}
   .loy-detail-item .val{font-size:1.05rem;font-weight:600;color:var(--body-color);margin-top:.15rem}
   .loy-detail-actions{display:flex;gap:.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+  .promo-calendar-wrap{background:var(--white);border:1px solid var(--border);border-radius:1rem;padding:1rem .75rem;margin-bottom:.75rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.04)}
+  .promo-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+  .promo-cal-month{font-size:.95rem;font-weight:600;color:var(--body-color)}
+  .promo-cal-nav{background:none;border:1px solid var(--border);border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .12s}
+  .promo-cal-nav:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .promo-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.78rem;margin-bottom:.5rem}
+  .promo-cal-grid .wd{font-size:.65rem;color:var(--muted);font-weight:600;padding-bottom:.35rem;text-transform:uppercase}
+  .promo-cal-grid .day{padding:.45rem .2rem;border-radius:8px;cursor:pointer;position:relative;transition:all .12s;color:var(--body-color)}
+  .promo-cal-grid .day:hover{background:#f1f3f5}
+  .promo-cal-grid .day.other{color:#ccc;cursor:default} .promo-cal-grid .day.other:hover{background:none}
+  .promo-cal-grid .day.today{font-weight:700;color:var(--primary)}
+  .promo-cal-grid .day.today::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary)}
+  .promo-cal-grid .day.has-promo.active{background:#dcfce7;color:#166534;font-weight:600}
+  .promo-cal-grid .day.has-promo.planned{background:#fef3c7;color:#92400e;font-weight:600}
+  .promo-cal-grid .day.has-promo.ended{background:#f1f3f5;color:var(--muted)}
+  .promo-cal-legend{display:flex;gap:.75rem;justify-content:center;font-size:.7rem;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);flex-wrap:wrap}
+  .promo-dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:2px}
+  .promo-dot.active{background:#16a34a} .promo-dot.planned{background:#f59e0b} .promo-dot.ended{background:#ccc}
+  .promo-detail{background:var(--white);border:1px solid var(--border);border-radius:1rem;padding:1.25rem;margin-top:.5rem}
+  .promo-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin:.75rem 0}
+  .promo-detail-item{background:#f8f9fa;border-radius:.6rem;padding:.55rem .7rem}
+  .promo-detail-item .lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;font-weight:600}
+  .promo-detail-item .val{font-size:.95rem;font-weight:600;color:var(--body-color);margin-top:.1rem}
+  .promo-status{display:inline-block;font-size:.7rem;font-weight:600;padding:.15rem .55rem;border-radius:20px}
+  .promo-status.active{background:#dcfce7;color:#166534} .promo-status.planned{background:#fef3c7;color:#92400e} .promo-status.ended{background:#f1f3f5;color:var(--muted)}
+  .promo-progress{height:4px;background:#f1f3f5;border-radius:4px;margin:.5rem 0;overflow:hidden}
+  .promo-progress-bar{height:100%;border-radius:4px;transition:width .3s}
+  .promo-timer{font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
+  @media(max-width:500px){.promo-cal-grid .day{padding:.3rem .1rem;font-size:.7rem}.promo-detail-grid{grid-template-columns:1fr}}
   .loy-emoji{font-size:1.3rem;cursor:pointer;padding:.25rem;border-radius:6px;transition:all .1s;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
   .loy-emoji:hover{background:var(--primary-light)}
   .loy-emoji.selected{background:var(--primary);color:#fff}
@@ -1225,15 +1254,31 @@
     <div class="page-section" id="page-promos">
       <div class="page-header">
         <div>
-          <h1>Акции</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Акции</h1>
           <div class="sub">Текущие и планируемые акции</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openPromoModal()">+ Добавить акцию</button>
+          <button class="btn-green" onclick="openPromoModal()">+ Добавить</button>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:25%">Название</th><th style="width:12%">Скидка</th><th style="width:35%">Описание</th><th style="width:28%">Период</th></tr></thead><tbody id="promoTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="promo-calendar-wrap" id="promoCalendarWrap">
+        <div class="promo-cal-header">
+          <button class="promo-cal-nav" onclick="switchPromoMonth(-1)">&lsaquo;</button>
+          <div class="promo-cal-month" id="promoCalMonth">Май 2026</div>
+          <button class="promo-cal-nav" onclick="switchPromoMonth(1)">&rsaquo;</button>
+        </div>
+        <div class="promo-cal-grid" id="promoCalGrid"></div>
+        <div class="promo-cal-legend">
+          <span><span class="promo-dot active"></span> Активна</span>
+          <span><span class="promo-dot planned"></span> Планируется</span>
+          <span><span class="promo-dot ended"></span> Завершена</span>
+        </div>
+      </div>
+      <div class="promo-detail" id="promoDetail" style="display:none"></div>
+      <div class="empty-products" id="promoDetailEmpty">
+        <div class="big-icon">🎉</div>
+        <p>Нажмите на день в календаре чтобы увидеть акцию</p>
       </div>
     </div>
     <!-- СОТРУДНИКИ -->
@@ -3715,6 +3760,76 @@ function deleteLoyalty(idx){
 function closeLoyaltyModal(){
   document.getElementById('loyaltyModal').classList.remove('active');
 }
+/* PROMO calendar */
+var PRO_D = [
+  {id:"pro_spring", name:"Весенняя распродажа", discount:25, start:"2026-05-06", end:"2026-05-14", desc:"Скидка 25% на все товары", status:"active", color:"#16a34a"},
+  {id:"pro_summer", name:"Летний старт", discount:15, start:"2026-06-01", end:"2026-06-15", desc:"Скидка 15% на первый заказ", status:"planned", color:"#f59e0b"},
+  {id:"pro_may", name:"Майская акция", discount:10, start:"2026-05-01", end:"2026-05-05", desc:"Скидка 10% в честь праздников", status:"ended", color:"#9ca3af"}
+];
+var promos = [];
+var proCalDate = new Date();
+function getPromos(){ return PRO_D.concat(JSON.parse(localStorage.getItem("promos88")||"[]")); }
+function renderPromosPage(){ promos = getPromos(); renderProCal(); }
+function renderProCal(){
+  var g = document.getElementById("promoCalGrid"); if(!g) return;
+  var y = proCalDate.getFullYear(), m = proCalDate.getMonth();
+  document.getElementById("promoCalMonth").textContent = new Date(y,m).toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
+  var fd = new Date(y,m,1).getDay(); if(fd===0) fd=7; fd--;
+  var dim = new Date(y,m+1,0).getDate();
+  var pmd = new Date(y,m,0).getDate();
+  var h = '<div class="wd">ПН</div><div class="wd">ВТ</div><div class="wd">СР</div><div class="wd">ЧТ</div><div class="wd">ПТ</div><div class="wd">СБ</div><div class="wd">ВС</div>';
+  var td = new Date(), ts = td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
+  for(var i=fd-1;i>=0;i--) h += '<div class="day other">'+(pmd-i)+'</div>';
+  for(var d=1;d<=dim;d++){
+    var ds = y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    var cls = "day";
+    if(ds===ts) cls += " today";
+    var pi = null;
+    promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) pi=p;});
+    if(pi) cls += " has-promo "+pi.status;
+    h += '<div class="'+cls+'" onclick="selectProDay('+d+')" data-day="'+d+'">'+d+'</div>';
+  }
+  var rem = (7 - (fd+dim)%7) % 7;
+  for(var i=1;i<=rem;i++) h += '<div class="day other">'+i+'</div>';
+  g.innerHTML = h;
+  var ap = promos.filter(function(p){return p.status==="active";});
+  if(ap.length) showProDetail(ap[0]);
+}
+function selectProDay(d){
+  var y=proCalDate.getFullYear(),m=proCalDate.getMonth();
+  var ds=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+  var pi = null;
+  promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) pi=p;});
+  if(pi) showProDetail(pi);
+}
+function showProDetail(p){
+  document.getElementById("promoDetailEmpty").style.display="none";
+  var dd=document.getElementById("promoDetail"); dd.style.display="block";
+  var sl={active:"Активна",planned:"Планируется",ended:"Завершена"};
+  var sd=p.start?p.start.split("-").reverse().join("."):"—";
+  var ed=p.end?p.end.split("-").reverse().join("."):"—";
+  var tot=new Date(p.end)-new Date(p.start);
+  var ela=new Date()-new Date(p.start);
+  var pct=tot>0?Math.min(100,Math.max(0,Math.round(ela/tot*100))):0;
+  var rem=Math.ceil((new Date(p.end)-new Date())/(1000*60*60*24));
+  var tr=rem>0?"Осталось "+rem+" "+(rem===1?"день":(rem<5?"дня":"дней")):"Завершилась";
+  dd.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">'+
+    '<div style="display:flex;align-items:center;gap:.5rem"><div style="font-size:1.8rem">\ud83d\udd25</div>'+
+    '<div><div style="font-weight:600;font-size:.95rem">'+p.name+'</div></div></div>'+
+    '<span class="promo-status '+p.status+'">'+(sl[p.status]||"—")+'</span></div>'+
+    '<div class="promo-detail-grid">'+
+    '<div class="promo-detail-item"><div class="lbl">Скидка</div><div class="val">'+p.discount+'%</div></div>'+
+    '<div class="promo-detail-item"><div class="lbl">Период</div><div class="val">'+sd+" — "+ed+'</div></div></div>'+
+    '<div class="promo-timer">'+tr+'</div>'+
+    '<div class="promo-progress"><div class="promo-progress-bar" style="width:'+pct+'%;background:'+p.color+'"></div></div>'+
+    '<div style="font-size:.82rem;color:var(--body-color);margin:.5rem 0">'+p.desc+'</div>'+
+    (!PRO_D.some(function(d){return d.id===p.id;})?'<div class="loy-detail-actions"><button class="btn btn-outline">\u270f\ufe0f Редактировать</button></div>':'')+
+  '</div>';
+}
+function switchPromoMonth(dir){proCalDate.setMonth(proCalDate.getMonth()+dir);renderProCal();}
+function openPromoModal(){}
+function closePromoModal(){}
+function savePromo(e){e.preventDefault();}
 function getExpCatList(){ return JSON.parse(localStorage.getItem('expCategories88') || '[]');
 }
 function saveExpCatList(list){
