@@ -2736,9 +2736,7 @@ price: price,
       barcode: document.getElementById('prodBarcode').value.trim(),
       type: document.getElementById('prodType').value,
       weight: parseFloat(document.getElementById('prodWeight').value) || 0,
-      weightUnit: document.getElementById('prodWeightUnit').value,
-      costNoVat: costNoVat,
-      costWithVat: costWithVat,
+      weightUnit: document.getElementById('prodWeightUnit').value
     });
   }
   localStorage.setItem('products88', JSON.stringify(list));
