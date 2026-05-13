@@ -3822,7 +3822,7 @@ function showProDetail(p){
     '<div style="display:flex;gap:.2rem;flex-shrink:0;margin-left:.5rem">'+
     '<span class="promo-status '+p.status+'" style="font-size:.6rem;padding:.1rem .4rem">'+(sl[p.status]||"—")+'</span>'+
     '<span onclick="openPromoModalEdit(\''+p.id+'\')" style="font-size:.8rem;cursor:pointer;color:var(--muted);padding:1px" title="Редактировать">✏️</span>'
-    '+(PRO_D.some(function(d){return d.id===p.id;})?"":"<span onclick=\"deletePromo('"+p.id+"')\" style=\"font-size:.8rem;cursor:pointer;color:#dc2626;padding:1px\" title=\"Удалить\">🗑️</span>")+
+     (PRO_D.some(function(d){return d.id===p.id;})?"":"<span onclick=\"deletePromo('"+p.id+"')\" style=\"font-size:.8rem;cursor:pointer;color:#dc2626;padding:1px\" title=\"Удалить\">🗑️</span>")+
     '</div></div>'+
     '<div style="display:flex;gap:.5rem;font-size:.75rem;color:var(--body-color);margin-bottom:.15rem">'+
     '<span>'+p.discount+'%</span><span style="color:var(--muted)">'+sd+' — '+ed+'</span></div>'+
