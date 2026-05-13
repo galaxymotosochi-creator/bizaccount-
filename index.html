@@ -4608,7 +4608,22 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  closeAllTxDropdowns();
+  var pdd = document.getElementById('periodDropdownTx');
+  if(pdd && pdd.classList.contains('open') && !e.target.closest('.tx-period-dropdown') && !e.target.closest('#periodTriggerTx')){
+    pdd.classList.remove('open');
+  }
+  var exdd = document.getElementById('exportTxDropdown');
+  if(exdd && exdd.classList.contains('open') && !e.target.closest('.export-dropdown') && !e.target.closest('#exportTxBtn')){
+    exdd.classList.remove('open');
+  }
+  var txdd = document.getElementById('txTypeDropdown');
+  if(txdd && txdd.classList.contains('open') && !e.target.closest('.tx-type-dropdown') && !e.target.closest('#txTypeBtn')){
+    txdd.classList.remove('open');
+  }
+  var expdd = document.getElementById('expCatDropdown');
+  if(expdd && expdd.classList.contains('open') && !e.target.closest('.exp-cat-dropdown') && !e.target.closest('#expCatBtn')){
+    expdd.classList.remove('open');
+  }
 });
 </script>
 <!-- Модалка итога инвентаризации -->
