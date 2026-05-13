@@ -1322,8 +1322,8 @@
           <input type="text" class="search-field" placeholder="Быстрый поиск">
         </div>
         <div class="actions-group">
-          <div style="position:relative">
-            <button class="text-btn" onclick="togglePeriodDropdownTx(event)" id="periodTriggerTx" title="Выбрать период" style="font-size:.9rem;padding:0 .2rem">
+          <div class="tx-period-wrapper" style="position:relative">
+            <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx" title="Выбрать период" style="font-size:.9rem;padding:0 .2rem">
               📅
             </button>
             <div class="tx-period-dropdown" id="periodDropdownTx">
@@ -1346,7 +1346,7 @@
             </div>
           </div>
           <div class="export-wrapper">
-            <button class="text-btn" onclick="toggleExportTxDropdown(event)" id="exportTxBtn">
+            <button class="text-btn" onclick="toggleExportTxDropdown()" id="exportTxBtn">
               Скачать <span class="act-arrow">▼</span>
             </button>
             <div class="export-dropdown" id="exportTxDropdown">
@@ -1358,7 +1358,7 @@
             </div>
           </div>
           <div class="tx-type-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleTxTypeDropdown(event)" id="txTypeBtn">
+            <button class="text-btn" onclick="toggleTxTypeDropdown()" id="txTypeBtn">
               Транзакция <span class="act-arrow">▼</span>
             </button>
             <div class="tx-type-dropdown" id="txTypeDropdown">
@@ -1382,7 +1382,7 @@
             </div>
           </div>
           <div class="exp-cat-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleExpCatDropdown(event)" id="expCatBtn">
+            <button class="text-btn" onclick="toggleExpCatDropdown()" id="expCatBtn">
               Расходы <span class="act-arrow">▼</span>
             </button>
             <div class="exp-cat-dropdown" id="expCatDropdown">
@@ -1391,7 +1391,7 @@
             </div>
           </div>
           <div class="inc-cat-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleIncCatDropdown(event)" id="incCatBtn">
+            <button class="text-btn" onclick="toggleIncCatDropdown()" id="incCatBtn">
               Доходы <span class="act-arrow">▼</span>
             </button>
             <div class="inc-cat-dropdown" id="incCatDropdown">
@@ -2520,7 +2520,6 @@ function saveProduct(e){
 /* Category dropdown */
 let selectedCats = new Set();
 function toggleCatDropdown(e){
-  e.stopPropagation();
   closeAllDropdowns();
   const dd = document.getElementById('catDropdown');
   const arr = document.getElementById('catArrow');
@@ -2582,7 +2581,6 @@ function exportToExcel(){
 }
 /* Export dropdown */
 function toggleExportDropdown(e){
-  e.stopPropagation();
   closeAllDropdowns();
   document.getElementById('exportDropdown').classList.add('open');
 }
@@ -2641,7 +2639,6 @@ function renderColHeaders(){
   el.querySelector('tr').innerHTML = html;
 }
 function toggleColsDropdown(e){
-  e.stopPropagation();
   closeAllDropdowns();
   const dd = document.getElementById('colsDropdown');
   dd.classList.add('open');
@@ -4732,13 +4729,11 @@ function closeAllTxDropdowns(){
   document.getElementById('expCatDropdown')?.classList.remove('open');
   document.getElementById('incCatDropdown')?.classList.remove('open');
 }
-function togglePeriodDropdownTx(e){
-  e.stopPropagation();
+function togglePeriodDropdownTx(){
   closeAllTxDropdowns();
   document.getElementById('periodDropdownTx').classList.toggle('open');
 }
-function toggleExportTxDropdown(e){
-  e.stopPropagation();
+function toggleExportTxDropdown(){
   closeAllTxDropdowns();
   document.getElementById('exportTxDropdown').classList.toggle('open');
 }
@@ -4751,8 +4746,7 @@ function confirmExportTx(){
 }
 var txTypeFilter = null;
 var expCatFilter = null;
-function toggleExpCatDropdown(e){
-  e.stopPropagation();
+function toggleExpCatDropdown(){
   closeAllTxDropdowns();
   loadExpCatFilterItems();
   document.getElementById('expCatDropdown').classList.toggle('open');
@@ -4791,8 +4785,7 @@ function toggleExpCatFilter(id, el){
   }
   filterTransactions();
 }
-function toggleTxTypeDropdown(e){
-  e.stopPropagation();
+function toggleTxTypeDropdown(){
   closeAllTxDropdowns();
   document.getElementById('txTypeDropdown').classList.toggle('open');
 }
@@ -4810,8 +4803,7 @@ function toggleTxTypeFilter(type, el){
   filterTransactions();
 }
 var incCatFilter = null;
-function toggleIncCatDropdown(e){
-  e.stopPropagation();
+function toggleIncCatDropdown(){
   closeAllTxDropdowns();
   loadIncCatFilterItems();
   document.getElementById('incCatDropdown').classList.toggle('open');
@@ -4853,9 +4845,16 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  if(!e.target.closest('.actions-group')){
-    closeAllTxDropdowns();
-  }
+  var pdd = document.getElementById('periodDropdownTx');
+  if(pdd && !e.target.closest('.tx-period-wrapper')) pdd.classList.remove('open');
+  var exdd = document.getElementById('exportTxDropdown');
+  if(exdd && !e.target.closest('.export-wrapper')) exdd.classList.remove('open');
+  var txdd = document.getElementById('txTypeDropdown');
+  if(txdd && !e.target.closest('.tx-type-wrapper')) txdd.classList.remove('open');
+  var expdd = document.getElementById('expCatDropdown');
+  if(expdd && !e.target.closest('.exp-cat-wrapper')) expdd.classList.remove('open');
+  var incdd = document.getElementById('incCatDropdown');
+  if(incdd && !e.target.closest('.inc-cat-wrapper')) incdd.classList.remove('open');
 });
 </script>
 <!-- Модалка итога инвентаризации -->
