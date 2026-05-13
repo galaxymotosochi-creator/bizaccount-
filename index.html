@@ -3731,18 +3731,23 @@ function selectLoyCard(i) {
   var ds=p.discount?p.discount+"%":"—";
   var cs=p.condition?"от "+p.condition.toLocaleString()+"₽":"Без условий";
   var tn={accumulative:"Накопительная",bonus:"Бонусная",birthday:"День рождения"};
-  dc.innerHTML='<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">'+
+  dc.innerHTML='<div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:1rem">'+
     '<div style="font-size:2.5rem">'+p.icon+'</div>'+
-    '<div><div style="font-size:1.1rem;font-weight:600">'+p.name+'</div>'+
-    '<div style="font-size:.8rem;color:var(--muted)">'+(tn[p.type]||"Постоянная")+'</div></div></div>'+
+    '<div style="flex:1"><div style="font-size:1.1rem;font-weight:600">'+p.name+'</div>'+
+    '<div style="font-size:.8rem;color:var(--muted)">'+(tn[p.type]||"Постоянная")+'</div></div>'+
+    '<div style="position:relative;flex-shrink:0">'+
+    '<span onclick="togglePromoMenu(this)" style="font-size:1.1rem;cursor:pointer;color:var(--muted);padding:4px;border-radius:4px">⋮</span>'+
+    '<div class="promo-menu-dropdown" style="display:none;position:absolute;top:100%;right:0;background:var(--white);border:1px solid var(--border);border-radius:.5rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.1);min-width:140px;padding:.25rem;z-index:10">'+
+    '<div class="promo-menu-item" onclick="editLoyalty('+i+');closePromoMenus()">Редактировать</div>'+
+    (isD?"":'<div class="promo-menu-item" onclick="deleteLoyalty('+i+');closePromoMenus()" style="color:#dc2626">Удалить</div>')+
+    '</div></div></div>'+
     '<div class="loy-detail-grid">'+
     '<div class="loy-detail-item"><div class="lbl">Скидка</div><div class="val">'+ds+'</div></div>'+
     '<div class="loy-detail-item"><div class="lbl">Условие</div><div class="val">'+cs+'</div></div>'+
     '<div class="loy-detail-item"><div class="lbl">Клиентов</div><div class="val">0</div></div>'+
     '<div class="loy-detail-item"><div class="lbl">Выручка</div><div class="val">0₽</div></div></div>'+
     '<div style="font-size:.82rem;color:var(--body-color);margin-bottom:.5rem">'+p.desc+'</div>'+
-    (isD?'<div style="font-size:.8rem;color:var(--muted);padding:.5rem 0">Эта программа предустановлена системой</div>':
-    '<div class="loy-detail-actions"><button class="btn btn-outline" onclick="editLoyalty('+i+')">Редактировать</button><button class="btn btn-outline" onclick="deleteLoyalty('+i+')" style="color:#dc2626;border-color:#dc2626">🗑️ Удалить</button></div>');
+    (isD?'<div style="font-size:.8rem;color:var(--muted);padding:.5rem 0">Эта программа предустановлена системой</div>':'');
 }
 function scrollLoyalty(d){var ap=LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));var i=loyIdx+d;if(i<0)i=ap.length-1;if(i>=ap.length)i=0;selectLoyCard(i);}
 /* LOV end */
