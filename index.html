@@ -3704,7 +3704,7 @@ function renderLoyaltyPage() {
   var car = document.getElementById("loyCarousel"); if(!car) return;
   car.innerHTML = ap.map(function(p,i){
     var b = ""; var tl = {accumulative:"📈 Накопительная",bonus:"🎯 Бонусная",birthday:"🎂 ДР-скидка"};
-    b = tl[p.type] ? "'+tl[p.type]+'" : "Постоянная";
+    b = tl[p.type] ? tl[p.type] : "Постоянная";
     var badge = '<span class="loy-card-badge" style="background:'+p.bg+';color:'+p.color+'">'+b+'</span>';
     var ds = p.discount ? p.discount+"%" : "—";
     var cs = p.condition ? p.condition.toLocaleString()+"₽" : "—";
