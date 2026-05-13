@@ -540,7 +540,13 @@
   .emp-card .ec-badge.green{background:#dcfce7;color:#166534}
   .emp-card .ec-badge.gray{background:#f1f3f5;color:var(--muted)}
   .emp-card .ec-badge.yellow{background:#fef3c7;color:#92400e}
-  .emp-card .ec-menu{position:absolute;top:6px;right:8px;font-size:1rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}
+  .emp-card .ec-menu{position:absolute;top:6px;right:8px;font-size:1rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}  .emp-card.fired{opacity:.5;filter:grayscale(1);position:relative}
+  .emp-card.fired .ec-avatar{opacity:.6}
+  .emp-card.fired .ec-name{color:var(--muted)}
+  .emp-card.fired .ec-row .val{color:var(--muted)}
+  .ec-fired-sticker{position:absolute;top:-1px;left:-1px;right:-1px;background:#dc2626;color:#fff;font-size:.55rem;font-weight:600;text-align:center;padding:.1rem .2rem;border-radius:.85rem .85rem 0 0;z-index:2;text-transform:uppercase;letter-spacing:.02em}
+  .ec-fired-del{position:absolute;top:8px;right:28px;font-size:.8rem;cursor:pointer;color:var(--muted);padding:2px 4px;border-radius:4px;z-index:3;line-height:1}
+  .ec-fired-del:hover{color:#dc2626}
   .emp-card .ec-menu:hover{background:#f1f3f5}
   .emp-menu-dropdown{position:absolute;background:var(--white);border:1px solid var(--border);border-radius:.5rem;box-shadow:0 .25rem .75rem rgba(0,0,0,.1);min-width:130px;padding:.25rem;z-index:10;display:none}
   .emp-menu-item{padding:.3rem .5rem;font-size:.75rem;cursor:pointer;border-radius:4px;font-family:var(--font);color:var(--body-color)}
@@ -4669,7 +4675,7 @@ function navigateTo(page){
   if(page === 'transactions') renderTransactionsPage();
   if(page === 'turnover') renderTurnoverPage();
   if(page === 'salary') renderSalaryPage();
-  
+}
 
 function generatePin(){
   document.getElementById("empPin").value = String(1000 + Math.floor(Math.random() * 9000));
@@ -4678,26 +4684,41 @@ function renderEmployeesPage(){
   var grid = document.getElementById("empGrid");
   if(!grid) return;
   var emps = JSON.parse(localStorage.getItem("employees88") || "[]");
+  // Sort: active first, fired last
+  emps.sort(function(a,b){
+    if(a.status==="fired" && b.status!=="fired") return 1;
+    if(a.status!=="fired" && b.status==="fired") return -1;
+    return 0;
+  });
   var empty = document.getElementById("empEmpty");
   if(!emps.length){grid.innerHTML="";if(empty)empty.style.display="block";return;}
   if(empty) empty.style.display="none";
+  var sales = JSON.parse(localStorage.getItem("sales88") || "[]");
   var colors = ["#6366f1","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444","#14b8a6","#8b5cf6","#f97316","#06b6d4"];
   grid.innerHTML = emps.map(function(e,i){
     var init = (e.name||"?")[0].toUpperCase();
     var posL = {cashier:"Кассир",admin:"Админ",manager:"Менеджер"};
     var pinStr = e.pin && e.pin.toString().length === 4 ? e.pin : "нет";
     var salStr = e.payType==="rate"?(e.ratePct?e.ratePct+"% ":"")+(e.rateFix?e.rateFix+"₽/см":"сдельная"):(e.salary?e.salary.toLocaleString()+"₽":"—");
-    return '<div class="emp-card">'+
+    var empSales = sales.filter(function(s){ return s.empId == e.id; });
+    var rev = empSales.reduce(function(ss,s){ return ss + (s.total||0); }, 0);
+    var checks = empSales.length;
+    var isFired = e.status === "fired";
+    return '<div class="emp-card'+(isFired?" fired":"")+'" onclick="showEmpDetail('+e.id+')" data-fired="'+(e.firedDate||"")+'">'+
+      (isFired?'<div class="ec-fired-sticker">Уволен '+(e.firedDate?e.firedDate.split("-").reverse().join("."):"")+'</div>':'')+
+      (isFired?'<div class="ec-fired-del" onclick="event.stopPropagation();deleteEmpPermanent('+e.id+')" title="Удалить навсегда">✕</div>':'')+
       '<div class="ec-menu" onclick="event.stopPropagation();toggleEmpMnu(this)" data-id="'+e.id+'">⋮</div>'+
       '<div class="emp-menu-dropdown" style="top:24px;right:8px">'+
-      '<div class="emp-menu-item" onclick="editEmp('+e.id+')">Редактировать</div>'+
-      '<div class="emp-menu-item" onclick="deleteEmp('+e.id+')" style="color:#dc2626">Уволить</div></div>'+
+      (!isFired?'<div class="emp-menu-item" onclick="event.stopPropagation();showEmpDetail('+e.id+')">Редактировать</div>':'')+
+      (!isFired?'<div class="emp-menu-item" onclick="event.stopPropagation();fireEmp('+e.id+')" style="color:#dc2626">Уволить</div>':
+      '<div class="emp-menu-item" onclick="event.stopPropagation();deleteEmpPermanent('+e.id+')" style="color:#dc2626">Удалить навсегда</div>')+
+      '</div>'+
       '<div class="ec-top">'+
       '<div class="ec-avatar" style="background:'+colors[i%colors.length]+'">'+init+'</div>'+
       '<div class="ec-info"><div class="ec-name">'+e.name+'</div><div class="ec-pos">'+(posL[e.position]||e.position||"—")+'</div></div></div>'+
       '<div class="ec-row"><span class="lbl">Тел.:</span><span class="val">'+(e.phone||"—")+'</span></div>'+
-      '<div class="ec-row"><span class="lbl">Долж.:</span><span class="val">'+(posL[e.position]||e.position||"—")+'</span></div>'+
-      '<div class="ec-row"><span class="lbl">Эл.почта:</span><span class="val">'+(e.email||"—")+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Выручка:</span><span class="val">'+rev.toLocaleString()+"₽"+'</span></div>'+
+      '<div class="ec-row"><span class="lbl">Чеков:</span><span class="val">'+checks+'</span></div>'+
       '<div class="ec-row"><span class="lbl">Пин:</span><span class="val">'+pinStr+'</span></div>'+
       '<div class="ec-row"><span class="lbl">Оклад:</span><span class="val">'+salStr+'</span></div>'+
       '</div>';
@@ -4803,23 +4824,39 @@ function editEmp(id){
   document.getElementById("empModalTitle").textContent = "\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430";
   document.getElementById("employeeModal").classList.add("active");
 }
+function showEmpDetail(id){
+  var emps = JSON.parse(localStorage.getItem("employees88")||"[]");
+  var e = emps.find(function(x){return x.id==id;});
+  if(!e) return;
+  editEmp(e.id);
+}
+function fireEmp(id){
+  var dateStr = prompt("Укажите дату увольнения (ДД.ММ.ГГГГ):", new Date().toLocaleDateString("ru-RU"));
+  if(!dateStr) return;
+  var parts = dateStr.split(".");
+  var isoDate = parts.length === 3 ? parts[2]+"-"+parts[1]+"-"+parts[0] : "";
+  if(!isoDate || isNaN(new Date(isoDate))) return alert("Некорректная дата");
+  var list = JSON.parse(localStorage.getItem("employees88")||"[]");
+  list.forEach(function(x){
+    if(x.id==id){ x.status="fired"; x.firedDate=isoDate; }
+  });
+  localStorage.setItem("employees88",JSON.stringify(list));
+  renderEmployeesPage();
+}
 function deleteEmp(id){
-  if(!confirm("\u0423\u0432\u043e\u043b\u0438\u0442\u044c \u0441\u043e\u0442\u0440\u0443\u0434\u043d\u0438\u043a\u0430?")) return;
+  if(!confirm("Уволить сотрудника?")) return;
   var list = JSON.parse(localStorage.getItem("employees88")||"[]");
   list = list.filter(function(x){return x.id!=id;});
   localStorage.setItem("employees88",JSON.stringify(list));
   renderEmployeesPage();
 }
-if(page === 'employees') renderEmployeesPage();
-  if(page === 'positions') renderPositionsPage();
-  if(page === 'registers') return;
-  if(page === 'venues') renderVenuesPage();
-  document.querySelectorAll('.nav-child').forEach(i => {
-    if(i.getAttribute('onclick') && i.getAttribute('onclick').includes(page)) i.classList.add('active');
-  });
+function deleteEmpPermanent(id){
+  if(!confirm("Удалить карточку сотрудника навсегда?")) return;
+  var list = JSON.parse(localStorage.getItem("employees88")||"[]");
+  list = list.filter(function(x){return x.id!=id;});
+  localStorage.setItem("employees88",JSON.stringify(list));
+  renderEmployeesPage();
 }
-// === СТРАНИЦА УСЛУГ ===
-let svcFilter = 'all';
 function openEmployeeModal(){
   document.getElementById("employeeForm").reset();
   document.getElementById("editEmpId").value = "";
