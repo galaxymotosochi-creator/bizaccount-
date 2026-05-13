@@ -92,6 +92,8 @@
   .tx-type-item:hover{background:var(--primary-light)}
   .tx-type-cb{width:15px;height:15px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;color:transparent;cursor:pointer}
   .tx-type-cb.checked{border-color:var(--primary);background:var(--primary);color:#fff}
+  .exp-cat-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
+  .exp-cat-dropdown.open{display:block}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.35rem;position:relative}
@@ -1358,6 +1360,15 @@
                 <span class="tx-type-cb" data-type="expense" onclick="toggleTxTypeFilter('expense', this)">✓</span>
                 Расход
               </label>
+            </div>
+          </div>
+          <div class="exp-cat-wrapper" style="position:relative">
+            <button class="text-btn" onclick="toggleExpCatDropdown(event)" id="expCatBtn">
+              Расходы <span class="act-arrow">▼</span>
+            </button>
+            <div class="exp-cat-dropdown" id="expCatDropdown">
+              <div class="pd-title">Категория расхода</div>
+              <div id="expCatList"></div>
             </div>
           </div>
         </div>
@@ -4511,6 +4522,8 @@ function applyCustomPeriodTx(){
 function closeAllTxDropdowns(){
   document.getElementById('periodDropdownTx')?.classList.remove('open');
   document.getElementById('exportTxDropdown')?.classList.remove('open');
+  document.getElementById('txTypeDropdown')?.classList.remove('open');
+  document.getElementById('expCatDropdown')?.classList.remove('open');
 }
 function togglePeriodDropdownTx(){
   closeAllTxDropdowns();
@@ -4529,6 +4542,47 @@ function confirmExportTx(){
   exportToExcel();
 }
 var txTypeFilter = null;
+var expCatFilter = null;
+function toggleExpCatDropdown(e){
+  e.stopPropagation();
+  closeAllTxDropdowns();
+  loadExpCatFilterItems();
+  document.getElementById('expCatDropdown').classList.toggle('open');
+}
+function loadExpCatFilterItems(){
+  var list = document.getElementById('expCatList');
+  if(!list) return;
+  var cats = [
+    {id:'other', name:'Прочее'},
+    {id:'rent', name:'Аренда'},
+    {id:'utilities', name:'Коммунальные'},
+    {id:'salary', name:'Зарплата'},
+    {id:'supplies', name:'Канцтовары'},
+    {id:'marketing', name:'Маркетинг'},
+    {id:'transport', name:'Транспорт'}
+  ];
+  var custom = JSON.parse(localStorage.getItem('expCategories88') || '[]');
+  custom.forEach(function(c){ cats.push({id:'custom_'+c.id, name:c.name}); });
+  list.innerHTML = cats.map(function(c){
+    var checked = expCatFilter === c.id;
+    return '<label class="tx-type-item" onclick="toggleExpCatFilter(''+c.id+'', this)">' +
+      '<span class="tx-type-cb'+(checked?' checked':'')+'">'+String.fromCharCode(10003)+'</span> ' +
+      c.name +
+    '</label>';
+  }).join('');
+}
+function toggleExpCatFilter(id, el){
+  var cb = el.querySelector('.tx-type-cb');
+  if(expCatFilter === id){
+    expCatFilter = null;
+    cb.classList.remove('checked');
+  } else {
+    document.querySelectorAll('#expCatList .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+    expCatFilter = id;
+    cb.classList.add('checked');
+  }
+  filterTransactions();
+}
 function toggleTxTypeDropdown(e){
   e.stopPropagation();
   closeAllTxDropdowns();
@@ -4568,6 +4622,12 @@ document.addEventListener('click', function(e){
   if(txdd && txdd.classList.contains('open')){
     if(!e.target.closest('#txTypeBtn') && !e.target.closest('.tx-type-dropdown')){
       txdd.classList.remove('open');
+    }
+  }
+  var expdd = document.getElementById('expCatDropdown');
+  if(expdd && expdd.classList.contains('open')){
+    if(!e.target.closest('#expCatBtn') && !e.target.closest('.exp-cat-dropdown')){
+      expdd.classList.remove('open');
     }
   }
 });
