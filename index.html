@@ -73,6 +73,12 @@
   .tx-period-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);padding:.5rem;z-index:50;min-width:220px;display:none}
   .tx-period-dropdown.open{display:block}
   .tx-period-dropdown .pd-title{font-size:.65rem;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:.35rem;padding:0 .3rem}
+  .tx-type-dropdown{position:absolute;top:100%;right:0;margin-top:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);padding:.5rem;z-index:50;min-width:220px;display:none}
+  .tx-type-dropdown.open{display:block}
+  .tx-type-item{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;font-size:.82rem;cursor:pointer;border-radius:.35rem;font-family:var(--font);color:var(--body-color);transition:all .08s}
+  .tx-type-item:hover{background:var(--primary-light);color:var(--primary)}
+  .tx-type-cb{width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .1s}
+  .tx-type-cb.checked{border-color:var(--primary);background:var(--primary)}
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.35rem;position:relative}
@@ -1312,6 +1318,30 @@
                 <span class="export-dd-btn" onclick="confirmExportTx()">Да</span>
                 <span class="export-dd-btn export-dd-cancel" onclick="closeExportTxDropdown()">Нет</span>
               </div>
+            </div>
+          </div>
+          <div class="tx-type-wrapper" style="position:relative">
+            <button class="text-btn" onclick="toggleTxTypeDropdown(event)" id="txTypeBtn">
+              Транзакция <span class="act-arrow">▼</span>
+            </button>
+            <div class="tx-type-dropdown" id="txTypeDropdown">
+              <div class="pd-title">Выберите тип транзакции:</div>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="sale" onclick="toggleTxTypeFilter('sale', this)"></span>
+                Продажа
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="supply" onclick="toggleTxTypeFilter('supply', this)"></span>
+                Поставка
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="writeoff" onclick="toggleTxTypeFilter('writeoff', this)"></span>
+                Списание
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="expense" onclick="toggleTxTypeFilter('expense', this)"></span>
+                Расход
+              </label>
             </div>
           </div>
         </div>
@@ -4255,6 +4285,28 @@ function confirmExportTx(){
   closeExportTxDropdown();
   exportToExcel();
 }
+var txTypeFilter = null;
+function toggleTxTypeDropdown(e){
+  e.stopPropagation();
+  closeAllTxDropdowns();
+  document.getElementById('txTypeDropdown').classList.toggle('open');
+}
+function toggleTxTypeFilter(type, el){
+  var cb = el;
+  var checked = cb.classList.contains('checked');
+  // Uncheck all first (single selection)
+  document.querySelectorAll('.tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+  if(!checked){
+    cb.classList.add('checked');
+    txTypeFilter = type;
+  } else {
+    txTypeFilter = null;
+  }
+  filterTransactions();
+}
+function filterTransactions(){
+  renderTransactionsPage();
+}
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
   var pdd = document.getElementById('periodDropdownTx');
@@ -4267,6 +4319,12 @@ document.addEventListener('click', function(e){
   if(exdd && exdd.classList.contains('open')){
     if(!e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){
       exdd.classList.remove('open');
+    }
+  }
+  var txdd = document.getElementById('txTypeDropdown');
+  if(txdd && txdd.classList.contains('open')){
+    if(!e.target.closest('#txTypeBtn') && !e.target.closest('.tx-type-dropdown')){
+      txdd.classList.remove('open');
     }
   }
 });
