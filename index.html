@@ -92,7 +92,36 @@
   .exp-cat-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
   .exp-cat-dropdown.open{display:block}
   .inc-cat-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--border);border-radius:.6rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);min-width:220px;padding:.35rem;z-index:100;display:none}
+  
   .inc-cat-dropdown.open{display:block}
+  .loy-carousel-wrap{position:relative;display:flex;align-items:center;gap:.5rem;margin:.75rem 0}
+  .loy-carousel{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:.5rem 0;flex:1;-ms-overflow-style:none;scrollbar-width:none}
+  .loy-carousel::-webkit-scrollbar{display:none}
+  .loy-card{scroll-snap-align:center;min-width:240px;max-width:280px;flex-shrink:0;background:var(--white);border:1px solid var(--border);border-radius:1rem;padding:1.25rem;cursor:pointer;transition:all .25s;position:relative;box-shadow:0 .25rem .75rem rgba(0,0,0,.04)}
+  .loy-card:hover{transform:translateY(-3px);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.1);border-color:var(--primary)}
+  .loy-card.active{transform:translateY(-3px);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.12);border-color:var(--primary);border-width:1.5px}
+  .loy-card-icon{font-size:2rem;margin-bottom:.5rem}
+  .loy-card-title{font-size:.9rem;font-weight:600;color:var(--body-color);margin-bottom:.15rem}
+  .loy-card-desc{font-size:.75rem;color:var(--muted);margin-bottom:.6rem;line-height:1.3}
+  .loy-card-badge{display:inline-block;font-size:.7rem;font-weight:600;padding:.15rem .5rem;border-radius:20px;margin-bottom:.5rem}
+  .loy-card-stat{display:flex;gap:.35rem;flex-wrap:wrap;font-size:.72rem;color:var(--muted)}
+  .loy-card-stat span{background:#f8f9fa;padding:.1rem .4rem;border-radius:4px}
+  .loy-arrow{background:var(--white);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .12s;z-index:2}
+  .loy-arrow:hover{background:var(--primary);border-color:var(--primary);color:#fff}
+  .loy-dots{display:flex;gap:.35rem;justify-content:center;margin:-.25rem 0 .75rem}
+  .loy-dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+  .loy-dot.active{background:var(--primary);width:20px;border-radius:4px}
+  .loy-detail{background:var(--white);border:1px solid var(--border);border-radius:1rem;padding:1.5rem;min-height:140px}
+  .loy-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+  .loy-detail-item{background:#f8f9fa;border-radius:.6rem;padding:.65rem .75rem}
+  .loy-detail-item .lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;font-weight:600}
+  .loy-detail-item .val{font-size:1.05rem;font-weight:600;color:var(--body-color);margin-top:.15rem}
+  .loy-detail-actions{display:flex;gap:.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+  @media(max-width:600px){
+    .loy-card{min-width:200px;max-width:240px;padding:1rem}
+    .loy-detail-grid{grid-template-columns:1fr}
+    .loy-arrow{display:none}
+  }
   .dash-settings-btn{background:none;border:1px solid var(--border);border-radius:var(--radius);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;color:var(--muted);transition:all .12s;flex-shrink:0}
   .dash-settings-btn:hover{color:var(--body-color);border-color:var(--muted)}
   .dash-block{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:.35rem;position:relative}
@@ -1166,15 +1195,26 @@
     <div class="page-section" id="page-loyalty">
       <div class="page-header">
         <div>
-          <h1>Программы лояльности</h1>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Программы лояльности</h1>
           <div class="sub">Системы скидок и поощрений для клиентов</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openLoyaltyModal()">+ Добавить программу</button>
+          <button class="btn-green" onclick="openLoyaltyModal()">+ Добавить</button>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:30%">Название</th><th style="width:15%">Скидка</th><th style="width:40%">Описание</th><th style="width:15%"></th></tr></thead><tbody id="loyaltyTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="loy-carousel-wrap">
+        <button class="loy-arrow loy-arrow-left" onclick="scrollLoyalty(-1)">&lsaquo;</button>
+        <div class="loy-carousel" id="loyCarousel"></div>
+        <button class="loy-arrow loy-arrow-right" onclick="scrollLoyalty(1)">&rsaquo;</button>
+      </div>
+      <div class="loy-dots" id="loyDots"></div>
+      <div class="loy-detail" id="loyDetail">
+        <div class="empty-products" id="loyDetailEmpty" style="display:block">
+          <div class="big-icon">&#11088;</div>
+          <p>Выберите программу лояльности</p>
+        </div>
+        <div id="loyDetailContent" style="display:none"></div>
       </div>
     </div>
     <!-- АКЦИИ -->
@@ -3504,8 +3544,63 @@ function saveIncome(e){
   closeIncomeModal();
   document.getElementById('incName').value = '';
   document.getElementById('incAmount').value = '';
-  renderTransactionsPage();
+  filterTransactions();
 }
+/* LOV start */
+var LD = [
+  {id:"loyal",icon:"⭐",name:"Постоянный клиент",discount:5,condition:50000,desc:"Скидка 5% при покупках от 50 000₽",type:"accumulative",color:"#f59e0b",bg:"#fffbeb"},
+  {id:"bonus",icon:"🎯",name:"Бонусная система",discount:0,condition:0,desc:"1₽ = 1 балл. 100 баллов = 100₽ скидки",type:"bonus",color:"#6366f1",bg:"#eef2ff"},
+  {id:"birthday",icon:"🎂",name:"День рождения",discount:15,condition:0,desc:"Скидка 15% за 3 дня до и 3 после ДР",type:"birthday",color:"#ec4899",bg:"#fdf2f8"}
+];
+var loyIdx = 0;
+function renderLoyaltyPage() {
+  var ap = LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));
+  var car = document.getElementById("loyCarousel"); if(!car) return;
+  car.innerHTML = ap.map(function(p,i){
+    var b = ""; var tl = {accumulative:"📈 Накопительная",bonus:"🎯 Бонусная",birthday:"🎂 ДР-скидка"};
+    b = tl[p.type] ? "'+tl[p.type]+'" : "Постоянная";
+    var badge = '<span class="loy-card-badge" style="background:'+p.bg+';color:'+p.color+'">'+b+'</span>';
+    var ds = p.discount ? p.discount+"%" : "—";
+    var cs = p.condition ? p.condition.toLocaleString()+"₽" : "—";
+    return '<div class="loy-card'+(i===0?" active":"")+'" onclick="selectLoyCard('+i+')">'+
+      '<div class="loy-card-icon">'+p.icon+'</div>'+
+      '<div class="loy-card-title">'+p.name+'</div>'+
+      '<div class="loy-card-desc">'+p.desc+'</div>'+badge+
+      '<div class="loy-card-stat"><span>💰 '+ds+'</span>'+(cs!=='—'?'<span>📋 от '+cs+'</span>':'')+'</div></div>';
+  }).join("");
+  var dt = document.getElementById("loyDots");
+  if(dt) dt.innerHTML = ap.map(function(p,i){return '<div class="loy-dot'+(i===0?" active":"")+'" onclick="selectLoyCard('+i+')"></div>';}).join("");
+  if(ap.length) selectLoyCard(0);
+}
+function selectLoyCard(i) {
+  var ap = LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));
+  loyIdx = i; var p = ap[i]; if(!p) return;
+  document.querySelectorAll(".loy-card").forEach(function(c,j){c.classList.toggle("active",j===i);});
+  document.querySelectorAll(".loy-dot").forEach(function(d,j){d.classList.toggle("active",j===i);});
+  var car = document.getElementById("loyCarousel");
+  if(car){var cs=car.querySelectorAll(".loy-card");if(cs[i])cs[i].scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});}
+  document.getElementById("loyDetailEmpty").style.display="none";
+  var dc=document.getElementById("loyDetailContent");dc.style.display="block";
+  var isD=p.id&&LD.some(function(d){return d.id===p.id;});
+  var ds=p.discount?p.discount+"%":"—";
+  var cs=p.condition?"от "+p.condition.toLocaleString()+"₽":"Без условий";
+  var tn={accumulative:"Накопительная",bonus:"Бонусная",birthday:"День рождения"};
+  dc.innerHTML='<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">'+
+    '<div style="font-size:2.5rem">'+p.icon+'</div>'+
+    '<div><div style="font-size:1.1rem;font-weight:600">'+p.name+'</div>'+
+    '<div style="font-size:.8rem;color:var(--muted)">'+(tn[p.type]||"Постоянная")+'</div></div></div>'+
+    '<div class="loy-detail-grid">'+
+    '<div class="loy-detail-item"><div class="lbl">Скидка</div><div class="val">'+ds+'</div></div>'+
+    '<div class="loy-detail-item"><div class="lbl">Условие</div><div class="val">'+cs+'</div></div>'+
+    '<div class="loy-detail-item"><div class="lbl">Клиентов</div><div class="val">0</div></div>'+
+    '<div class="loy-detail-item"><div class="lbl">Выручка</div><div class="val">0₽</div></div></div>'+
+    '<div style="font-size:.82rem;color:var(--body-color);margin-bottom:.5rem">'+p.desc+'</div>'+
+    (isD?'<div style="font-size:.8rem;color:var(--muted);padding:.5rem 0">Эта программа предустановлена системой</div>':
+    '<div class="loy-detail-actions"><button class="btn btn-outline">✏️ Редактировать</button></div>');
+}
+function scrollLoyalty(d){var ap=LD.concat(JSON.parse(localStorage.getItem("loyalty88")||"[]"));var i=loyIdx+d;if(i<0)i=ap.length-1;if(i>=ap.length)i=0;selectLoyCard(i);}
+/* LOV end */
+
 function getExpCatList(){ return JSON.parse(localStorage.getItem('expCategories88') || '[]');
 }
 function saveExpCatList(list){
