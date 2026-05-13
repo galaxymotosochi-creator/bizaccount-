@@ -1776,16 +1776,7 @@
           </div>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Прибыль (₽)</label>
-          <input type="text" id="prodProfit" placeholder="—" readonly style="background:var(--body-bg);color:var(--muted);font-weight:500">
-        </div>
-        <div class="form-group">
-          <label>Наценка (%)</label>
-          <input type="text" id="prodMargin" placeholder="—" readonly style="background:var(--body-bg);color:var(--muted);font-weight:500">
-        </div>
-      </div>
+
       <div class="form-group">
         <label>Описание</label>
         <textarea id="prodDesc" placeholder="Краткое описание..."></textarea>
@@ -2634,14 +2625,7 @@ function openProductModal(){
   loadProdCats();
   document.getElementById('productModal').classList.add('active');
 }
-function calcProfit(){
-  var price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  var cost = 0;
-  var profit = price - cost;
-  document.getElementById('prodProfit').value = profit > 0 ? profit.toFixed(2) : '0.00';
-  var margin = cost > 0 ? (profit / cost * 100) : 0;
-  document.getElementById('prodMargin').value = margin > 0 ? margin.toFixed(1) : '0.0';
-}
+
 function closeProductModal(){
   document.getElementById('productModal').classList.remove('active');
   document.getElementById('productForm').reset();
@@ -2666,7 +2650,6 @@ function editProduct(id){
   document.getElementById('prodWeight').value = p.weight || 0;
   document.getElementById('prodWeightUnit').value = p.weightUnit || 'кг';
 
-  if(typeof calcProfit === 'function') calcProfit();
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
   document.getElementById('modalSub').textContent = p.hidden ? 'Восстановите или измените товар' : 'Измените поля и нажмите Сохранить';
