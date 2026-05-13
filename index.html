@@ -1746,8 +1746,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Срок годности</label>
-          <input type="date" id="prodExpiry">
+          <label>Мин. остаток</label>
+          <input type="number" id="prodMinStock" placeholder="0" min="0">
         </div>
       </div>
       <div class="form-row">
@@ -2644,7 +2644,7 @@ function openProductModal(){
   loadProdCats();
   document.getElementById('prodWholesale').value = '';
   document.getElementById('prodItemWeight').value = '';
-  document.getElementById('prodExpiry').value = '';
+  document.getElementById('prodMinStock').value = '';
   document.getElementById('productModal').classList.add('active');
 }
 
@@ -2666,7 +2666,7 @@ function editProduct(id){
   document.getElementById('prodPrice').value = p.price;
   document.getElementById('prodWholesale').value = p.wholesale || '';
   document.getElementById('prodItemWeight').value = p.itemWeight || '';
-  document.getElementById('prodExpiry').value = p.expiry || '';
+  document.getElementById('prodMinStock').value = p.minStock || 0;
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
   document.getElementById('prodBarcode').value = p.barcode || '';
@@ -2699,7 +2699,7 @@ function saveProduct(e){
   var price = parseFloat(document.getElementById('prodPrice').value) || 0;
   var wholesale = parseFloat(document.getElementById('prodWholesale').value) || 0;
   var itemWeight = parseFloat(document.getElementById('prodItemWeight').value) || 0;
-  var expiry = document.getElementById('prodExpiry').value || '';
+  var minStock = parseFloat(document.getElementById('prodMinStock').value) || 0;
   var list = JSON.parse(localStorage.getItem('products88') || '[]');
   var editId = parseInt(document.getElementById('editProductId').value);
   if(editId){
@@ -2713,7 +2713,7 @@ function saveProduct(e){
 price: price,
       wholesale: wholesale,
       itemWeight: itemWeight,
-      expiry: expiry,
+      minStock: minStock,
       unit: document.getElementById('prodUnit').value,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
@@ -2733,7 +2733,7 @@ price: price,
 price: price,
       wholesale: wholesale,
       itemWeight: itemWeight,
-      expiry: expiry,
+      minStock: minStock,
       unit: document.getElementById('prodUnit').value,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
@@ -2831,6 +2831,7 @@ function confirmExport(){
 const COLUMNS = [
   {id:'category', label:'Категория', def:true},
   {id:'barcode', label:'Штрихкод', def:false},
+  {id:'minStock', label:'Мин. остаток', def:false},
   {id:'type', label:'Тип', def:false},
   {id:'weight', label:'Весовой товар', def:false},
   {id:'unit', label:'Ед. измерения', def:false},
@@ -2863,8 +2864,8 @@ function closeAllDropdowns(){
 function renderColHeaders(){
   var el = document.getElementById('colHeaders');
   if(!el) return;
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
-  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
+  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',minStock:'Мин.остаток',profit:'Прибыль',margin:'Наценка'};
   var html = '';
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
@@ -2950,13 +2951,14 @@ function renderProductsPage(){
     tbody.innerHTML = '<tr><td colspan="' + colspan + '"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
     return;
   }
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
   var CAT_LABELS_R = CAT_LABELS || {};
   function cellFor(col, p){
     switch(col){
       case 'name': return '<div class="prod-name">'+p.name+'</div>';
       case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
       case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||p.sku||'—')+'</span>';
+      case 'minStock': return '<span class="num" style="'+(p.minStock&&getStock(p.id)<=p.minStock?'color:#dc2626;font-weight:600':'')+'">'+(p.minStock!=null?p.minStock:'—')+'</span>';
       case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
       case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
       case 'unit': return p.unit || '—';
@@ -3044,8 +3046,8 @@ function renderTrashPage(){
   var th = document.getElementById('trashColHeaders');
   if(!tb) return;
   // Колонки как в Товарах — все всегда видны
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','profit','margin'];
-  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',profit:'Прибыль',margin:'Наценка'};
+  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
+  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',minStock:'Мин.остаток',profit:'Прибыль',margin:'Наценка'};
   // Рисуем шапку
   var headHtml = '';
   order.forEach(function(col){
