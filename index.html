@@ -2794,7 +2794,7 @@ function viewSupply(id){
   document.getElementById('invResultTotals').innerHTML = '';
   document.getElementById('invResultModal').classList.add('active');
   var btns = document.querySelectorAll('#invResultModal .modal-actions button');
-  btns.forEach(function(b){ b.style.display = 'none'; });
+  btns.forEach(function(b){ b.style.setProperty("display", "none", "important"); });
 }
 function editSupply(id){
   var list = JSON.parse(localStorage.getItem('supplies88') || '[]');
@@ -2904,7 +2904,7 @@ function renderInventoryPage(){
   var bb = document.getElementById('invBackBtn');
   var invTh = document.getElementById('invColHeaders');
   if(invTh) invTh.style.display = '';
-  if(nb) nb.style.display = '';
+  if(nb) nb.style.removeProperty('display');
   if(bb) bb.style.display = 'none';
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
   var tb = document.getElementById('inventoryTableBody');
@@ -2938,7 +2938,7 @@ function startInventory(){
   var invTh = document.getElementById('invColHeaders');
   if(invTh) invTh.style.display = 'none';
   if(nb) nb.style.display = 'none';
-  if(bb) bb.style.display = '';
+  if(bb) bb.style.removeProperty('display');
   var now = new Date();
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
   var num = 'INV-' + String(list.length + 1).padStart(3, '0');
@@ -3079,7 +3079,7 @@ function completeInventory(docId){
 function closeInvResult(){
   document.getElementById('invResultModal').classList.remove('active');
   var btns = document.querySelectorAll('#invResultModal .modal-actions button');
-  btns.forEach(function(b){ b.style.display = ''; });
+  btns.forEach(function(b){ b.style.removeProperty('display'); });
 }
 function viewInventory(id){
   var list = JSON.parse(localStorage.getItem('inventory88') || '[]');
@@ -3444,7 +3444,7 @@ function viewClient(id){
   document.getElementById('invResultBody').innerHTML = body;
   document.getElementById('invResultTotals').innerHTML = '';
   var btns = document.querySelectorAll('#invResultModal .modal-actions button');
-  btns.forEach(function(b){ b.style.display = 'none'; });
+  btns.forEach(function(b){ b.style.setProperty("display", "none", "important"); });
   document.getElementById('invResultModal').classList.add('active');
 }
 function deleteClient(id){
