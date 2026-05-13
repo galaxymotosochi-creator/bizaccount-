@@ -1273,7 +1273,7 @@
           <div class="sub">Все приходы и расходы в одном месте</div>
         </div>
         <div class="page-actions">
-          <button class="btn-green" onclick="openWriteoffModal()">+ Добавить расход</button>
+          <button class="btn-green" onclick="openExpenseModal()">+ Добавить расход</button>
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
@@ -1361,6 +1361,19 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="product-table" style="margin-top:.5rem">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;text-align:left">Дата</th>
+              <th style="width:35%;text-align:left">Название</th>
+              <th style="width:17%;text-align:right">Сумма</th>
+              <th style="width:30%;text-align:left">Категория</th>
+            </tr>
+          </thead>
+          <tbody id="expenseTableBody"></tbody>
+        </table>
       </div>
     </div>
     <!-- ОБОРАЧИВАЕМОСТЬ -->
@@ -1754,6 +1767,45 @@
   </div>
 </div>
 <!-- Модальное окно списания -->
+<div class="modal-overlay" id="expenseModal" onclick="if(event.target===this)closeExpenseModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeExpenseModal()">&times;</button>
+    <h2>Добавить расход</h2>
+    <div class="sub">Запишите новый расход</div>
+    <form onsubmit="saveExpense(event)">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="expName" placeholder="Например: аренда, коммунальные, зарплата" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Сумма (₽) *</label>
+          <input type="number" id="expAmount" placeholder="0" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Дата</label>
+          <input type="date" id="expDate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Категория</label>
+        <select id="expCategory">
+          <option value="other">Прочее</option>
+          <option value="rent">Аренда</option>
+          <option value="utilities">Коммунальные</option>
+          <option value="salary">Зарплата</option>
+          <option value="supplies">Канцтовары</option>
+          <option value="marketing">Маркетинг</option>
+          <option value="transport">Транспорт</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeExpenseModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Добавить</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="modal-overlay" id="writeoffModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeWriteoffModal()">&times;</button>
@@ -3243,6 +3295,47 @@ function renderWriteoffsPage(){
       '</td>' +
     '</tr>';
   }).join('');
+}
+function closeExpenseModal(){
+  document.getElementById('expenseModal').classList.remove('active');
+}
+function openExpenseModal(){
+  document.getElementById('expDate').valueAsDate = new Date();
+  document.getElementById('expenseModal').classList.add('active');
+}
+function renderTransactionsPage(){
+  var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
+  var tbody = document.getElementById('expenseTableBody');
+  if(!tbody) return;
+  if(!expenses.length){
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">💸</div><p>Расходов пока нет. Нажмите «+ Добавить расход»</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = expenses.map(function(e){
+    var d = e.date ? e.date.split('-').reverse().join('.') : '—';
+    var cats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
+    return '<tr>' +
+      '<td style="text-align:left;font-size:.8rem;color:var(--muted)">'+d+'</td>' +
+      '<td style="text-align:left">'+e.name+'</td>' +
+      '<td style="text-align:right;font-weight:500;color:#dc2626">−'+e.amount.toLocaleString()+'₽</td>' +
+      '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+(cats[e.category]||'Прочее')+'</td>' +
+    '</tr>';
+  }).join('');
+}
+function saveExpense(e){
+  e.preventDefault();
+  var name = document.getElementById('expName').value.trim();
+  var amount = parseFloat(document.getElementById('expAmount').value);
+  var date = document.getElementById('expDate').value;
+  var cat = document.getElementById('expCategory').value;
+  if(!name || !amount) return;
+  var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
+  expenses.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, created:new Date().toISOString()});
+  localStorage.setItem('expenses88', JSON.stringify(expenses));
+  closeExpenseModal();
+  document.getElementById('expName').value = '';
+  document.getElementById('expAmount').value = '';
+  renderTransactionsPage();
 }
 function openWriteoffModal(){
   var sel = document.getElementById('woProduct');
