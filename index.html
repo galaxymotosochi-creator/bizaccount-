@@ -3429,7 +3429,7 @@ function viewClient(id){
     '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">День рождения:</span> <span>'+bday+'</span></div>' +
     '<div style="margin-bottom:.25rem"><span style="color:var(--muted)">Покупок:</span> <span>'+(c.purchases||0)+'</span></div>' +
     '<div style="margin-bottom:0"><span style="color:var(--muted)">На сумму:</span> <span>'+(c.total?c.total.toLocaleString()+'₽':'0₽')+'</span></div>' +
-    (c.comment ? '<div style="margin-top:.5rem;padding:.5rem;background:var(--body-bg);border-radius:6px;font-size:.85rem"><span style="color:var(--muted)">Комментарий:</span><br>'+c.comment+'</div>' : '') +
+    '<div style="margin-top:.5rem;padding:.5rem;background:var(--body-bg);border-radius:6px;font-size:.85rem"><span style="color:var(--muted)">Комментарий:</span><br>'+(c.comment||'—')+'</div>' +
   '</div>' +
   '<div style="font-size:.78rem;font-weight:600;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);margin-bottom:.35rem">История покупок</div>' +
   (clientSales.length === 0 ?
