@@ -1363,16 +1363,26 @@
      <div class="page-section" id="page-shifts">
       <div class="page-header">
         <div>
-          <h1>Кассовые смены</h1>
-          <div class="sub">История открытых и закрытых смен</div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Кассовые смены</h1>
+          <div class="sub">История работы кассиров и продаж</div>
         </div>
       </div>
-      <div class="product-table">
-        <table><thead><tr><th style="width:18%">Дата открытия</th><th style="width:18%">Дата закрытия</th><th style="width:20%">Сотрудник</th><th style="width:14%">Продажи</th><th style="width:14%">Касса</th><th style="width:16%">Статус</th></tr></thead><tbody id="shiftTableBody"></tbody></table>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="shift-metrics" id="shiftMetrics">
+        <div class="shift-metric"><div class="sm-lbl">Открыто</div><div id="smOpen" class="sm-val"></div></div>
+        <div class="shift-metric"><div class="sm-lbl">Закрыто</div><div id="smClosed" class="sm-val">0</div></div>
+        <div class="shift-metric"><div class="sm-lbl">Выручка</div><div id="smRev" class="sm-val">0₽</div></div>
+        <div class="shift-metric"><div class="sm-lbl">Сред. чек</div><div id="smAvg" class="sm-val">0₽</div></div>
       </div>
-    </div>
-    <!-- ТРАНЗАКЦИИ -->
-    <div class="page-section" id="page-transactions">
+      <div class="shift-carousel-wrap">
+        <div class="shift-carousel" id="shiftCarousel"></div>
+      </div>
+      <div class="shift-detail" id="shiftDetail" style="display:none"></div>
+      <div class="empty-products" id="shiftEmpty">
+        <div class="big-icon">📊</div>
+        <p>Смен пока нет. Откройте кассу!</p>
+      </div>
+    </div>    <div class="page-section" id="page-transactions">
       <div class="page-header">
         <div>
           <h1 style="font-size:1.2rem;font-weight:600;margin:0">Транзакции</h1>
@@ -5090,28 +5100,76 @@ function editStockPrice(id){
   localStorage.setItem('products88',JSON.stringify(list));
   renderStockPage();
 }function renderShiftsPage(){
-  var tb = document.getElementById("shiftTableBody");
-  if(!tb) return;
-  var shifts = JSON.parse(localStorage.getItem("shifts88") || "[]");
-  if(!shifts.length){
-    tb.innerHTML = "<tr><td colspan=\'6\'><div class=\'empty-products\'><div class=\'big-icon\'>📊</div><p>Смен пока нет. Откройте кассу!</p></div></td></tr>";
-    return;
-  }
-  var h = "";
-  for(var i=0;i<shifts.length;i++){
-    var s = shifts[i];
-    h += "<tr>";
-    h += "<td style=\'font-size:.8rem\'>" + (s.openedAt||"\u2014") + "</td>";
-    h += "<td style=\'font-size:.8rem\'>" + (s.closedAt||"\u2014") + "</td>";
-    h += "<td>" + (s.employeeName||"\u2014") + "</td>";
-    h += "<td>" + (s.totalSales||0) + "₽</td>";
-    h += "<td>" + (s.closingBalance||0) + "₽</td>";
-    h += "<td><span style=\'color:" + (s.status==="open"?"#16a34a":"var(--muted)") + ";font-weight:600\'>" + (s.status==="open"?"✅ Открыта":"❌ Закрыта") + "</span></td>";
-    h += "</tr>";
-  }
-  tb.innerHTML = h;
+  var all = JSON.parse(localStorage.getItem("shifts88") || "[]");
+  all.sort(function(a,b){ return (b.openedAt||"") > (a.openedAt||"") ? 1 : -1; });
+  var car = document.getElementById("shiftCarousel");
+  if(!car) return;
+  var open = all.filter(function(s){return s.status==="open";}).length;
+  var closed = all.filter(function(s){return s.status==="closed";}).length;
+  var rev = all.reduce(function(sm,s){ return sm + (s.totalSales||0); }, 0);
+  var cnt = all.reduce(function(sm,s){ return sm + (s.salesCount||0); }, 0);
+  var e1=document.getElementById("smOpen"); if(e1) e1.textContent = open;
+  var e2=document.getElementById("smClosed"); if(e2) e2.textContent = closed;
+  var e3=document.getElementById("smRev"); if(e3) e3.textContent = rev.toLocaleString()+"\u20bd";
+  var e4=document.getElementById("smAvg"); if(e4) e4.textContent = cnt>0?Math.round(rev/cnt).toLocaleString()+"\u20bd":"0\u20bd";
+  var empty = document.getElementById("shiftEmpty");
+  if(!all.length){ car.innerHTML=""; if(empty)empty.style.display="block"; return; }
+  if(empty) empty.style.display="none";
+  car.innerHTML = all.map(function(s,i){
+    var d = s.openedAt ? s.openedAt.split(",")[0].trim() : "";
+    var isO = s.status === "open";
+    var emp = s.employeeName || "без сотрудника";
+    var sls = s.totalSales || 0;
+    var sc = s.salesCount || 0;
+    var qs = JSON.parse(localStorage.getItem("quickSales88") || "[]").filter(function(q){ return q.shiftId === s.id; });
+    var qr = qs.reduce(function(ss,q){ return ss + (q.total||0); }, 0);
+    var total = sls + qr;
+    return '<div class="shift-card'+(isO?' open':'')+(i===0?' active':'')+'" onclick="selectShiftCard('+i+')">'+
+      '<div class="sc-header"><div class="sc-date">'+d+'</div><div class="sc-status">'+(isO?'Открыта':'Закрыта')+'</div></div>'+
+      '<div class="sc-amount">'+sls.toLocaleString()+"\u20bd"+'</div>'+
+      '<div class="sc-sub">'+sc+' чеков</div>'+
+      '<div class="sc-sub">'+emp+'</div>'+
+      '<div class="sc-divider"></div>'+
+      '<div class="sc-total">Быстрые: '+qr.toLocaleString()+"\u20bd"+'</div>'+
+      '<div class="sc-total" style="font-weight:600">Итого: '+total.toLocaleString()+"\u20bd"+'</div>'+
+      '</div>';
+  }).join("");
+  if(all.length) selectShiftCard(0);
 }
-// === КАТЕГОРИИ ===
+function selectShiftCard(idx){
+  var all = JSON.parse(localStorage.getItem("shifts88") || "[]");
+  all.sort(function(a,b){ return (b.openedAt||"") > (a.openedAt||"") ? 1 : -1; });
+  var s = all[idx]; if(!s) return;
+  document.querySelectorAll(".shift-card").forEach(function(c,i){c.classList.toggle("active",i===idx);});
+  var dd = document.getElementById("shiftDetail"); dd.style.display="block";
+  var isO = s.status === "open";
+  var emp = s.employeeName || "\u2014";
+  var sls = s.totalSales || 0;
+  var cash = s.totalCash || 0;
+  var card = s.totalCard || 0;
+  var trf = s.totalTransfer || 0;
+  var cnt = s.salesCount || 0;
+  var qs = JSON.parse(localStorage.getItem("quickSales88") || "[]").filter(function(q){ return q.shiftId === s.id; });
+  var qr = qs.reduce(function(ss,q){ return ss + (q.total||0); }, 0);
+  var total = sls + qr;
+  var openD = s.openedAt || "\u2014";
+  var closeD = s.closedAt || "\u2014";
+  dd.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem">'+
+    '<div style="font-weight:600;font-size:.85rem">'+openD+'<span style="font-weight:400;color:var(--muted);font-size:.75rem"> '+emp+'</span></div>'+
+    (isO?'<button class="btn btn-outline" onclick="openCloseShift()" style="font-size:.65rem;padding:.15rem .45rem;color:#dc2626;border-color:#dc2626">Закрыть</button>':'')+
+    '</div>'+
+    '<div class="shift-detail-grid">'+
+    '<div class="shift-detail-item"><div class="lbl">Продажи</div><div class="val">'+sls.toLocaleString()+"\u20bd"+'</div></div>'+
+    '<div class="shift-detail-item"><div class="lbl">Чеков</div><div class="val">'+cnt+'</div></div>'+
+    (cash?'<div class="shift-detail-item"><div class="lbl">Наличные</div><div class="val">'+cash.toLocaleString()+"\u20bd"+'</div></div>':'')+
+    (card?'<div class="shift-detail-item"><div class="lbl">Карта</div><div class="val">'+card.toLocaleString()+"\u20bd"+'</div></div>':'')+
+    (trf?'<div class="shift-detail-item"><div class="lbl">Перевод</div><div class="val">'+trf.toLocaleString()+"\u20bd"+'</div></div>':'')+
+    '</div>'+
+    '<div class="sd-row"><span>Быстрые продажи</span><span>'+qr.toLocaleString()+"\u20bd"+'</span></div>'+
+    '<div class="sd-row bold"><span>Итого</span><span>'+total.toLocaleString()+"\u20bd"+'</span></div>';
+}
+
 function openCatModal(){
   document.getElementById('catModalTitle').textContent = 'Добавить категорию';
   document.getElementById('catModalSub').textContent = 'Введите название и выберите вид';
