@@ -3302,10 +3302,11 @@ function renderClientsPage(){
   if(!tb) return;
   // Дни рождения
   var today = new Date();
-  var m = String(today.getMonth()+1).padStart(2,'0');
-  var d = String(today.getDate()).padStart(2,'0');
-  var todayMD = m+'-'+d;
-  var birthdayClients = list.filter(function(c){ return c.birthday && (c.birthday.slice(5) === todayMD); }).map(function(c){ return c.name; });
+  var birthdayClients = list.filter(function(c){
+    if(!c.birthday) return false;
+    var b = new Date(c.birthday);
+    return b.getMonth() === today.getMonth() && b.getDate() === today.getDate();
+  }).map(function(c){ return c.name; });
   var bannerEl = document.getElementById('clBirthdayBanner') || document.querySelector('#page-clients .search-row');
   var existingBanner = document.getElementById('clBirthdayBanner');
   if(existingBanner){
