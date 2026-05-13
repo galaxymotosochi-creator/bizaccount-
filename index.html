@@ -1395,6 +1395,14 @@
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.35rem 0">
+        <button class="text-btn" onclick="toggleShiftEmpFilter()" id="shiftEmpBtn" style="font-size:.78rem">
+          Сотрудник <span class="act-arrow">▼</span>
+        </button>
+        <button class="text-btn" onclick="toggleShiftDateFilter()" id="shiftDateBtn" style="font-size:.78rem">
+          Дата <span class="act-arrow">▼</span>
+        </button>
+      </div>
       <div class="shift-metrics" id="shiftMetrics">
         <div class="shift-metric"><div class="sm-lbl">Открыто</div><div id="smOpen" class="sm-val"></div></div>
         <div class="shift-metric"><div class="sm-lbl">Закрыто</div><div id="smClosed" class="sm-val">0</div></div>
@@ -1404,7 +1412,7 @@
       <div class="shift-carousel-wrap">
         <div class="shift-carousel" id="shiftCarousel"></div>
       </div>
-      <div class="shift-detail" id="shiftDetail" style="display:none"></div>
+
       <div class="empty-products" id="shiftEmpty">
         <div class="big-icon">📊</div>
         <p>Смен пока нет. Откройте кассу!</p>
@@ -5126,7 +5134,15 @@ function editStockPrice(id){
   list=list.map(function(x){if(x.id==id)x.price=p;return x;});
   localStorage.setItem('products88',JSON.stringify(list));
   renderStockPage();
-}function renderShiftsPage(){
+}
+var shiftEmpFilter = null;
+function toggleShiftEmpFilter(){
+  // TBD - will show employee dropdown
+}
+function toggleShiftDateFilter(){
+  // TBD - will show date range selector
+}
+function renderShiftsPage(){
   var all = JSON.parse(localStorage.getItem("shifts88") || "[]");
   all.sort(function(a,b){ return (b.openedAt||"") > (a.openedAt||"") ? 1 : -1; });
   var car = document.getElementById("shiftCarousel");
@@ -5143,7 +5159,15 @@ function editStockPrice(id){
   if(!all.length){ car.innerHTML=""; if(empty)empty.style.display="block"; return; }
   if(empty) empty.style.display="none";
   car.innerHTML = all.map(function(s,i){
-    var d = s.openedAt ? s.openedAt.split(",")[0].trim() : "";
+    var d = "";
+if(s.openedAt){
+  if(s.openedAt.includes("T")){
+    var parts = s.openedAt.split("T")[0].split("-");
+    d = parts[2]+"."+parts[1]+"."+parts[0];
+  } else {
+    d = s.openedAt.split(",")[0].trim().replace(/(\d+)\.(\d+)\.(\d+)/,"$1.$2");
+  }
+}
     var isO = s.status === "open";
     var emp = s.employeeName || "без сотрудника";
     var sls = s.totalSales || 0;
@@ -5161,42 +5185,8 @@ function editStockPrice(id){
       '<div class="sc-total" style="font-weight:600">Итого: '+total.toLocaleString()+"\u20bd"+'</div>'+
       '</div>';
   }).join("");
-  if(all.length) selectShiftCard(0);
-}
-function selectShiftCard(idx){
-  var all = JSON.parse(localStorage.getItem("shifts88") || "[]");
-  all.sort(function(a,b){ return (b.openedAt||"") > (a.openedAt||"") ? 1 : -1; });
-  var s = all[idx]; if(!s) return;
-  document.querySelectorAll(".shift-card").forEach(function(c,i){c.classList.toggle("active",i===idx);});
-  var dd = document.getElementById("shiftDetail"); dd.style.display="block";
-  var isO = s.status === "open";
-  var emp = s.employeeName || "\u2014";
-  var sls = s.totalSales || 0;
-  var cash = s.totalCash || 0;
-  var card = s.totalCard || 0;
-  var trf = s.totalTransfer || 0;
-  var cnt = s.salesCount || 0;
-  var qs = JSON.parse(localStorage.getItem("quickSales88") || "[]").filter(function(q){ return q.shiftId === s.id; });
-  var qr = qs.reduce(function(ss,q){ return ss + (q.total||0); }, 0);
-  var total = sls + qr;
-  var openD = s.openedAt || "\u2014";
-  var closeD = s.closedAt || "\u2014";
-  dd.innerHTML =
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem">'+
-    '<div style="font-weight:600;font-size:.85rem">'+openD+'<span style="font-weight:400;color:var(--muted);font-size:.75rem"> '+emp+'</span></div>'+
-    (isO?'<button class="btn btn-outline" onclick="openCloseShift()" style="font-size:.65rem;padding:.15rem .45rem;color:#dc2626;border-color:#dc2626">Закрыть</button>':'')+
-    '</div>'+
-    '<div class="shift-detail-grid">'+
-    '<div class="shift-detail-item"><div class="lbl">Продажи</div><div class="val">'+sls.toLocaleString()+"\u20bd"+'</div></div>'+
-    '<div class="shift-detail-item"><div class="lbl">Чеков</div><div class="val">'+cnt+'</div></div>'+
-    (cash?'<div class="shift-detail-item"><div class="lbl">Наличные</div><div class="val">'+cash.toLocaleString()+"\u20bd"+'</div></div>':'')+
-    (card?'<div class="shift-detail-item"><div class="lbl">Карта</div><div class="val">'+card.toLocaleString()+"\u20bd"+'</div></div>':'')+
-    (trf?'<div class="shift-detail-item"><div class="lbl">Перевод</div><div class="val">'+trf.toLocaleString()+"\u20bd"+'</div></div>':'')+
-    '</div>'+
-    '<div class="sd-row"><span>Быстрые продажи</span><span>'+qr.toLocaleString()+"\u20bd"+'</span></div>'+
-    '<div class="sd-row bold"><span>Итого</span><span>'+total.toLocaleString()+"\u20bd"+'</span></div>';
-}
-
+  }
+function selectShiftCard(idx){ document.querySelectorAll(".shift-card").forEach(function(c,i){c.classList.toggle("active",i===idx);}); }
 function openCatModal(){
   document.getElementById('catModalTitle').textContent = 'Добавить категорию';
   document.getElementById('catModalSub').textContent = 'Введите название и выберите вид';
