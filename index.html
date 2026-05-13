@@ -4407,7 +4407,7 @@ function renderSuppliersPage(){
   tb.innerHTML = list.map(function(s){
     var supSupplies = supplies.filter(function(sp){ return sp.supplierName === s.name; });
     var supplyCount = supSupplies.length;
-    var totalSum = supSupplies.reduce(function(sum, sp){ return sum + ((sp.qty||0) * (sp.cost||0)); }, 0);
+    var totalSum = supSupplies.reduce(function(sum, sp){ return sum + (sp.total||0); }, 0);
     var icon = contactIcons[s.contactMethod] || '📞';
     var label = contactLabels[s.contactMethod] || s.contactMethod || '—';
     return '<tr>' +
@@ -5231,7 +5231,7 @@ function calcProductStats(){
     });
     var totalSupplied=0,lastSupplyDate=null;
     supplies.forEach(function(sp){
-      if(sp.prodId==p.id){totalSupplied+=sp.qty||0;if(!lastSupplyDate||sp.date>lastSupplyDate)lastSupplyDate=sp.date;}
+      if(sp.items) sp.items.forEach(function(it){ if(it.id==p.id||it.prodId==p.id){ totalSupplied+=it.qty||0; if(!lastSupplyDate||sp.date>lastSupplyDate) lastSupplyDate=sp.date; }});
     });
     var stock=totalSupplied-soldQty;
     stats[p.id]={name:p.name,price:p.price||0,cost:p.cost||0,cat:p.cat,soldQty:soldQty,rev:rev,stock:Math.max(0,stock),totalSupplied:totalSupplied,lastSupplyDate:lastSupplyDate};
