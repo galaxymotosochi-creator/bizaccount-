@@ -1305,7 +1305,7 @@
         </div>
         <div class="actions-group">
           <div style="position:relative">
-            <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx">
+            <button class="text-btn" onclick="togglePeriodDropdownTx(event)" id="periodTriggerTx">
               Период <span class="act-arrow">▼</span>
             </button>
             <div class="tx-period-dropdown" id="periodDropdownTx">
@@ -4526,7 +4526,8 @@ function closeAllTxDropdowns(){
   document.getElementById('txTypeDropdown')?.classList.remove('open');
   document.getElementById('expCatDropdown')?.classList.remove('open');
 }
-function togglePeriodDropdownTx(){
+function togglePeriodDropdownTx(e){
+  e.stopPropagation();
   closeAllTxDropdowns();
   document.getElementById('periodDropdownTx').classList.toggle('open');
 }
@@ -4607,12 +4608,7 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  var isInside = e.target.closest('.actions-group');
-  var inDD = e.target.closest('.tx-period-dropdown, .export-dropdown, .tx-type-dropdown, .exp-cat-dropdown');
-  var inBtn = e.target.closest('.text-btn');
-  if(!isInside || (!inDD && !inBtn)){
-    closeAllTxDropdowns();
-  }
+  closeAllTxDropdowns();
 });
 </script>
 <!-- Модалка итога инвентаризации -->
