@@ -318,6 +318,9 @@
 #dirColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #dirColHeaders th:first-child{text-align:left;padding-left:0}
 #dirTableBody td:first-child{text-align:left;padding-left:0}
+#txColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#txColHeaders th:first-child{text-align:left;padding-left:0}
+#txColHeaders th.actions{width:140px;text-align:right}
 #productTableBody td:first-child{text-align:left;padding-left:0}
 /* Шапка инвентаризации — единый стиль с товарами */
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
@@ -1594,12 +1597,13 @@
       </div>
       <div class="product-table" style="margin-top:.5rem">
         <table>
-          <thead>
+          <thead id="txColHeaders">
             <tr>
-              <th style="width:18%;text-align:left">Дата</th>
-              <th style="width:35%;text-align:left">Название</th>
-              <th style="width:17%;text-align:right">Сумма</th>
-              <th style="width:30%;text-align:left">Категория</th>
+              <th>Дата</th>
+              <th>Название</th>
+              <th>Сумма</th>
+              <th>Категория</th>
+              <th class="actions"></th>
             </tr>
           </thead>
           <tbody id="expenseTableBody"></tbody>
@@ -1990,6 +1994,7 @@
     <h2>Добавить доход</h2>
     <div class="sub">Запишите новый доход</div>
     <form onsubmit="saveIncome(event)">
+      <input type="hidden" id="editIncomeId" value="">
       <div class="form-group">
         <label>Название *</label>
         <input type="text" id="incName" placeholder="Например: инвестиции, партнёрские, проценты" required>
@@ -2059,6 +2064,7 @@
     <h2>Добавить расход</h2>
     <div class="sub">Запишите новый расход</div>
     <form onsubmit="saveExpense(event)">
+      <input type="hidden" id="editExpenseId" value="">
       <div class="form-group">
         <label>Название *</label>
         <input type="text" id="expName" placeholder="Например: аренда, коммунальные, зарплата" required>
@@ -3916,7 +3922,11 @@ function deleteIncCat(){
   var id = parseInt(v.replace('custom_','')), l = getIncCatList().filter(function(c){ return c.id !== id; });
   saveIncCatList(l); s.value = 'other'; loadIncCategories();
 }
-function closeIncomeModal(){ document.getElementById('incomeModal').classList.remove('active'); }
+function closeIncomeModal(){
+  document.getElementById('incomeModal').classList.remove('active');
+  document.getElementById('editIncomeId').value = '';
+  document.querySelector('#incomeModal h2').textContent = 'Добавить доход';
+}
 function openIncomeModal(){
   loadIncCategories();
   document.getElementById('incDate').valueAsDate = new Date();
@@ -3940,11 +3950,18 @@ function saveIncome(e){
   });
   if(!Object.keys(accounts).length) return alert('Выберите счёт');
   var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
-  list.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
+  var editId = document.getElementById('editIncomeId').value;
+  if(editId){
+    var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
+    if(idx >= 0){ list[idx] = {...list[idx], name:name, amount:amount, date:date, category:cat, accounts:accounts}; }
+  } else {
+    list.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
+  }
   localStorage.setItem('incomes88', JSON.stringify(list));
   closeIncomeModal();
   document.getElementById('incName').value = '';
   document.getElementById('incAmount').value = '';
+  document.getElementById('editIncomeId').value = '';
   filterTransactions();
 }
 /* LOV start */
@@ -4373,8 +4390,14 @@ function deleteExpCat(){
 }
 function closeExpenseModal(){
   document.getElementById('expenseModal').classList.remove('active');
+  document.getElementById('editExpenseId').value = '';
+  document.querySelector('#expenseModal h2').textContent = 'Добавить расход';
 }
 function openExpenseModal(){
+  document.getElementById('editExpenseId').value = '';
+  document.querySelector('#expenseModal h2').textContent = 'Добавить расход';
+  document.getElementById('expName').value = '';
+  document.getElementById('expAmount').value = '';
   loadExpCategories();
   document.getElementById('expDate').valueAsDate = new Date();
   document.querySelectorAll('.exp-acc-amount').forEach(function(i){ i.value = ''; });
@@ -4419,7 +4442,7 @@ function renderTransactionsPage(){
   incomes.forEach(function(e){ allItems.push({type:'income', data:e}); });
   allItems.sort(function(a,b){ return (b.data.date||'') > (a.data.date||'') ? 1 : -1; });
   if(!allItems.length){
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-products"><div class="big-icon">💰</div><p>Записей пока нет</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">💰</div><p>Записей пока нет</p></div></td></tr>';
     return;
   }
   var expCats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
@@ -4435,13 +4458,87 @@ function renderTransactionsPage(){
     }
     var color = item.type === 'expense' ? '#dc2626' : '#16a34a';
     var prefix = item.type === 'expense' ? '−' : '+';
+    var fnName = item.type === 'expense' ? 'editExpense' : 'editIncome';
+    var delFn = item.type === 'expense' ? 'deleteExpense' : 'deleteIncome';
     return '<tr>' +
-      '<td style="text-align:left;font-size:.8rem;color:var(--muted)">'+d+'</td>' +
-      '<td style="text-align:left">'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
-      '<td style="text-align:right;font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
-      '<td style="text-align:left;font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted)">'+d+'</td>' +
+      '<td>'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
+      '<td style="font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
+      '<td style="font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="'+fnName+'('+e.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="'+delFn+'('+e.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
     '</tr>';
   }).join('');
+}
+/* Редактирование и удаление транзакций */
+function editExpense(id){
+  var list = JSON.parse(localStorage.getItem('expenses88') || '[]');
+  var e = list.find(function(x){ return x.id === id; });
+  if(!e) return alert('Расход не найден');
+  document.getElementById('editExpenseId').value = e.id;
+  document.getElementById('expName').value = e.name;
+  document.getElementById('expAmount').value = e.amount;
+  document.getElementById('expDate').value = e.date || '';
+  var catEl = document.getElementById('expCategory');
+  for(var i=0;i<catEl.options.length;i++){
+    if(catEl.options[i].value === e.category || catEl.options[i].textContent === e.category){
+      catEl.value = catEl.options[i].value; break;
+    }
+  }
+  document.querySelectorAll('#accountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
+  var accOrder = ['cash','card','transfer'];
+  accOrder.forEach(function(k,i){
+    document.querySelectorAll('.exp-acc-cb')[i].checked = e.accounts && e.accounts[k] > 0;
+    if(e.accounts && e.accounts[k] > 0) document.querySelectorAll('.exp-acc-amount')[i].value = e.accounts[k];
+  });
+  calcAccTotal();
+  document.querySelector('#expenseModal h2').textContent = 'Редактировать расход';
+  document.getElementById('expenseModal').classList.add('active');
+}
+function deleteExpense(id){
+  if(!confirm('Удалить расход?')) return;
+  var list = JSON.parse(localStorage.getItem('expenses88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('expenses88', JSON.stringify(list));
+  renderTransactionsPage();
+}
+function editIncome(id){
+  var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
+  var e = list.find(function(x){ return x.id === id; });
+  if(!e) return alert('Доход не найден');
+  document.getElementById('editIncomeId').value = e.id;
+  document.getElementById('incName').value = e.name;
+  document.getElementById('incAmount').value = e.amount;
+  document.getElementById('incDate').value = e.date || '';
+  var catEl = document.getElementById('incCategory');
+  for(var i=0;i<catEl.options.length;i++){
+    if(catEl.options[i].value === e.category || catEl.options[i].textContent === e.category){
+      catEl.value = catEl.options[i].value; break;
+    }
+  }
+  document.querySelectorAll('#incAccountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
+  var accOrder = ['cash','card','transfer'];
+  accOrder.forEach(function(k,i){
+    document.querySelectorAll('#incAccountsList .exp-acc-cb')[i].checked = e.accounts && e.accounts[k] > 0;
+    if(e.accounts && e.accounts[k] > 0) document.querySelectorAll('#incAccountsList .exp-acc-amount')[i].value = e.accounts[k];
+  });
+  calcAccTotal();
+  document.querySelector('#incomeModal h2').textContent = 'Редактировать доход';
+  document.getElementById('incomeModal').classList.add('active');
+}
+function deleteIncome(id){
+  if(!confirm('Удалить доход?')) return;
+  var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
+  list = list.filter(function(x){ return x.id !== id; });
+  localStorage.setItem('incomes88', JSON.stringify(list));
+  renderTransactionsPage();
 }
 function calcAccTotal(){
   var rows = document.querySelectorAll('#accountsList .exp-acc-row');
@@ -4481,14 +4578,18 @@ function saveExpense(e){
     return;
   }
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
-  expenses.push({
-    id:Date.now(), name:name, amount:amount, date:date, category:cat,
-    accounts:accounts, created:new Date().toISOString()
-  });
+  var editId = document.getElementById('editExpenseId').value;
+  if(editId){
+    var idx = expenses.findIndex(function(x){ return x.id === parseInt(editId); });
+    if(idx >= 0){ expenses[idx] = {...expenses[idx], name:name, amount:amount, date:date, category:cat, accounts:accounts}; }
+  } else {
+    expenses.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
+  }
   localStorage.setItem('expenses88', JSON.stringify(expenses));
   closeExpenseModal();
   document.getElementById('expName').value = '';
   document.getElementById('expAmount').value = '';
+  document.getElementById('editExpenseId').value = '';
   renderTransactionsPage();
 }
 function openWriteoffModal(){
