@@ -496,7 +496,7 @@
   .pin-dot.shake{animation:pinShake .4s ease}
 .toast-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:var(--radius);display:none;align-items:center;justify-content:center;z-index:10}
 .toast-overlay.show{display:flex}
-.toast-msg{background:#dc2626;color:#fff;padding:1rem 1.5rem;border-radius:12px;font-size:.85rem;font-family:var(--font);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.25);max-width:380px;text-align:center;line-height:1.5}
+.toast-msg{background:var(--white);color:var(--body-color);padding:1.25rem 1.5rem;border-radius:var(--radius);font-size:.9rem;font-family:var(--font);box-shadow:0 .75rem 2rem rgba(0,0,0,.15);max-width:380px;text-align:center;line-height:1.5}
   @keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;max-width:220px;margin:0 auto}
   .pin-btn{height:50px;border-radius:12px;border:1px solid var(--border);font-size:1.2rem;font-weight:500;cursor:pointer;font-family:var(--font);background:var(--white);transition:all .12s}
@@ -6909,7 +6909,7 @@ function showToast(msg){
   var overlay = document.getElementById('expToastOverlay');
   var msgEl = document.getElementById('expToastMsg');
   if(!overlay || !msgEl) return;
-  msgEl.textContent = msg;
+  msgEl.innerHTML = '<div style="font-size:2rem;margin-bottom:.5rem">❗</div>' + msg;
   overlay.classList.add('show');
   setTimeout(function(){ overlay.classList.remove('show'); }, 1500);
 }
