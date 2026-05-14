@@ -4454,13 +4454,6 @@ function editExpense(id){
       catEl.value = catEl.options[i].value; break;
     }
   }
-  document.querySelectorAll('#accountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
-  var accOrder = ['cash','card','transfer'];
-  accOrder.forEach(function(k,i){
-    document.querySelectorAll('.exp-acc-cb')[i].checked = e.accounts && e.accounts[k] > 0;
-    if(e.accounts && e.accounts[k] > 0) document.querySelectorAll('.exp-acc-amount')[i].value = e.accounts[k];
-  });
-  calcAccTotal();
   document.querySelector('#expenseModal h2').textContent = 'Редактировать расход';
   document.getElementById('expenseModal').classList.add('active');
 }
@@ -4542,10 +4535,13 @@ function getAccBalances(){
   return b;
 }
 function openAccSelectModal(amount){
+  var tmp = window._expenseTemp;
+  var isExpense = tmp && tmp.type === 'expense';
   var balances = getAccBalances();
   var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
   var icons = {cash:'💵', card:'💳', transfer:'🔄'};
-  document.getElementById('accSelectSub').textContent = 'Сумма расхода: ' + amount.toLocaleString() + '₽';
+  document.getElementById('accSelectTitle').textContent = isExpense ? 'С какого счета списать?' : 'На какой счет зачислить?';
+  document.getElementById('accSelectSub').textContent = (isExpense ? 'Сумма расхода' : 'Сумма дохода') + ': ' + amount.toLocaleString() + '₽';
   document.querySelectorAll('.acc-card').forEach(function(card){
     var acc = card.dataset.acc;
     card.querySelector('.acc-name').textContent = labels[acc];
