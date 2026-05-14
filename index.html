@@ -5504,9 +5504,12 @@ function renderStockPage(){
   var supplies=JSON.parse(localStorage.getItem('supplies88')||'[]');
   var stockMap={};
   supplies.forEach(function(sp){
-    if(!stockMap[sp.prodId]) stockMap[sp.prodId]={qty:0,cost:0};
-    stockMap[sp.prodId].qty+=sp.qty||0;
-    stockMap[sp.prodId].cost+=(sp.cost||0)*sp.qty;
+    if(sp.supplyStatus !== 'received') return;
+    (sp.items||[]).forEach(function(it){
+      if(!stockMap[it.prodId]) stockMap[it.prodId]={qty:0,cost:0};
+      stockMap[it.prodId].qty+=it.qty||0;
+      stockMap[it.prodId].cost+=(it.cost||0)*it.qty;
+    });
   });
   var q=(document.getElementById('stockSearch')?.value||'').toLowerCase().trim();
   var items=products.filter(function(p){return stockMap[p.id];});
