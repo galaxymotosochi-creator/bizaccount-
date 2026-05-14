@@ -330,8 +330,7 @@
 #supColHeaders th:first-child{text-align:left;padding-left:0}
 #supplierTableBody td:first-child{padding-left:0}
 /* Шапка корзины — единый стиль с товарами */
-#trashColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
-#trashColHeaders th:first-child{text-align:left}
+#trashColHeaders th{font-weight:700}
 /* Category dropdown */
 .cat-wrapper{position:relative;display:flex;align-items:center}
 .actions-group{display:flex;align-items:center;gap:10px;margin-left:12px}
@@ -3152,9 +3151,9 @@ function renderTrashPage(){
     switch(col){
       case 'name': return '<div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div>';
       case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
-      case 'sku': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.sku||'—')+'</span>';
-      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||'—')+'</span>';
-      case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
+      case 'sku': return '<span class="prod-sku">'+(p.sku||'—')+'</span>';
+      case 'barcode': return '<span class="prod-sku">'+(p.barcode||'—')+'</span>';
+      case 'type': return '<span class="prod-cat">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
       case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
       case 'unit': return p.unit || '—';
       case 'costNoVat': return '<span class="num">'+(p.costNoVat != null ? p.costNoVat.toLocaleString()+'₽' : '—')+'</span>';
