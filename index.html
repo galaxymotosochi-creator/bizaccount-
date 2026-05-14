@@ -4373,7 +4373,9 @@ function toggleTxTypeFilter(type){
   if(_txTypeFilter){
     var btn = document.getElementById(type === 'expense' ? 'expCatBtn' : 'incCatBtn');
     btn.style.color = '#1983dd';
-    btn.style.fontWeight = '600';
+    btn.style.fontWeight = '700';
+    btn.style.background = '#eaf5ff';
+    btn.style.borderRadius = '4px';
   }
   renderTransactionsPage();
 }
