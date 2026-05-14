@@ -494,7 +494,8 @@
   .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
   .pin-dot.filled{background:var(--primary);border-color:var(--primary)}
   .pin-dot.shake{animation:pinShake .4s ease}
-.shake{animation:pinShake .4s ease}
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:999;background:#dc2626;color:#fff;padding:.85rem 1.5rem;border-radius:12px;font-size:.85rem;font-family:var(--font);box-shadow:0 .5rem 1.5rem rgba(0,0,0,.2);opacity:0;transition:opacity .25s;pointer-events:none;max-width:420px;text-align:center;line-height:1.4}
+.toast.show{opacity:1}
   @keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;max-width:220px;margin:0 auto}
   .pin-btn{height:50px;border-radius:12px;border:1px solid var(--border);font-size:1.2rem;font-weight:500;cursor:pointer;font-family:var(--font);background:var(--white);transition:all .12s}
@@ -4566,22 +4567,12 @@ function saveExpense(e){
       }
     }
   });
-  function shakeEl(id){
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.classList.add('shake');
-    setTimeout(function(){ el.classList.remove('shake'); }, 500);
-  }
   if(Object.keys(accounts).length === 0){
-    alert('Выберите хотя бы один счёт и укажите сумму');
-    shakeEl('accountsList');
-    shakeEl('expAmount');
+    showToast('Выберите хотя бы один счёт и укажите сумму');
     return;
   }
   if(Math.abs(accTotal - amount) > 0.01){
-    alert('Сумма по счетам должна совпадать с суммой расхода');
-    shakeEl('accountsList');
-    shakeEl('expAmount');
+    showToast('Общая сумма расхода не совпадает с суммой в выбранных счетах! Пожалуйста, измените сумму.');
     return;
   }
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
@@ -6910,6 +6901,14 @@ function onBarcodeFound(code) {
     }, 2000);
   }
 }
+function showToast(msg){
+  var el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 1500);
+}
 </script>
+<div class="toast" id="toast"></div>
 </body>
 </html>
