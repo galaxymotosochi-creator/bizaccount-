@@ -3921,9 +3921,8 @@ function closeIncomeModal(){
 function openIncomeModal(){
   loadIncCategories();
   document.getElementById('incDate').valueAsDate = new Date();
-  document.querySelectorAll('#incAccountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
-  document.querySelectorAll('#incAccountsList .exp-acc-cb').forEach(function(c,i){ c.checked = i === 0; });
-  document.getElementById('incTotalSum').textContent = '0₽';
+  document.getElementById('incName').value = '';
+  document.getElementById('incAmount').value = '';
   document.getElementById('incomeModal').classList.add('active');
 }
 function saveIncome(e){
@@ -3935,7 +3934,6 @@ function saveIncome(e){
   var cat = catRaw.startsWith('custom_') ? document.querySelector('#incCategory option[value="'+catRaw+'"]').textContent : catRaw;
   if(!name || !amount) return alert('Заполните название и сумму');
   window._expenseTemp = {type:'income', name:name, amount:amount, date:date, category:cat};
-  closeIncomeModal();
   openAccSelectModal(amount);
 }
 /* LOV start */
@@ -4487,13 +4485,6 @@ function editIncome(id){
       catEl.value = catEl.options[i].value; break;
     }
   }
-  document.querySelectorAll('#incAccountsList .exp-acc-amount').forEach(function(i){ i.value = ''; });
-  var accOrder = ['cash','card','transfer'];
-  accOrder.forEach(function(k,i){
-    document.querySelectorAll('#incAccountsList .exp-acc-cb')[i].checked = e.accounts && e.accounts[k] > 0;
-    if(e.accounts && e.accounts[k] > 0) document.querySelectorAll('#incAccountsList .exp-acc-amount')[i].value = e.accounts[k];
-  });
-  calcAccTotal();
   document.querySelector('#incomeModal h2').textContent = 'Редактировать доход';
   document.getElementById('incomeModal').classList.add('active');
 }
@@ -4542,7 +4533,6 @@ function saveExpense(e){
     }
   });
   window._expenseTemp = {type:'expense', name:name, amount:amount, date:date, category:cat};
-  closeExpenseModal();
   openAccSelectModal(amount);
 }
 var _selectedAcc = 'cash';
