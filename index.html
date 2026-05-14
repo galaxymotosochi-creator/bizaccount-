@@ -960,9 +960,9 @@
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
       <div class="search-row">
-        <div class="search-input-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-field" placeholder="Быстрый поиск">
+        <div class="stock-search" style="width:30%;min-width:180px;max-width:400px">
+          <span style="font-size:.75rem;color:var(--muted)">🔍</span>
+          <input type="text" id="productSearch" placeholder="Быстрый поиск" oninput="renderProductsPage()">
         </div>
         <div class="actions-group"><div class="cat-wrapper">
           <button class="text-btn" onclick="document.getElementById('exportDropdown')?.classList.remove('open');document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
