@@ -312,6 +312,8 @@
 #colHeaders th:first-child{text-align:left;padding-left:0}
 #trashColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #trashColHeaders th:first-child{text-align:left;padding-left:0}
+#stockColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
+#stockColHeaders th:first-child{text-align:left;padding-left:0}
 #productTableBody td:first-child{text-align:left;padding-left:0}
 /* Шапка инвентаризации — единый стиль с товарами */
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
@@ -1104,18 +1106,18 @@
         </div>
       </div>
       <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table style="min-width:680px">
-          <thead>
+        <table>
+          <thead id="stockColHeaders">
             <tr>
-              <th>Артикул</th>
-              <th>Товар</th>
-              <th>Категория</th>
-              <th class="tr">Остаток</th>
-              <th class="tr">Закуп</th>
-              <th class="tr">Продажа</th>
-              <th class="tr">Наценка</th>
-              <th class="tr">Сумма</th>
-              <th>Действия</th>
+              <th data-col="sku">Артикул</th>
+              <th data-col="name">Товар</th>
+              <th data-col="category">Категория</th>
+              <th data-col="remain" class="tr">Остаток</th>
+              <th data-col="cost" class="tr">Закуп</th>
+              <th data-col="price" class="tr">Продажа</th>
+              <th data-col="margin" class="tr">Наценка</th>
+              <th data-col="total" class="tr">Сумма</th>
+              <th style="width:140px;text-align:right"></th>
             </tr>
           </thead>
           <tbody id="stockTableBody">
