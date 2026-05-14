@@ -314,7 +314,7 @@
 #trashColHeaders th:first-child{text-align:left;padding-left:0}
 #stockColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #stockColHeaders th:first-child{text-align:left;padding-left:0}
-#stockColHeaders th.tr{text-align:right}
+#stockTableBody td:first-child{text-align:left}
 #productTableBody td:first-child{text-align:left;padding-left:0}
 /* Шапка инвентаризации — единый стиль с товарами */
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
@@ -1114,11 +1114,11 @@
               <th data-col="sku">Артикул</th>
               <th data-col="barcode">Штрихкод</th>
               <th data-col="category">Категория</th>
-              <th data-col="remain" class="tr">Остаток</th>
-              <th data-col="cost" class="tr">Закуп</th>
-              <th data-col="price" class="tr">Продажа</th>
-              <th data-col="margin" class="tr">Наценка</th>
-              <th data-col="total" class="tr">Сумма</th>
+              <th data-col="remain">Остаток</th>
+              <th data-col="cost">Закуп</th>
+              <th data-col="price">Продажа</th>
+              <th data-col="margin">Наценка</th>
+              <th data-col="total">Сумма</th>
               <th style="width:140px;text-align:right"></th>
             </tr>
           </thead>
@@ -5537,15 +5537,15 @@ function renderStockPage(){
       '<td style="font-size:.72rem;color:var(--muted);font-family:monospace">'+(p.sku||'\u2014')+'</td>'+
       '<td style="font-size:.72rem;color:var(--muted)">'+(p.barcode||'\u2014')+'</td>'+
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'\u2014')+'</span></td>'+
-      '<td class="tr '+(low?'stock-low':'')+'">'+qty+'</td>'+
-      '<td class="tr">'+costPrice.toLocaleString()+'</td>'+
-      '<td class="tr"><span class="editable-price" onclick="editStockPrice('+p.id+')">'+retailPrice.toLocaleString()+'</span></td>'+
-      '<td class="tr"><span class="markup-badge '+(markup>=0?'pos':'neg')+'">'+(markup>=0?'+':'')+markup.toLocaleString()+(markupPct?' ('+markupPct+'%)':'')+'</span></td>'+
-      '<td class="tr">'+sumValue.toLocaleString()+'</td>'+
+      '<td'+(low?' class="stock-low"':'')+'>'+qty+'</td>'+
+      '<td>'+costPrice.toLocaleString()+'</td>'+
+      '<td><span class="editable-price" onclick="editStockPrice('+p.id+')">'+retailPrice.toLocaleString()+'</span></td>'+
+      '<td><span class="markup-badge '+(markup>=0?'pos':'neg')+'">'+(markup>=0?'+':'')+markup.toLocaleString()+(markupPct?' ('+markupPct+'%)':'')+'</span></td>'+
+      '<td>'+sumValue.toLocaleString()+'</td>'+
       '<td><a onclick="editProduct('+p.id+')" style="color:var(--primary);cursor:pointer;font-size:.72rem">Ред.</a></td>'+
     '</tr>';
   }).join('')+
-  '<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Итого</td><td></td><td></td><td></td><td class="tr">'+totalQty+'</td><td></td><td></td><td></td><td class="tr">'+totalSum.toLocaleString()+'</td><td></td></tr>';
+  '<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Итого</td><td></td><td></td><td></td><td>'+totalQty+'</td><td></td><td></td><td></td><td>'+totalSum.toLocaleString()+'</td><td></td></tr>';
 }
 function editStockPrice(id){
   var n=prompt('Новая цена продажи:');
