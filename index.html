@@ -2094,20 +2094,20 @@
       </div>
       <div class="sub">Выберите счет списания</div>
       <div style="display:flex;flex-direction:column;gap:.5rem" id="accountsList">
-        <div data-acc="cash" style="display:flex;align-items:center;gap:.5rem">
-          <label for="accCash" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Наличные</label>
-          <input type="number" placeholder="0" min="0" id="accCashAmount" oninput="autoCheckAcc('cash');calcAccTotal()" style="flex:1;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()" style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+        <div data-acc="cash" style="display:flex;align-items:center;gap:.35rem">
+          <label for="accCash" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Наличные</label>
+          <input type="number" placeholder="0" min="0" id="accCashAmount" oninput="autoCheckAcc('cash');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
+          <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
         </div>
-        <div data-acc="card" style="display:flex;align-items:center;gap:.5rem">
-          <label for="accCard" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Карта</label>
-          <input type="number" placeholder="0" min="0" id="accCardAmount" oninput="autoCheckAcc('card');calcAccTotal()" style="flex:1;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()" style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+        <div data-acc="card" style="display:flex;align-items:center;gap:.35rem">
+          <label for="accCard" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Карта</label>
+          <input type="number" placeholder="0" min="0" id="accCardAmount" oninput="autoCheckAcc('card');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
+          <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
         </div>
-        <div data-acc="transfer" style="display:flex;align-items:center;gap:.5rem">
-          <label for="accTransfer" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Перевод</label>
-          <input type="number" placeholder="0" min="0" id="accTransferAmount" oninput="autoCheckAcc('transfer');calcAccTotal()" style="flex:1;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()" style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+        <div data-acc="transfer" style="display:flex;align-items:center;gap:.35rem">
+          <label for="accTransfer" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Перевод</label>
+          <input type="number" placeholder="0" min="0" id="accTransferAmount" oninput="autoCheckAcc('transfer');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
+          <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
         </div>
       </div>
       <div class="modal-actions" style="margin-top:1.5rem">
@@ -4564,16 +4564,22 @@ function saveExpense(e){
       }
     }
   });
+  function shakeEl(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.classList.add('shake');
+    setTimeout(function(){ el.classList.remove('shake'); }, 500);
+  }
   if(Object.keys(accounts).length === 0){
     alert('Выберите хотя бы один счёт и укажите сумму');
-    document.getElementById('accountsList').classList.add('shake');
-    setTimeout(function(){ document.getElementById('accountsList').classList.remove('shake'); }, 500);
+    shakeEl('accountsList');
+    shakeEl('expAmount');
     return;
   }
   if(Math.abs(accTotal - amount) > 0.01){
     alert('Сумма по счетам должна совпадать с суммой расхода');
-    document.getElementById('accountsList').classList.add('shake');
-    setTimeout(function(){ document.getElementById('accountsList').classList.remove('shake'); }, 500);
+    shakeEl('accountsList');
+    shakeEl('expAmount');
     return;
   }
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
