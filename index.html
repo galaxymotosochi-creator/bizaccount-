@@ -276,6 +276,8 @@
   .form-group label{display:block;font-size:.8rem;font-weight:500;margin-bottom:.3rem;color:var(--body-color)}
   .form-group input,.form-group select,.form-group textarea{width:100%;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;transition:border-color .15s;background:var(--white);color:var(--body-color)}
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,131,221,.1)}
+.acc-amount-input{width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center;background:var(--white);color:var(--body-color);transition:border-color .15s}
+.acc-amount-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,131,221,.1)}
   .form-group textarea{min-height:60px;resize:vertical}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
   .modal-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
@@ -2096,18 +2098,18 @@
       <div style="display:flex;flex-direction:column;gap:.5rem" id="accountsList">
         <div data-acc="cash" style="display:flex;align-items:center;gap:.35rem">
           <label for="accCash" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Наличные</label>
-          <input type="number" placeholder="0" min="0" id="accCashAmount" oninput="autoCheckAcc('cash');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
+          <input type="number" placeholder="0" min="0" id="accCashAmount" oninput="autoCheckAcc('cash');calcAccTotal()" class="acc-amount-input">
+          <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
         </div>
         <div data-acc="card" style="display:flex;align-items:center;gap:.35rem">
           <label for="accCard" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Карта</label>
-          <input type="number" placeholder="0" min="0" id="accCardAmount" oninput="autoCheckAcc('card');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
+          <input type="number" placeholder="0" min="0" id="accCardAmount" oninput="autoCheckAcc('card');calcAccTotal()" class="acc-amount-input">
+          <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
         </div>
         <div data-acc="transfer" style="display:flex;align-items:center;gap:.35rem">
           <label for="accTransfer" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Перевод</label>
-          <input type="number" placeholder="0" min="0" id="accTransferAmount" oninput="autoCheckAcc('transfer');calcAccTotal()" style="width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center">
-          <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;margin-left:0">
+          <input type="number" placeholder="0" min="0" id="accTransferAmount" oninput="autoCheckAcc('transfer');calcAccTotal()" class="acc-amount-input">
+          <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
         </div>
       </div>
       <div class="modal-actions" style="margin-top:1.5rem">
