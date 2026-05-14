@@ -6071,13 +6071,21 @@ function closeAllTxDropdowns(){
   document.getElementById('exportTxDropdown')?.classList.remove('open');
   document.getElementById('txTypeDropdown')?.classList.remove('open');
 }
+function setupTxCloseListener(){
+  setTimeout(function(){ document.addEventListener('click', function closeTx(e){
+    document.removeEventListener('click', closeTx);
+    closeAllTxDropdowns();
+  }); }, 10);
+}
 function togglePeriodDropdownTx(){
   closeAllTxDropdowns();
-  document.getElementById('periodDropdownTx').classList.toggle('open');
+  var dd = document.getElementById('periodDropdownTx'); dd.classList.toggle('open');
+  if(dd.classList.contains('open')) setupTxCloseListener();
 }
 function toggleExportTxDropdown(){
   closeAllTxDropdowns();
-  document.getElementById('exportTxDropdown').classList.toggle('open');
+  var dd = document.getElementById('exportTxDropdown'); dd.classList.toggle('open');
+  if(dd.classList.contains('open')) setupTxCloseListener();
 }
 function closeExportTxDropdown(){
   document.getElementById('exportTxDropdown').classList.remove('open');
@@ -6129,7 +6137,8 @@ function toggleExpCatFilter(id, el){
 }
 function toggleTxTypeDropdown(){
   closeAllTxDropdowns();
-  document.getElementById('txTypeDropdown').classList.toggle('open');
+  var dd = document.getElementById('txTypeDropdown'); dd.classList.toggle('open');
+  if(dd.classList.contains('open')) setupTxCloseListener();
 }
 function toggleTxTypeClick(labelEl){
   var cb = labelEl.querySelector('.tx-type-cb');
@@ -6187,11 +6196,7 @@ function filterTransactions(){
   renderTransactionsPage();
 }
 /* Закрытие дропдаунов при клике вне */
-document.addEventListener('click', function(e){
-  if(e.target.closest('#periodTriggerTx') || e.target.closest('#exportTxBtn') || e.target.closest('#txTypeBtn')) return;
-  if(e.target.closest('#periodDropdownTx') || e.target.closest('#exportTxDropdown') || e.target.closest('#txTypeDropdown')) return;
-  closeAllTxDropdowns();
-});
+
 </script>
 <!-- Модалка итога инвентаризации -->
 <div class="modal-overlay" id="invResultModal" onclick="if(event.target===this)closeInvResult()">
