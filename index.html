@@ -4421,7 +4421,7 @@ function renderTransactionsPage(){
     var fnName = item.type === 'expense' ? 'editExpense' : 'editIncome';
     var delFn = item.type === 'expense' ? 'deleteExpense' : 'deleteIncome';
     return '<tr>' +
-      '<td style="font-size:.8rem;color:var(--muted);text-align:left">'+d+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted)">'+d+'</td>' +
       '<td>'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
       '<td style="font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
       '<td style="font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
