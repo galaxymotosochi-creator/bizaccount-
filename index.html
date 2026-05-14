@@ -3880,8 +3880,13 @@ function loadIncCategories(){
   var sel = document.getElementById('incCategory');
   if(!sel) return;
   sel.innerHTML = '';
-  var custom = getIncCatList();
-  custom.forEach(function(c){ var opt = document.createElement('option'); opt.value = 'custom_'+c.id; opt.textContent = c.name; sel.appendChild(opt); });
+  var all = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  all.filter(function(c){ return c.type === 'income'; }).forEach(function(c){
+    var opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
 }
 function openNewIncCat(){
   var w = document.getElementById('incNewCatWrap'), i = document.getElementById('incNewCatInput');
@@ -3922,8 +3927,7 @@ function saveIncome(e){
   var name = document.getElementById('incName').value.trim();
   var amount = parseFloat(document.getElementById('incAmount').value);
   var date = document.getElementById('incDate').value;
-  var catRaw = document.getElementById('incCategory').value;
-  var cat = catRaw.startsWith('custom_') ? document.querySelector('#incCategory option[value="'+catRaw+'"]').textContent : catRaw;
+  var cat = document.getElementById('incCategory').value;
   if(!name || !amount) return alert('Заполните название и сумму');
   window._expenseTemp = {type:'income', name:name, amount:amount, date:date, category:cat};
   openAccSelectModal(amount);
@@ -4302,10 +4306,10 @@ function loadExpCategories(){
   var sel = document.getElementById('expCategory');
   if(!sel) return;
   sel.innerHTML = '';
-  var custom = getExpCatList();
-  custom.forEach(function(c){
+  var all = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  all.filter(function(c){ return c.type === 'business'; }).forEach(function(c){
     var opt = document.createElement('option');
-    opt.value = 'custom_'+c.id;
+    opt.value = c.name;
     opt.textContent = c.name;
     sel.appendChild(opt);
   });
@@ -4448,7 +4452,7 @@ function editExpense(id){
   document.getElementById('expDate').value = e.date || '';
   var catEl = document.getElementById('expCategory');
   for(var i=0;i<catEl.options.length;i++){
-    if(catEl.options[i].value === e.category || catEl.options[i].textContent === e.category){
+    if(catEl.options[i].value === e.category){
       catEl.value = catEl.options[i].value; break;
     }
   }
@@ -4472,7 +4476,7 @@ function editIncome(id){
   document.getElementById('incDate').value = e.date || '';
   var catEl = document.getElementById('incCategory');
   for(var i=0;i<catEl.options.length;i++){
-    if(catEl.options[i].value === e.category || catEl.options[i].textContent === e.category){
+    if(catEl.options[i].value === e.category){
       catEl.value = catEl.options[i].value; break;
     }
   }
@@ -4507,8 +4511,7 @@ function saveExpense(e){
   var name = document.getElementById('expName').value.trim();
   var amount = parseFloat(document.getElementById('expAmount').value);
   var date = document.getElementById('expDate').value;
-  var catRaw = document.getElementById('expCategory').value;
-  var cat = catRaw.startsWith('custom_') ? document.querySelector('#expCategory option[value="'+catRaw+'"]').textContent : catRaw;
+  var cat = document.getElementById('expCategory').value;
   if(!name || !amount){ alert('Заполните название и сумму'); return; }
   var accounts = {};
   var accTotal = 0;
