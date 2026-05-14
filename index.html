@@ -3882,7 +3882,6 @@ function loadIncCategories(){
   sel.innerHTML = '';
   var custom = getIncCatList();
   custom.forEach(function(c){ var opt = document.createElement('option'); opt.value = 'custom_'+c.id; opt.textContent = c.name; sel.appendChild(opt); });
-  sel.value = val;
 }
 function openNewIncCat(){
   var w = document.getElementById('incNewCatWrap'), i = document.getElementById('incNewCatInput');
@@ -4310,7 +4309,6 @@ function loadExpCategories(){
     opt.textContent = c.name;
     sel.appendChild(opt);
   });
-  sel.value = val;
 }
 function openNewExpCat(){
   var wrap = document.getElementById('expNewCatWrap');
