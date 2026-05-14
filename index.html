@@ -1494,15 +1494,13 @@
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
       <div class="search-row">
-        <div class="search-input-wrap">
-          <span class="search-icon">🔍</span>
-          <input type="text" class="search-field" placeholder="Быстрый поиск">
+        <div class="stock-search" style="width:30%;min-width:180px;max-width:400px">
+          <span style="font-size:.75rem;color:var(--muted)">🔍</span>
+          <input type="text" id="txSearchInput" placeholder="Быстрый поиск" oninput="renderTransactionsPage()">
         </div>
-        <div class="actions-group">
-          <div class="tx-period-wrapper" style="position:relative">
-            <button class="text-btn" onclick="togglePeriodDropdownTx()" id="periodTriggerTx" title="Выбрать период" style="font-size:.9rem;padding:0 .2rem">
-              📅
-            </button>
+        <div class="stock-filter-links">
+          <div class="tx-period-wrapper" style="position:relative;display:inline-flex">
+            <span class="stock-filter-link" onclick="togglePeriodDropdownTx()" id="periodTriggerTx">📅 Период</span>
             <div class="tx-period-dropdown" id="periodDropdownTx">
               <div class="pd-title">Период</div>
               <button class="period-preset active" onclick="setPeriodTx('today', 'Сегодня', this)">Сегодня</button>
@@ -1522,22 +1520,9 @@
               </div>
             </div>
           </div>
-          <div class="export-wrapper">
-            <button class="text-btn" onclick="toggleExportTxDropdown()" id="exportTxBtn">
-              Скачать <span class="act-arrow">▼</span>
-            </button>
-            <div class="export-dropdown" id="exportTxDropdown">
-              <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
-              <div class="export-dd-actions">
-                <span class="export-dd-btn" onclick="confirmExportTx()">Да</span>
-                <span class="export-dd-btn export-dd-cancel" onclick="closeExportTxDropdown()">Нет</span>
-              </div>
-            </div>
-          </div>
-          <div class="tx-type-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleTxTypeDropdown()" id="txTypeBtn">
-              Транзакция <span class="act-arrow">▼</span>
-            </button>
+          <span class="stock-filter-link" onclick="toggleExportTxDropdown()" id="exportTxBtn">Скачать</span>
+          <div class="tx-type-wrapper" style="position:relative;display:inline-flex">
+            <span class="stock-filter-link" onclick="toggleTxTypeDropdown()" id="txTypeBtn">Транзакция</span>
             <div class="tx-type-dropdown" id="txTypeDropdown">
               <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item">
@@ -1558,22 +1543,13 @@
               </label>
             </div>
           </div>
-          <div class="exp-cat-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleExpCatDropdown()" id="expCatBtn">
-              Расходы <span class="act-arrow">▼</span>
-            </button>
-            <div class="exp-cat-dropdown" id="expCatDropdown">
-              <div class="pd-title">Категория расхода</div>
-              <div id="expCatList"></div>
-            </div>
-          </div>
-          <div class="inc-cat-wrapper" style="position:relative">
-            <button class="text-btn" onclick="toggleIncCatDropdown()" id="incCatBtn">
-              Доходы <span class="act-arrow">▼</span>
-            </button>
-            <div class="inc-cat-dropdown" id="incCatDropdown">
-              <div class="pd-title">Категория дохода</div>
-              <div id="incCatList"></div>
+          <span class="stock-filter-link" onclick="toggleExpCatDropdown()" id="expCatBtn">Расходы</span>
+          <span class="stock-filter-link" onclick="toggleIncCatDropdown()" id="incCatBtn">Доходы</span>
+          <div class="export-dropdown" id="exportTxDropdown">
+            <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
+            <div class="export-dd-actions">
+              <span class="export-dd-btn" onclick="confirmExportTx()">Да</span>
+              <span class="export-dd-btn export-dd-cancel" onclick="closeExportTxDropdown()">Нет</span>
             </div>
           </div>
         </div>
