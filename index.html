@@ -278,6 +278,18 @@
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,131,221,.1)}
 .acc-amount-input{width:140px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font);border:1px solid var(--border);border-radius:var(--radius);outline:none;text-align:center;background:var(--white);color:var(--body-color);transition:border-color .15s}
 .acc-amount-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(25,131,221,.1)}
+.acc-card{display:flex;align-items:center;gap:.5rem;padding:.65rem .75rem;border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .12s;background:var(--white)}
+.acc-card:hover{border-color:#cbd5e1;background:#f8fafc}
+.acc-card.selected{border-color:var(--primary);background:var(--primary-light)}
+.acc-radio{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;transition:all .12s}
+.acc-card.selected .acc-radio{border-color:var(--primary);border-width:6px}
+.acc-icon{font-size:1.2rem;flex-shrink:0;line-height:1}
+.acc-name{flex:1;font-size:.85rem;font-weight:500;color:var(--body-color)}
+.acc-balance{font-size:.82rem;font-weight:600;color:var(--primary)}
+.acc-split-row{display:flex;align-items:center;gap:.35rem;padding:.25rem 0}
+.acc-split-input{width:100px;padding:.4rem .5rem;font-size:.82rem;font-family:var(--font);border:1px solid var(--border);border-radius:5px;outline:none;text-align:center}
+.acc-split-input:focus{border-color:var(--primary)}
+.acc-split-cb{width:16px;height:16px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
   .form-group textarea{min-height:60px;resize:vertical}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
   .modal-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
@@ -2116,6 +2128,62 @@
         <button type="submit" class="btn btn-primary">Добавить</button>
       </div>
     </form>
+  </div>
+</div>
+<!-- МОДАЛКА ВЫБОРА СЧЕТА -->
+<div class="modal-overlay" id="accountSelectModal" onclick="if(event.target===this)closeAccSelectModal()">
+  <div class="modal-box" style="max-width:400px">
+    <button class="modal-close" onclick="closeAccSelectModal()">&times;</button>
+    <h2>💰 С какого счета списать?</h2>
+    <div class="sub" id="accSelectSub">Сумма расхода: 0 ₽</div>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0" id="accSelectList">
+      <div class="acc-card" data-acc="cash" onclick="selectAccCard(this)">
+        <div class="acc-radio"></div>
+        <span class="acc-icon">💵</span>
+        <span class="acc-name">Наличные</span>
+        <span class="acc-balance">0 ₽</span>
+      </div>
+      <div class="acc-card" data-acc="card" onclick="selectAccCard(this)">
+        <div class="acc-radio"></div>
+        <span class="acc-icon">💳</span>
+        <span class="acc-name">Карта</span>
+        <span class="acc-balance">0 ₽</span>
+      </div>
+      <div class="acc-card" data-acc="transfer" onclick="selectAccCard(this)">
+        <div class="acc-radio"></div>
+        <span class="acc-icon">🔄</span>
+        <span class="acc-name">Перевод</span>
+        <span class="acc-balance">0 ₽</span>
+      </div>
+    </div>
+    <div id="accSplitWrap" style="display:none;margin-bottom:.5rem">
+      <div class="acc-split-row" data-acc="cash">
+        <span class="acc-icon" style="font-size:1rem">💵</span>
+        <span class="acc-name" style="font-size:.82rem">Наличные</span>
+        <input type="number" class="acc-split-input" placeholder="0" min="0" oninput="calcSplitTotal()">
+        <input type="checkbox" class="acc-split-cb" checked onchange="toggleSplitRow(this)">
+      </div>
+      <div class="acc-split-row" data-acc="card">
+        <span class="acc-icon" style="font-size:1rem">💳</span>
+        <span class="acc-name" style="font-size:.82rem">Карта</span>
+        <input type="number" class="acc-split-input" placeholder="0" min="0" oninput="calcSplitTotal()">
+        <input type="checkbox" class="acc-split-cb" checked onchange="toggleSplitRow(this)">
+      </div>
+      <div class="acc-split-row" data-acc="transfer">
+        <span class="acc-icon" style="font-size:1rem">🔄</span>
+        <span class="acc-name" style="font-size:.82rem">Перевод</span>
+        <input type="number" class="acc-split-input" placeholder="0" min="0" oninput="calcSplitTotal()">
+        <input type="checkbox" class="acc-split-cb" checked onchange="toggleSplitRow(this)">
+      </div>
+      <div id="splitError" style="font-size:.78rem;color:#dc2626;margin-top:.25rem;display:none"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:.35rem;font-size:.82rem;cursor:pointer;margin-bottom:1rem" id="splitToggleWrap">
+      <input type="checkbox" id="splitToggle" onchange="toggleSplitMode(this.checked)" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
+      Разделить
+    </label>
+    <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
+      <button type="button" class="btn btn-primary" onclick="confirmAccSelect()" id="accSelectBtn" style="width:100%">✅ Списать 0 ₽</button>
+    </div>
   </div>
 </div>
 <div class="modal-overlay" id="writeoffModal">
@@ -4565,23 +4633,142 @@ function saveExpense(e){
       }
     }
   });
-  if(Object.keys(accounts).length === 0){
-    accounts.cash = amount;
-    accTotal = amount;
+  window._expenseTemp = {name:name, amount:amount, date:date, category:cat};
+  openAccSelectModal(amount);
+}
+var _selectedAcc = 'cash';
+function getAccBalances(){
+  var b = JSON.parse(localStorage.getItem('accountBalances88') || 'null');
+  if(!b){ b = {cash:0, card:0, transfer:0}; localStorage.setItem('accountBalances88', JSON.stringify(b)); }
+  return b;
+}
+function openAccSelectModal(amount){
+  var balances = getAccBalances();
+  var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
+  var icons = {cash:'💵', card:'💳', transfer:'🔄'};
+  document.getElementById('accSelectSub').textContent = 'Сумма расхода: ' + amount.toLocaleString() + ' ₽';
+  document.querySelectorAll('.acc-card').forEach(function(card){
+    var acc = card.dataset.acc;
+    card.querySelector('.acc-name').textContent = labels[acc];
+    card.querySelector('.acc-balance').textContent = (balances[acc]||0).toLocaleString() + ' ₽';
+    card.querySelector('.acc-icon').textContent = icons[acc];
+  });
+  document.getElementById('splitToggle').checked = false;
+  document.getElementById('accSplitWrap').style.display = 'none';
+  _selectedAcc = 'cash';
+  document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelector('.acc-card[data-acc="cash"]').classList.add('selected');
+  document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
+  document.getElementById('accountSelectModal').classList.add('active');
+}
+function closeAccSelectModal(){
+  document.getElementById('accountSelectModal').classList.remove('active');
+}
+function selectAccCard(el){
+  document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  _selectedAcc = el.dataset.acc;
+  if(!document.getElementById('splitToggle').checked){
+    var amount = window._expenseTemp.amount;
+    var balances = getAccBalances();
+    document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
   }
+}
+function toggleSplitMode(enabled){
+  document.getElementById('accSplitWrap').style.display = enabled ? 'block' : 'none';
+  if(enabled){
+    var amount = window._expenseTemp.amount;
+    var splitAmt = Math.round(amount / 3);
+    document.querySelectorAll('.acc-split-input').forEach(function(inp, i){
+      inp.value = i === 2 ? (amount - splitAmt * 2) : splitAmt;
+    });
+    calcSplitTotal();
+  } else {
+    var amount = window._expenseTemp.amount;
+    document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
+    document.querySelectorAll('.acc-split-row').forEach(function(r){ r.style.display = 'flex'; });
+    document.querySelectorAll('.acc-split-cb').forEach(function(c){ c.checked = true; });
+  }
+}
+function toggleSplitRow(cb){
+  var row = cb.closest('.acc-split-row');
+  var inp = row.querySelector('.acc-split-input');
+  if(cb.checked){
+    row.style.opacity = '1';
+    inp.disabled = false;
+  } else {
+    row.style.opacity = '.4';
+    inp.disabled = true;
+    inp.value = '';
+  }
+  calcSplitTotal();
+}
+function calcSplitTotal(){
+  var total = 0;
+  var errEl = document.getElementById('splitError');
+  document.querySelectorAll('.acc-split-row').forEach(function(r){
+    var cb = r.querySelector('.acc-split-cb');
+    var inp = r.querySelector('.acc-split-input');
+    if(cb.checked && inp.value) total += parseFloat(inp.value) || 0;
+  });
+  var amount = window._expenseTemp.amount;
+  if(Math.abs(total - amount) > 0.01){
+    errEl.textContent = 'Сумма должна быть ' + amount.toLocaleString() + ' ₽. Сейчас: ' + total.toLocaleString() + ' ₽';
+    errEl.style.display = 'block';
+  } else {
+    errEl.style.display = 'none';
+  }
+  document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + total.toLocaleString() + ' ₽';
+}
+function confirmAccSelect(){
+  var tmp = window._expenseTemp;
+  if(!tmp) return;
+  var balances = getAccBalances();
+  var amount = tmp.amount;
+  var accounts = {};
+  var isSplit = document.getElementById('splitToggle').checked;
+  if(isSplit){
+    document.querySelectorAll('.acc-split-row').forEach(function(r){
+      var cb = r.querySelector('.acc-split-cb');
+      var inp = r.querySelector('.acc-split-input');
+      if(cb.checked && inp.value){
+        var val = parseFloat(inp.value) || 0;
+        if(val > 0) accounts[r.dataset.acc] = val;
+      }
+    });
+    var total = Object.values(accounts).reduce(function(s,v){ return s+v; }, 0);
+    if(Math.abs(total - amount) > 0.01) return alert('Сумма по счетам не совпадает с суммой расхода');
+  } else {
+    accounts[_selectedAcc] = amount;
+  }
+  // Проверка балансов
+  for(var acc in accounts){
+    if((balances[acc]||0) < accounts[acc]){
+      var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
+      return alert('Недостаточно средств на счёте «' + (labels[acc]||acc) + '». Текущий баланс: ' + (balances[acc]||0).toLocaleString() + ' ₽. Сначала пополните счёт.');
+    }
+  }
+  // Списываем
+  for(var acc in accounts){
+    balances[acc] = (balances[acc]||0) - accounts[acc];
+  }
+  localStorage.setItem('accountBalances88', JSON.stringify(balances));
+  // Сохраняем расход
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
   var editId = document.getElementById('editExpenseId').value;
   if(editId){
     var idx = expenses.findIndex(function(x){ return x.id === parseInt(editId); });
-    if(idx >= 0){ expenses[idx] = {...expenses[idx], name:name, amount:amount, date:date, category:cat, accounts:accounts}; }
+    if(idx >= 0){ expenses[idx] = {...expenses[idx], name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts}; }
   } else {
-    expenses.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
+    expenses.push({id:Date.now(), name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts, created:new Date().toISOString()});
   }
   localStorage.setItem('expenses88', JSON.stringify(expenses));
+  closeAccSelectModal();
   closeExpenseModal();
   document.getElementById('expName').value = '';
   document.getElementById('expAmount').value = '';
   document.getElementById('editExpenseId').value = '';
+  window._expenseTemp = null;
   renderTransactionsPage();
 }
 function openWriteoffModal(){
