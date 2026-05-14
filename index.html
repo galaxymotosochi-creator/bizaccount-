@@ -1523,7 +1523,7 @@
         </div>
         <div class="stock-filter-links">
           <div class="tx-period-wrapper" style="position:relative;display:inline-flex">
-            <span class="stock-filter-link tx-period-wrapper" onclick="togglePeriodDropdownTx()" id="periodTriggerTx">📅 Период</span>
+            <span class="stock-filter-link tx-period-wrapper" onclick="event.stopPropagation();togglePeriodDropdownTx()" id="periodTriggerTx">📅 Период</span>
             <div class="tx-period-dropdown" id="periodDropdownTx">
               <div class="pd-title">Период</div>
               <button class="period-preset active" onclick="setPeriodTx('today', 'Сегодня', this)">Сегодня</button>
@@ -1543,9 +1543,9 @@
               </div>
             </div>
           </div>
-          <span class="stock-filter-link export-wrapper" onclick="toggleExportTxDropdown()" id="exportTxBtn">Скачать</span>
+          <span class="stock-filter-link export-wrapper" onclick="event.stopPropagation();toggleExportTxDropdown()" id="exportTxBtn">Скачать</span>
           <div class="tx-type-wrapper" style="position:relative;display:inline-flex">
-            <span class="stock-filter-link tx-type-wrapper" onclick="toggleTxTypeDropdown()" id="txTypeBtn">Транзакция</span>
+            <span class="stock-filter-link tx-type-wrapper" onclick="event.stopPropagation();toggleTxTypeDropdown()" id="txTypeBtn">Транзакция</span>
             <div class="tx-type-dropdown" id="txTypeDropdown">
               <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
@@ -6071,21 +6071,14 @@ function closeAllTxDropdowns(){
   document.getElementById('exportTxDropdown')?.classList.remove('open');
   document.getElementById('txTypeDropdown')?.classList.remove('open');
 }
-function setupTxCloseListener(){
-  setTimeout(function(){ document.addEventListener('click', function closeTx(e){
-    document.removeEventListener('click', closeTx);
-    closeAllTxDropdowns();
-  }); }, 10);
-}
+
 function togglePeriodDropdownTx(){
   closeAllTxDropdowns();
-  var dd = document.getElementById('periodDropdownTx'); dd.classList.toggle('open');
-  if(dd.classList.contains('open')) setupTxCloseListener();
+  document.getElementById('periodDropdownTx').classList.toggle('open');
 }
 function toggleExportTxDropdown(){
   closeAllTxDropdowns();
-  var dd = document.getElementById('exportTxDropdown'); dd.classList.toggle('open');
-  if(dd.classList.contains('open')) setupTxCloseListener();
+  document.getElementById('exportTxDropdown').classList.toggle('open');
 }
 function closeExportTxDropdown(){
   document.getElementById('exportTxDropdown').classList.remove('open');
@@ -6137,9 +6130,9 @@ function toggleExpCatFilter(id, el){
 }
 function toggleTxTypeDropdown(){
   closeAllTxDropdowns();
-  var dd = document.getElementById('txTypeDropdown'); dd.classList.toggle('open');
-  if(dd.classList.contains('open')) setupTxCloseListener();
+  document.getElementById('txTypeDropdown').classList.toggle('open');
 }
+document.addEventListener('click', function(){ closeAllTxDropdowns(); });
 function toggleTxTypeClick(labelEl){
   var cb = labelEl.querySelector('.tx-type-cb');
   if(!cb) return;
