@@ -2013,13 +2013,7 @@
       </div>
       <div class="form-group">
         <label>Категория</label>
-        <select id="incCategory">
-          <option value="other">Прочее</option>
-          <option value="investment">Инвестиции</option>
-          <option value="partners">Партнёрские</option>
-          <option value="interest">Проценты</option>
-          <option value="sale_other">Прочие продажи</option>
-        </select>
+        <select id="incCategory"></select>
       </div>
       <div class="modal-actions" style="margin-top:1.5rem">
         <button type="submit" class="btn btn-primary">Добавить</button>
@@ -3885,8 +3879,7 @@ function saveIncCatList(list){ localStorage.setItem('incCategories88', JSON.stri
 function loadIncCategories(){
   var sel = document.getElementById('incCategory');
   if(!sel) return;
-  var val = sel.value;
-  sel.innerHTML = '<option value="other">Прочее</option><option value="investment">Инвестиции</option><option value="partners">Партнёрские</option><option value="interest">Проценты</option><option value="sale_other">Прочие продажи</option>';
+  sel.innerHTML = '';
   var custom = getIncCatList();
   custom.forEach(function(c){ var opt = document.createElement('option'); opt.value = 'custom_'+c.id; opt.textContent = c.name; sel.appendChild(opt); });
   sel.value = val;
@@ -4309,15 +4302,7 @@ function saveExpCatList(list){
 function loadExpCategories(){
   var sel = document.getElementById('expCategory');
   if(!sel) return;
-  var val = sel.value;
-  sel.innerHTML =
-    '<option value="other">Прочее</option>' +
-    '<option value="rent">Аренда</option>' +
-    '<option value="utilities">Коммунальные</option>' +
-    '<option value="salary">Зарплата</option>' +
-    '<option value="supplies">Канцтовары</option>' +
-    '<option value="marketing">Маркетинг</option>' +
-    '<option value="transport">Транспорт</option>';
+  sel.innerHTML = '';
   var custom = getExpCatList();
   custom.forEach(function(c){
     var opt = document.createElement('option');
@@ -4376,6 +4361,16 @@ function openExpenseModal(){
   document.querySelectorAll('.exp-acc-cb').forEach(function(c,i){ c.checked = i === 0; });
   document.getElementById('expenseModal').classList.add('active');
 }
+var _txTypeFilter = null;
+function toggleTxTypeFilter(type){
+  if(_txTypeFilter === type) _txTypeFilter = null; else _txTypeFilter = type;
+  document.querySelectorAll('#expCatBtn,#incCatBtn').forEach(function(el){
+    el.style.fontWeight = 'normal';
+  });
+  var btn = document.getElementById(type === 'expense' ? 'expCatBtn' : 'incCatBtn');
+  if(_txTypeFilter) btn.style.fontWeight = '600';
+  renderTransactionsPage();
+}
 function renderTransactionsPage(){
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
   var incomes = JSON.parse(localStorage.getItem('incomes88') || '[]');
@@ -4402,13 +4397,18 @@ function renderTransactionsPage(){
   var allItems = [];
   expenses.forEach(function(e){ allItems.push({type:'expense', data:e}); });
   incomes.forEach(function(e){ allItems.push({type:'income', data:e}); });
+  // Фильтр по типу (Расходы / Доходы)
+  if(_txTypeFilter) allItems = allItems.filter(function(i){ return i.type === _txTypeFilter; });
+  // Поиск по названию
+  var q = (document.getElementById('txSearchInput')?.value||'').toLowerCase().trim();
+  if(q) allItems = allItems.filter(function(i){ return i.data.name.toLowerCase().includes(q); });
   allItems.sort(function(a,b){ return (b.data.date||'') > (a.data.date||'') ? 1 : -1; });
   if(!allItems.length){
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">💰</div><p>Записей пока нет</p></div></td></tr>';
     return;
   }
-  var expCats = {rent:'Аренда',utilities:'Коммунальные',salary:'Зарплата',supplies:'Канцтовары',marketing:'Маркетинг',transport:'Транспорт',other:'Прочее'};
-  var incCats = {investment:'Инвестиции',partners:'Партнёрские',interest:'Проценты',sale_other:'Прочие продажи',other:'Прочее'};
+  var expCats = {};
+  var incCats = {};
   tbody.innerHTML = allItems.map(function(item){
     var e = item.data;
     var d = e.date ? e.date.split('-').reverse().join('.') : '—';
@@ -4423,7 +4423,7 @@ function renderTransactionsPage(){
     var fnName = item.type === 'expense' ? 'editExpense' : 'editIncome';
     var delFn = item.type === 'expense' ? 'deleteExpense' : 'deleteIncome';
     return '<tr>' +
-      '<td style="font-size:.8rem;color:var(--muted)">'+d+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted);text-align:left">'+d+'</td>' +
       '<td>'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
       '<td style="font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
       '<td style="font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
