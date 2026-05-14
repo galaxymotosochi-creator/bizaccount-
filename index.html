@@ -1549,12 +1549,12 @@
             <div class="tx-type-dropdown" id="txTypeDropdown">
               <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="income">✓</span>
-                Доход
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
                 <span class="tx-type-cb" data-type="expense">✓</span>
                 Расход
+              </label>
+              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
+                <span class="tx-type-cb" data-type="income">✓</span>
+                Доход
               </label>
               <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
                 <span class="tx-type-cb" data-type="supply_expense">✓</span>
@@ -6134,18 +6134,15 @@ function toggleTxTypeDropdown(){
 function toggleTxTypeClick(labelEl){
   var cb = labelEl.querySelector('.tx-type-cb');
   if(!cb) return;
-  var type = cb.dataset.type;
-  var checked = cb.classList.contains('checked');
-  document.querySelectorAll('.tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
-  if(!checked){
-    cb.classList.add('checked');
-    txTypeFilter = type;
-    if(type === 'expense' || type === 'income') _txTypeFilter = type;
-    else _txTypeFilter = null;
-  } else {
-    txTypeFilter = null;
-    _txTypeFilter = null;
-  }
+  cb.classList.toggle('checked');
+  var checkedTypes = [];
+  document.querySelectorAll('.tx-type-cb.checked').forEach(function(c){ checkedTypes.push(c.dataset.type); });
+  // Если выбраны 'expense' или 'income' — фильтруем, иначе показываем всё
+  var hasExpense = checkedTypes.indexOf('expense') >= 0;
+  var hasIncome = checkedTypes.indexOf('income') >= 0;
+  if(hasExpense && !hasIncome) _txTypeFilter = 'expense';
+  else if(hasIncome && !hasExpense) _txTypeFilter = 'income';
+  else _txTypeFilter = null;
   renderTransactionsPage();
 }
 var incCatFilter = null;
