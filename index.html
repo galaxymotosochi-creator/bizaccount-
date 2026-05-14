@@ -3355,6 +3355,14 @@ function openStockEntryModal(){
     document.getElementById("seBarcode").value = "";
     document.getElementById("seWeight").value = "";
     document.getElementById("seItemWeight").value = "";
+    // Load categories
+    var sel = document.getElementById("seCat");
+    if(sel){
+      var cats = JSON.parse(localStorage.getItem("prodCats88") || "[]");
+      var statCats = {material:"Материалы",tool:"Инструменты",service:"Услуги",equipment:"Оборудование",other:"Прочее"};
+      sel.innerHTML = Object.keys(statCats).map(function(k){ return '<option value="'+k+'">'+statCats[k]+'</option>'; }).join("") +
+        cats.map(function(c){ return '<option value="'+c.name+'">'+c.name+'</option>'; }).join("");
+    }
   }
   renderSEItems();
   document.getElementById("stockEntryModal").classList.add("active");
