@@ -2931,12 +2931,12 @@ function showToast(msg){
 }
 function toggleTypeFilter(type, el){
   var cb = el;
-  document.querySelectorAll('#catDropdown .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
-  cb.classList.add('checked');
-  // Filter products table by type
-  typeFilter = type;
+  cb.classList.toggle('checked');
+  // Build filter from all checked types
+  var checked = [];
+  document.querySelectorAll('#catDropdown .tx-type-cb.checked').forEach(function(c){ checked.push(c.dataset.type); });
+  typeFilter = checked.length > 0 ? checked : null;
   renderProductsPage();
-  document.getElementById('catDropdown').classList.remove('open');
 }
 var typeFilter = null;
 function closeAllDropdowns(){
@@ -3009,9 +3009,8 @@ function closeTrashModal(){
 document.addEventListener('click', function(e){
   const catDD = document.getElementById('catDropdown');
   const colsDD = document.getElementById('colsDropdown');
-  if(catDD && !e.target.closest('.search-row')){
+  if(catDD && !e.target.closest('.cat-wrapper') && !e.target.closest('#catDropdown')){
     catDD.classList.remove('open');
-    
   }
   if(colsDD && !e.target.closest('.cols-wrapper')){
     colsDD.classList.remove('open');
@@ -3028,7 +3027,7 @@ function renderProductsPage(){
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
   if(currentFilter !== 'all') products = products.filter(p => p.cat === currentFilter);
-  if(typeFilter) products = products.filter(p => p.type === typeFilter);
+  if(typeFilter) products = products.filter(p => typeFilter.indexOf(p.type) >= 0);
   if(selectedCats.size > 0) products = products.filter(p => selectedCats.has(CAT_LABELS[p.cat] || p.cat || ''));
   if(q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q));
   const tbody = document.getElementById('productTableBody');
