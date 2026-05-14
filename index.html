@@ -335,6 +335,7 @@
 #txColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
 #txColHeaders th:first-child{text-align:left;padding-left:0}
 #txColHeaders th.actions{width:140px;text-align:right}
+#expenseTableBody td:first-child{text-align:left}
 #productTableBody td:first-child{text-align:left;padding-left:0}
 /* Шапка инвентаризации — единый стиль с товарами */
 #invColHeaders th{font-size:.72rem;font-weight:400;color:var(--muted);text-transform:uppercase;padding:.5rem .5rem;white-space:nowrap;border-bottom:1px solid var(--border);background:var(--white);text-align:center}
@@ -4478,7 +4479,7 @@ function renderTransactionsPage(){
     var fnName = item.type === 'expense' ? 'editExpense' : 'editIncome';
     var delFn = item.type === 'expense' ? 'deleteExpense' : 'deleteIncome';
     return '<tr>' +
-      '<td style="font-size:.8rem;color:var(--muted);text-align:left">'+d+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted)">'+d+'</td>' +
       '<td>'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
       '<td style="font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
       '<td style="font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
