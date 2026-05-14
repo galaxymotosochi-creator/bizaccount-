@@ -965,39 +965,39 @@
           <input type="text" id="productSearch" placeholder="Быстрый поиск" oninput="renderProductsPage()">
         </div>
         <div class="stock-filter-links">
-          <span class="stock-filter-link cat-wrapper" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
+          <span class="stock-filter-link" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
             Категория
           </span>
-          <div class="cat-dropdown" id="catDropdown">
-            <div class="cat-dd-actions">
-              <span class="cat-dd-action" onclick="selectAllCats()">Выбрать все</span>
-              <span class="cat-dd-action" onclick="clearAllCats()">Очистить</span>
-            </div>
-            <div class="cat-dd-search">
-              <input type="text" placeholder="Поиск..." oninput="filterCatList(this.value)">
-            </div>
-            <div class="cat-dd-list" id="catList"></div>
-          </div>
           <span class="stock-filter-link" onclick="closeAllDropdowns();navigateTo('trash')">Корзина</span>
-          <span class="stock-filter-link export-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');toggleExportDropdown(event)">
+          <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');toggleExportDropdown(event)">
             Скачать
           </span>
-          <div class="export-dropdown" id="exportDropdown">
-            <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
-            <div class="export-dd-actions">
-              <span class="export-dd-btn" onclick="confirmExport()">Да</span>
-              <span class="export-dd-btn export-dd-cancel" onclick="closeExportDropdown()">Нет</span>
-            </div>
-          </div>
-          <span class="stock-filter-link cols-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
+          <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
             Столбцы
           </span>
-          <div class="cols-dropdown" id="colsDropdown">
-            <div class="cols-title">Отображать столбцы</div>
-            <div class="cols-list" id="colsList"></div>
-            <div class="cols-footer">
-              <span class="cols-reset" onclick="resetCols()">Вернуть по умолчанию</span>
-            </div>
+        </div>
+        <div class="cat-dropdown" id="catDropdown">
+          <div class="cat-dd-actions">
+            <span class="cat-dd-action" onclick="selectAllCats()">Выбрать все</span>
+            <span class="cat-dd-action" onclick="clearAllCats()">Очистить</span>
+          </div>
+          <div class="cat-dd-search">
+            <input type="text" placeholder="Поиск..." oninput="filterCatList(this.value)">
+          </div>
+          <div class="cat-dd-list" id="catList"></div>
+        </div>
+        <div class="export-dropdown" id="exportDropdown">
+          <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
+          <div class="export-dd-actions">
+            <span class="export-dd-btn" onclick="confirmExport()">Да</span>
+            <span class="export-dd-btn export-dd-cancel" onclick="closeExportDropdown()">Нет</span>
+          </div>
+        </div>
+        <div class="cols-dropdown" id="colsDropdown">
+          <div class="cols-title">Отображать столбцы</div>
+          <div class="cols-list" id="colsList"></div>
+          <div class="cols-footer">
+            <span class="cols-reset" onclick="resetCols()">Вернуть по умолчанию</span>
           </div>
         </div>
     </div>
