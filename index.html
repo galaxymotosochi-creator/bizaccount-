@@ -1566,8 +1566,8 @@
               </label>
             </div>
           </div>
-          <span class="stock-filter-link" onclick="alert('1')" id="expCatBtn" style="cursor:pointer">Расходы</span>
-          <span class="stock-filter-link" onclick="alert('2')" id="incCatBtn" style="cursor:pointer">Доходы</span>
+          <span class="stock-filter-link" onclick="toggleTxFilter('expense')" id="expCatBtn" style="cursor:pointer">Расходы</span>
+          <span class="stock-filter-link" onclick="toggleTxFilter('income')" id="incCatBtn" style="cursor:pointer">Доходы</span>
         </div>
         <div class="export-dropdown" id="exportTxDropdown">
           <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
@@ -4364,7 +4364,7 @@ function openExpenseModal(){
   document.getElementById('expenseModal').classList.add('active');
 }
 var _txTypeFilter = null;
-function toggleTxTypeFilter(type){
+function toggleTxFilter(type){
   if(_txTypeFilter === type) _txTypeFilter = null; else _txTypeFilter = type;
   document.querySelectorAll('#expCatBtn,#incCatBtn').forEach(function(el){
     el.style.color = '';
