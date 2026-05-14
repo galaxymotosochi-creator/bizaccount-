@@ -1566,8 +1566,8 @@
               </label>
             </div>
           </div>
-          <span class="stock-filter-link" onclick="console.log('expense');toggleTxTypeFilter('expense')" id="expCatBtn" style="cursor:pointer">Расходы</span>
-          <span class="stock-filter-link" onclick="console.log('income');toggleTxTypeFilter('income')" id="incCatBtn" style="cursor:pointer">Доходы</span>
+          <span class="stock-filter-link" onclick="(function(){var t=document.getElementById('expenseTableBody');t.innerHTML='<tr><td colspan=5>ТЕСТ ФИЛЬТРА</td></tr>'})()" id="expCatBtn" style="cursor:pointer">Расходы</span>
+          <span class="stock-filter-link" onclick="(function(){var t=document.getElementById('expenseTableBody');t.innerHTML='<tr><td colspan=5>ТЕСТ ФИЛЬТРА ДОХОД</td></tr>'})()" id="incCatBtn" style="cursor:pointer">Доходы</span>
         </div>
         <div class="export-dropdown" id="exportTxDropdown">
           <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
