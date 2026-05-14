@@ -2067,7 +2067,7 @@
       <input type="hidden" id="editExpenseId" value="">
       <div class="form-group">
         <label>Название *</label>
-        <input type="text" id="expName" placeholder="Например: аренда, коммунальные, зарплата" required>
+        <input type="text" id="expName" placeholder="Например: аренда, коммунальные, налоги" required>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -2081,46 +2081,36 @@
       </div>
       <div class="form-group">
         <label>Категория</label>
-        <div style="display:flex;gap:.35rem;align-items:center">
-          <select id="expCategory" style="flex:1">
-            <option value="other">Прочее</option>
-            <option value="rent">Аренда</option>
-            <option value="utilities">Коммунальные</option>
-            <option value="salary">Зарплата</option>
-            <option value="supplies">Канцтовары</option>
-            <option value="marketing">Маркетинг</option>
-            <option value="transport">Транспорт</option>
-          </select>
-          <button type="button" class="btn btn-outline" onclick="openNewExpCat()" title="Добавить свою категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0">+</button>
-          <button type="button" class="btn btn-outline" onclick="deleteExpCat()" title="Удалить категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0;color:#dc3545;border-color:#dc3545">−</button>
-        </div>
-        <div id="expNewCatWrap" style="display:none;margin-top:.35rem">
-          <div style="display:flex;gap:.35rem;align-items:center">
-            <input type="text" id="expNewCatInput" placeholder="Название новой категории" style="flex:1;padding:.3rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)" onkeydown="if(event.key==='Enter'){event.preventDefault();addExpCat()}">
-            <button type="button" class="btn btn-primary" onclick="addExpCat()" style="padding:.35rem .6rem;font-size:.8rem">OK</button>
-          </div>
-        </div>
+        <select id="expCategory">
+          <option value="other">Прочее</option>
+          <option value="rent">Аренда</option>
+          <option value="utilities">Коммунальные</option>
+          <option value="salary">Зарплата</option>
+          <option value="supplies">Канцтовары</option>
+          <option value="marketing">Маркетинг</option>
+          <option value="transport">Транспорт</option>
+        </select>
       </div>
       <div class="form-group">
-        <label>Счёт списания</label>
-        <div style="display:flex;flex-direction:column;gap:.35rem" id="accountsList">
-          <div class="exp-acc-row" data-acc="cash">
+        <label style="font-size:.82rem;color:var(--muted);font-weight:400">Счёт списания</label>
+        <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.35rem" id="accountsList">
+          <div class="exp-acc-row" data-acc="cash" style="display:flex;align-items:center;gap:.5rem">
             <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()">
-            <label for="accCash" style="flex:1;font-size:.82rem;cursor:pointer">Наличные</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCashAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+            <label for="accCash" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Наличные</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCashAmount" oninput="calcAccTotal()" style="flex:1;padding:.6rem .85rem;font-size:.9rem;border:2px solid var(--border);border-radius:8px;outline:none;font-family:var(--font);text-align:center">
           </div>
-          <div class="exp-acc-row" data-acc="card">
+          <div class="exp-acc-row" data-acc="card" style="display:flex;align-items:center;gap:.5rem">
             <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()">
-            <label for="accCard" style="flex:1;font-size:.82rem;cursor:pointer">Карта</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCardAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+            <label for="accCard" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Карта</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accCardAmount" oninput="calcAccTotal()" style="flex:1;padding:.6rem .85rem;font-size:.9rem;border:2px solid var(--border);border-radius:8px;outline:none;font-family:var(--font);text-align:center">
           </div>
-          <div class="exp-acc-row" data-acc="transfer">
+          <div class="exp-acc-row" data-acc="transfer" style="display:flex;align-items:center;gap:.5rem">
             <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()">
-            <label for="accTransfer" style="flex:1;font-size:.82rem;cursor:pointer">Перевод</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accTransferAmount" oninput="calcAccTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
+            <label for="accTransfer" style="flex:none;font-size:.85rem;cursor:pointer;width:80px">Перевод</label>
+            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="accTransferAmount" oninput="calcAccTotal()" style="flex:1;padding:.6rem .85rem;font-size:.9rem;border:2px solid var(--border);border-radius:8px;outline:none;font-family:var(--font);text-align:center">
           </div>
         </div>
-        <div id="accTotalDisplay" style="text-align:right;font-size:.82rem;color:var(--muted);margin-top:.25rem">Сумма по счетам: <span id="accTotalSum" style="font-weight:600;color:var(--body-color)">0₽</span></div>
+        <div class="sub" style="text-align:right;margin-top:.5rem">Общая сумма по счетам: <span id="accTotalSum" style="font-weight:600;color:var(--body-color)">0₽</span></div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeExpenseModal()">Отмена</button>
@@ -4461,7 +4451,7 @@ function renderTransactionsPage(){
     var fnName = item.type === 'expense' ? 'editExpense' : 'editIncome';
     var delFn = item.type === 'expense' ? 'deleteExpense' : 'deleteIncome';
     return '<tr>' +
-      '<td style="font-size:.8rem;color:var(--muted)">'+d+'</td>' +
+      '<td style="font-size:.8rem;color:var(--muted);text-align:left">'+d+'</td>' +
       '<td>'+e.name+'<br><span style="font-size:.7rem;color:var(--muted)">'+accStr+'</span></td>' +
       '<td style="font-weight:500;color:'+color+'">'+prefix+e.amount.toLocaleString()+'₽</td>' +
       '<td style="font-size:.78rem;color:var(--muted)">'+catLabel+'</td>' +
