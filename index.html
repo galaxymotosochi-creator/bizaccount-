@@ -1459,13 +1459,11 @@
         </div>
       </div>
       <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
-      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.35rem 0">
-        <button class="text-btn" onclick="toggleShiftEmpFilter()" id="shiftEmpBtn" style="font-size:.78rem">
-          Сотрудник <span class="act-arrow">▼</span>
-        </button>
-        <button class="text-btn" onclick="toggleShiftDateFilter()" id="shiftDateBtn" style="font-size:.78rem">
-          Дата <span class="act-arrow">▼</span>
-        </button>
+      <div class="search-row">
+        <div class="stock-filter-links">
+          <span class="stock-filter-link" onclick="toggleShiftEmpFilter()" id="shiftEmpBtn">Сотрудник</span>
+          <span class="stock-filter-link" onclick="toggleShiftDateFilter()" id="shiftDateBtn">Дата</span>
+        </div>
       </div>
       <div class="shift-metrics" id="shiftMetrics">
         <div class="shift-metric"><div class="sm-lbl">Открыто</div><div id="smOpen" class="sm-val"></div></div>
