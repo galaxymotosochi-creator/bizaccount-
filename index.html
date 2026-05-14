@@ -330,7 +330,7 @@
 #supColHeaders th:first-child{text-align:left;padding-left:0}
 #supplierTableBody td:first-child{padding-left:0}
 /* Шапка корзины — единый стиль с товарами */
-#trashColHeaders th{font-weight:700}
+
 /* Category dropdown */
 .cat-wrapper{position:relative;display:flex;align-items:center}
 .actions-group{display:flex;align-items:center;gap:10px;margin-left:12px}
@@ -3130,15 +3130,14 @@ function renderTrashPage(){
   var tb = document.getElementById('trashTableBody');
   var th = document.getElementById('trashColHeaders');
   if(!tb) return;
-  // Колонки как в Товарах — все всегда видны
+  // Шапка — один в один как в товарах
   var order = ['name','type','category','unit','minStock','sku','barcode','price'];
   var labels = {name:'Название',type:'Вид',category:'Категория',unit:'Ед.измерения',minStock:'Мин.остаток',sku:'Артикул',barcode:'Штрихкод',price:'Цена'};
-  // Рисуем шапку
   var headHtml = '';
   order.forEach(function(col){
-    headHtml += '<th>'+(labels[col]||col)+'</th>';
+    headHtml += '<th data-col="' + col + '">' + (labels[col]||col) + '</th>';
   });
-  headHtml += '<th style="width:130px;min-width:130px;text-align:right"></th>';
+  headHtml += '<th style="width:140px;text-align:right"></th>';
   if(th && th.querySelector('tr')) th.querySelector('tr').innerHTML = headHtml;
   // Пусто
   var colspan = order.length + 1;
