@@ -6190,12 +6190,9 @@ function filterTransactions(){
 }
 /* Закрытие дропдаунов при клике вне */
 document.addEventListener('click', function(e){
-  const pdd = document.getElementById('periodDropdownTx');
-  const exdd = document.getElementById('exportTxDropdown');
-  const txdd = document.getElementById('txTypeDropdown');
-  if(pdd && !e.target.closest('.tx-period-wrapper') && !e.target.closest('#periodDropdownTx')){ pdd.classList.remove('open'); }
-  if(exdd && !e.target.closest('.export-wrapper') && !e.target.closest('#exportTxDropdown')){ exdd.classList.remove('open'); }
-  if(txdd && !e.target.closest('.tx-type-wrapper') && !e.target.closest('#txTypeDropdown')){ txdd.classList.remove('open'); }
+  if(e.target.closest('#periodTriggerTx') || e.target.closest('#exportTxBtn') || e.target.closest('#txTypeBtn')) return;
+  if(e.target.closest('#periodDropdownTx') || e.target.closest('#exportTxDropdown') || e.target.closest('#txTypeDropdown')) return;
+  closeAllTxDropdowns();
 });
 </script>
 <!-- Модалка итога инвентаризации -->
