@@ -1796,7 +1796,7 @@
         <button type="button" class="btn btn-primary" onclick="restoreProduct()" style="background:var(--success,green);width:100%">Восстановить товар</button>
       </div>
       <div class="modal-actions">
-        <button type="submit" class="btn-green" style="width:100%">Сохранить</button>
+        <button type="submit" class="btn-green">Сохранить</button>
       </div>
     </form>
   </div>
@@ -2747,9 +2747,6 @@ function onProdTypeChange(){
 }
 function openProductModal(){
   loadProdCats();
-  document.getElementById('prodWholesale').value = '';
-  document.getElementById('prodItemWeight').value = '';
-  document.getElementById('prodMinStock').value = '';
   document.getElementById('productModal').classList.add('active');
 }
 
@@ -2769,8 +2766,6 @@ function editProduct(id){
   document.getElementById('prodName').value = p.name;
   document.getElementById('prodCat').value = p.cat;
   document.getElementById('prodPrice').value = p.price;
-  document.getElementById('prodWholesale').value = p.wholesale || '';
-  document.getElementById('prodItemWeight').value = p.itemWeight || '';
   document.getElementById('prodMinStock').value = p.minStock || 0;
   document.getElementById('prodUnit').value = p.unit;
   document.getElementById('prodSku').value = p.sku;
