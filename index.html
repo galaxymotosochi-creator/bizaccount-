@@ -2908,11 +2908,11 @@ function confirmExport(){
 }
 /* Columns dropdown */
 const COLUMNS = [
-  {id:'type', label:'Вид', def:false},
-  {id:'category', label:'Категория', def:false},
-  {id:'unit', label:'Ед.измерения', def:false},
-  {id:'minStock', label:'Мин.остаток', def:false},
-  {id:'barcode', label:'Штрихкод', def:false},
+  {id:'type', label:'Вид', def:true},
+  {id:'category', label:'Категория', def:true},
+  {id:'unit', label:'Ед.измерения', def:true},
+  {id:'minStock', label:'Мин.остаток', def:true},
+  {id:'barcode', label:'Штрихкод', def:true},
   {id:'price', label:'Цена', def:true}
 ];
 let activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
