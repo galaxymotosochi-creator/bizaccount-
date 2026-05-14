@@ -4410,7 +4410,11 @@ function renderTransactionsPage(){
   // Поиск по названию
   var q = (document.getElementById('txSearchInput')?.value||'').toLowerCase().trim();
   if(q) allItems = allItems.filter(function(i){ return i.data.name.toLowerCase().includes(q); });
-  allItems.sort(function(a,b){ return (b.data.date||'') > (a.data.date||'') ? 1 : -1; });
+  allItems.sort(function(a,b){
+    var dateCmp = (b.data.date||'') > (a.data.date||'') ? 1 : (b.data.date||'') < (a.data.date||'') ? -1 : 0;
+    if(dateCmp !== 0) return dateCmp;
+    return (b.data.id||0) - (a.data.id||0);
+  });
   if(!allItems.length){
     tbody.innerHTML = '<tr><td colspan="5"><div class="empty-products"><div class="big-icon">💰</div><p>Записей пока нет</p></div></td></tr>';
     return;
