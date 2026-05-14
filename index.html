@@ -2013,47 +2013,15 @@
       </div>
       <div class="form-group">
         <label>Категория</label>
-        <div style="display:flex;gap:.35rem;align-items:center">
-          <select id="incCategory" style="flex:1">
-            <option value="other">Прочее</option>
-            <option value="investment">Инвестиции</option>
-            <option value="partners">Партнёрские</option>
-            <option value="interest">Проценты</option>
-            <option value="sale_other">Прочие продажи</option>
-          </select>
-          <button type="button" class="btn btn-outline" onclick="openNewIncCat()" title="Добавить свою категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0">+</button>
-          <button type="button" class="btn btn-outline" onclick="deleteIncCat()" title="Удалить категорию" style="padding:.35rem .5rem;font-size:.8rem;flex-shrink:0;color:#dc3545;border-color:#dc3545">−</button>
-        </div>
-        <div id="incNewCatWrap" style="display:none;margin-top:.35rem">
-          <div style="display:flex;gap:.35rem;align-items:center">
-            <input type="text" id="incNewCatInput" placeholder="Название новой категории" style="flex:1;padding:.3rem .5rem;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font)" onkeydown="if(event.key==='Enter'){event.preventDefault();addIncCat()}">
-            <button type="button" class="btn btn-primary" onclick="addIncCat()" style="padding:.35rem .6rem;font-size:.8rem">OK</button>
-          </div>
-        </div>
+        <select id="incCategory">
+          <option value="other">Прочее</option>
+          <option value="investment">Инвестиции</option>
+          <option value="partners">Партнёрские</option>
+          <option value="interest">Проценты</option>
+          <option value="sale_other">Прочие продажи</option>
+        </select>
       </div>
-      <div class="form-group">
-        <label>Счёт зачисления</label>
-        <div style="display:flex;flex-direction:column;gap:.35rem" id="incAccountsList">
-          <div class="exp-acc-row" data-acc="cash">
-            <input type="checkbox" class="exp-acc-cb" id="incCash" checked onchange="calcIncTotal()">
-            <label for="incCash" style="flex:1;font-size:.82rem;cursor:pointer">Наличные</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incCashAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
-          </div>
-          <div class="exp-acc-row" data-acc="card">
-            <input type="checkbox" class="exp-acc-cb" id="incCard" onchange="calcIncTotal()">
-            <label for="incCard" style="flex:1;font-size:.82rem;cursor:pointer">Карта</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incCardAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
-          </div>
-          <div class="exp-acc-row" data-acc="transfer">
-            <input type="checkbox" class="exp-acc-cb" id="incTransfer" onchange="calcIncTotal()">
-            <label for="incTransfer" style="flex:1;font-size:.82rem;cursor:pointer">Перевод</label>
-            <input type="number" class="exp-acc-amount" placeholder="0" min="0" id="incTransferAmount" oninput="calcIncTotal()" style="width:120px;padding:.25rem .4rem;font-size:.78rem;border:1px solid var(--border);border-radius:5px;outline:none;font-family:var(--font);text-align:right">
-          </div>
-        </div>
-        <div style="text-align:right;font-size:.82rem;color:var(--muted);margin-top:.25rem">Сумма по счетам: <span id="incTotalSum" style="font-weight:600;color:var(--body-color)">0₽</span></div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" onclick="closeIncomeModal()">Отмена</button>
+      <div class="modal-actions" style="margin-top:1.5rem">
         <button type="submit" class="btn btn-primary">Добавить</button>
       </div>
     </form>
@@ -2146,12 +2114,7 @@
       </div>
       <div id="splitError" style="font-size:.78rem;color:#dc2626;margin-top:.25rem;display:none"></div>
     </div>
-    <div class="sub" style="margin-bottom:.75rem">
-      <label style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer">
-        <input type="checkbox" id="splitToggle" onchange="toggleSplitMode(this.checked)" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
-        Разделить
-      </label>
-    </div>
+    <div class="sub" style="margin-bottom:.75rem;cursor:pointer" onclick="toggleSplitMode()" id="splitToggleLabel">➕ Разделить</div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
       <button type="button" class="btn btn-primary" onclick="confirmAccSelect()" id="accSelectBtn" style="width:100%">Списать 0₽</button>
     </div>
@@ -3971,26 +3934,8 @@ function saveIncome(e){
   var catRaw = document.getElementById('incCategory').value;
   var cat = catRaw.startsWith('custom_') ? document.querySelector('#incCategory option[value="'+catRaw+'"]').textContent : catRaw;
   if(!name || !amount) return alert('Заполните название и сумму');
-  var accounts = {};
-  document.querySelectorAll('#incAccountsList .exp-acc-row').forEach(function(r){
-    var cb = r.querySelector('.exp-acc-cb'), inp = r.querySelector('.exp-acc-amount');
-    if(cb.checked && inp.value){ var val = parseFloat(inp.value) || 0; if(val > 0) accounts[r.dataset.acc] = val; }
-  });
-  if(!Object.keys(accounts).length) return alert('Выберите счёт');
-  var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
-  var editId = document.getElementById('editIncomeId').value;
-  if(editId){
-    var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
-    if(idx >= 0){ list[idx] = {...list[idx], name:name, amount:amount, date:date, category:cat, accounts:accounts}; }
-  } else {
-    list.push({id:Date.now(), name:name, amount:amount, date:date, category:cat, accounts:accounts, created:new Date().toISOString()});
-  }
-  localStorage.setItem('incomes88', JSON.stringify(list));
-  closeIncomeModal();
-  document.getElementById('incName').value = '';
-  document.getElementById('incAmount').value = '';
-  document.getElementById('editIncomeId').value = '';
-  filterTransactions();
+  window._expenseTemp = {type:'income', name:name, amount:amount, date:date, category:cat};
+  openAccSelectModal(amount);
 }
 /* LOV start */
 var LD = [
@@ -4595,7 +4540,7 @@ function saveExpense(e){
       }
     }
   });
-  window._expenseTemp = {name:name, amount:amount, date:date, category:cat};
+  window._expenseTemp = {type:'expense', name:name, amount:amount, date:date, category:cat};
   openAccSelectModal(amount);
 }
 var _selectedAcc = 'cash';
@@ -4615,7 +4560,7 @@ function openAccSelectModal(amount){
     card.querySelector('.acc-balance').textContent = (balances[acc]||0).toLocaleString() + '₽';
     card.querySelector('.acc-icon').textContent = icons[acc];
   });
-  document.getElementById('splitToggle').checked = false;
+  window._splitMode = false;
   document.getElementById('accSplitWrap').style.display = 'none';
   _selectedAcc = 'cash';
   document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
@@ -4630,14 +4575,17 @@ function selectAccCard(el){
   document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
   el.classList.add('selected');
   _selectedAcc = el.dataset.acc;
-  if(!document.getElementById('splitToggle').checked){
+  if(!window._splitMode){
     var amount = window._expenseTemp.amount;
-    var balances = getAccBalances();
     document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
   }
 }
-function toggleSplitMode(enabled){
+function toggleSplitMode(){
+  window._splitMode = !window._splitMode;
+  var enabled = window._splitMode;
   document.getElementById('accSplitWrap').style.display = enabled ? 'block' : 'none';
+  var label = document.getElementById('splitToggleLabel');
+  label.textContent = enabled ? '➖ Разделить' : '➕ Разделить';
   if(enabled){
     var amount = window._expenseTemp.amount;
     var splitAmt = Math.round(amount / 3);
@@ -4687,7 +4635,7 @@ function confirmAccSelect(){
   var balances = getAccBalances();
   var amount = tmp.amount;
   var accounts = {};
-  var isSplit = document.getElementById('splitToggle').checked;
+  var isSplit = window._splitMode;
   if(isSplit){
     document.querySelectorAll('.acc-split-row').forEach(function(r){
       var cb = r.querySelector('.acc-split-cb');
@@ -4702,33 +4650,53 @@ function confirmAccSelect(){
   } else {
     accounts[_selectedAcc] = amount;
   }
-  // Проверка балансов
-  for(var acc in accounts){
-    if((balances[acc]||0) < accounts[acc]){
-      var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
-      return alert('Недостаточно средств на счёте «' + (labels[acc]||acc) + '». Текущий баланс: ' + (balances[acc]||0).toLocaleString() + '₽. Сначала пополните счёт.');
+  // Проверка балансов (только для расходов)
+  if(tmp.type === 'expense'){
+    for(var acc in accounts){
+      if((balances[acc]||0) < accounts[acc]){
+        var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
+        return alert('Недостаточно средств на счёте «' + (labels[acc]||acc) + '». Текущий баланс: ' + (balances[acc]||0).toLocaleString() + '₽. Сначала пополните счёт.');
+      }
     }
   }
-  // Списываем
+  // Меняем баланс
+  var multiplier = tmp.type === 'expense' ? -1 : 1;
   for(var acc in accounts){
-    balances[acc] = (balances[acc]||0) - accounts[acc];
+    balances[acc] = (balances[acc]||0) + accounts[acc] * multiplier;
   }
   localStorage.setItem('accountBalances88', JSON.stringify(balances));
-  // Сохраняем расход
-  var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
-  var editId = document.getElementById('editExpenseId').value;
-  if(editId){
-    var idx = expenses.findIndex(function(x){ return x.id === parseInt(editId); });
-    if(idx >= 0){ expenses[idx] = {...expenses[idx], name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts}; }
+  // Сохраняем в нужное хранилище
+  var editId;
+  if(tmp.type === 'expense'){
+    var list = JSON.parse(localStorage.getItem('expenses88') || '[]');
+    editId = document.getElementById('editExpenseId').value;
+    if(editId){
+      var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
+      if(idx >= 0){ list[idx] = {...list[idx], name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts}; }
+    } else {
+      list.push({id:Date.now(), name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts, created:new Date().toISOString()});
+    }
+    localStorage.setItem('expenses88', JSON.stringify(list));
+    closeExpenseModal();
+    document.getElementById('expName').value = '';
+    document.getElementById('expAmount').value = '';
+    document.getElementById('editExpenseId').value = '';
   } else {
-    expenses.push({id:Date.now(), name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts, created:new Date().toISOString()});
+    var list = JSON.parse(localStorage.getItem('incomes88') || '[]');
+    editId = document.getElementById('editIncomeId').value;
+    if(editId){
+      var idx = list.findIndex(function(x){ return x.id === parseInt(editId); });
+      if(idx >= 0){ list[idx] = {...list[idx], name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts}; }
+    } else {
+      list.push({id:Date.now(), name:tmp.name, amount:amount, date:tmp.date, category:tmp.category, accounts:accounts, created:new Date().toISOString()});
+    }
+    localStorage.setItem('incomes88', JSON.stringify(list));
+    closeIncomeModal();
+    document.getElementById('incName').value = '';
+    document.getElementById('incAmount').value = '';
+    document.getElementById('editIncomeId').value = '';
   }
-  localStorage.setItem('expenses88', JSON.stringify(expenses));
   closeAccSelectModal();
-  closeExpenseModal();
-  document.getElementById('expName').value = '';
-  document.getElementById('expAmount').value = '';
-  document.getElementById('editExpenseId').value = '';
   window._expenseTemp = null;
   renderTransactionsPage();
 }
