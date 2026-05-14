@@ -1110,8 +1110,9 @@
         <table>
           <thead id="stockColHeaders">
             <tr>
-              <th data-col="sku">Артикул</th>
               <th data-col="name">Товар</th>
+              <th data-col="sku">Артикул</th>
+              <th data-col="barcode">Штрихкод</th>
               <th data-col="category">Категория</th>
               <th data-col="remain" class="tr">Остаток</th>
               <th data-col="cost" class="tr">Закуп</th>
@@ -5519,7 +5520,7 @@ function renderStockPage(){
   var cnt=document.getElementById('stockCount');
   if(cnt) cnt.textContent=items.length;
   if(!items.length){
-    tbody.innerHTML='<tr><td colspan="9"><div class="empty-products"><div class="big-icon">\uD83D\uDCE6</div><p>Товаров на складе нет</p></div></td></tr>';return;
+    tbody.innerHTML='<tr><td colspan="10"><div class="empty-products"><div class="big-icon">\uD83D\uDCE6</div><p>Товаров на складе нет</p></div></td></tr>';return;
   }
   var totalQty=0,totalSum=0;
   tbody.innerHTML=items.map(function(p){
@@ -5532,8 +5533,9 @@ function renderStockPage(){
     var low=qty<=5;
     totalQty+=qty;totalSum+=sumValue;
     return '<tr>'+
-      '<td style="font-size:.72rem;color:var(--muted);font-family:monospace">'+(p.sku||'\u2014')+'</td>'+
       '<td><span style="font-weight:400">'+p.name+'</span>'+(low?' <span style="color:#dc2626;font-size:.65rem">\u26A0</span>':'')+'</td>'+
+      '<td style="font-size:.72rem;color:var(--muted);font-family:monospace">'+(p.sku||'\u2014')+'</td>'+
+      '<td style="font-size:.72rem;color:var(--muted)">'+(p.barcode||'\u2014')+'</td>'+
       '<td><span class="prod-cat">'+(CAT_LABELS[p.cat]||p.cat||'\u2014')+'</span></td>'+
       '<td class="tr '+(low?'stock-low':'')+'">'+qty+'</td>'+
       '<td class="tr">'+costPrice.toLocaleString()+'</td>'+
@@ -5543,7 +5545,7 @@ function renderStockPage(){
       '<td><a onclick="editProduct('+p.id+')" style="color:var(--primary);cursor:pointer;font-size:.72rem">Ред.</a></td>'+
     '</tr>';
   }).join('')+
-  '<tr style="font-weight:600;border-top:2px solid var(--border)"><td></td><td>Итого</td><td></td><td class="tr">'+totalQty+'</td><td></td><td></td><td></td><td class="tr">'+totalSum.toLocaleString()+'</td><td></td></tr>';
+  '<tr style="font-weight:600;border-top:2px solid var(--border)"><td>Итого</td><td></td><td></td><td></td><td class="tr">'+totalQty+'</td><td></td><td></td><td></td><td class="tr">'+totalSum.toLocaleString()+'</td><td></td></tr>';
 }
 function editStockPrice(id){
   var n=prompt('Новая цена продажи:');
