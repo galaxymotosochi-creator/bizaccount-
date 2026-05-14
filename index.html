@@ -2071,7 +2071,7 @@
 <div class="modal-overlay" id="accountSelectModal" onclick="if(event.target===this)closeAccSelectModal()">
   <div class="modal-box" style="max-width:400px">
     <button class="modal-close" onclick="closeAccSelectModal()">&times;</button>
-    <h2>С какого счета списать?</h2>
+    <h2 id="accSelectTitle">С какого счета списать?</h2>
     <div class="sub" id="accSelectSub">Сумма расхода: 0₽</div>
     <div style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0" id="accSelectList">
       <div class="acc-card" data-acc="cash" onclick="selectAccCard(this)">
@@ -4557,7 +4557,7 @@ function openAccSelectModal(amount){
   _selectedAcc = 'cash';
   document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
   document.querySelector('.acc-card[data-acc="cash"]').classList.add('selected');
-  document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
+  document.getElementById('accSelectBtn').innerHTML = (isExpense ? 'Списать' : 'Зачислить') + ' ' + amount.toLocaleString() + '₽';
   document.getElementById('accountSelectModal').classList.add('active');
 }
 function closeAccSelectModal(){
@@ -4569,7 +4569,8 @@ function selectAccCard(el){
   _selectedAcc = el.dataset.acc;
   if(!window._splitMode){
     var amount = window._expenseTemp.amount;
-    document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
+    var btnText = window._expenseTemp && window._expenseTemp.type === 'expense' ? 'Списать' : 'Зачислить';
+    document.getElementById('accSelectBtn').innerHTML = btnText + ' ' + amount.toLocaleString() + '₽';
   }
 }
 function toggleSplitMode(){
@@ -4586,7 +4587,8 @@ function toggleSplitMode(){
     });
     calcSplitTotal();
   } else {
-    document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
+    var btnText = window._expenseTemp && window._expenseTemp.type === 'expense' ? 'Списать' : 'Зачислить';
+    document.getElementById('accSelectBtn').innerHTML = btnText + ' ' + amount.toLocaleString() + '₽';
     document.querySelectorAll('.acc-split-row').forEach(function(r){ r.style.display = 'flex'; });
     document.querySelectorAll('.acc-split-cb').forEach(function(c){ c.checked = true; });
   }
@@ -4619,7 +4621,8 @@ function calcSplitTotal(){
   } else {
     errEl.style.display = 'none';
   }
-  document.getElementById('accSelectBtn').innerHTML = 'Списать ' + total.toLocaleString() + '₽';
+  var btnText = window._expenseTemp && window._expenseTemp.type === 'expense' ? 'Списать' : 'Зачислить';
+  document.getElementById('accSelectBtn').innerHTML = btnText + ' ' + total.toLocaleString() + '₽';
 }
 function confirmAccSelect(){
   var tmp = window._expenseTemp;
