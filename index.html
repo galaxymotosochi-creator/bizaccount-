@@ -965,9 +965,22 @@
           <input type="text" id="productSearch" placeholder="Быстрый поиск" oninput="renderProductsPage()">
         </div>
         <div class="stock-filter-links">
-          <span class="stock-filter-link cat-wrapper" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
-            Категория
-          </span>
+          <div style="position:relative;display:inline-flex">
+            <span class="stock-filter-link cat-wrapper" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
+              Категория
+            </span>
+            <div class="tx-type-dropdown" id="catDropdown">
+              <div class="pd-title">Тип категории</div>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="product" onclick="toggleTypeFilter('product', this)">✓</span>
+                Товар
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="service" onclick="toggleTypeFilter('service', this)">✓</span>
+                Услуга
+              </label>
+            </div>
+          </div>
           <span class="stock-filter-link" onclick="closeAllDropdowns();navigateTo('trash')">Корзина</span>
           <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');toggleExportDropdown(event)">
             Скачать
@@ -975,17 +988,6 @@
           <span class="stock-filter-link cols-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
             Столбцы
           </span>
-        </div>
-        <div class="tx-type-dropdown" id="catDropdown">
-          <div class="pd-title">Тип категории</div>
-          <label class="tx-type-item">
-            <span class="tx-type-cb" data-type="product" onclick="toggleTypeFilter('product', this)">✓</span>
-            Товар
-          </label>
-          <label class="tx-type-item">
-            <span class="tx-type-cb" data-type="service" onclick="toggleTypeFilter('service', this)">✓</span>
-            Услуга
-          </label>
         </div>
         <div class="export-dropdown" id="exportDropdown">
           <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
