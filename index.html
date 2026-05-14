@@ -2772,8 +2772,6 @@ function editProduct(id){
   document.getElementById('prodBarcode').value = p.barcode || '';
   document.getElementById('prodType').value = p.type || 'product';
   loadProdCats();
-  document.getElementById('prodWeight').value = p.weight || 0;
-  document.getElementById('prodWeightUnit').value = p.weightUnit || 'кг';
 
   document.getElementById('prodDesc').value = p.desc || '';
   document.getElementById('modalTitle').textContent = p.hidden ? 'Товар скрыт' : 'Редактировать товар';
@@ -2797,8 +2795,6 @@ function saveProduct(e){
   var name = document.getElementById('prodName').value.trim();
   if(!name) return alert('Введите название');
   var price = parseFloat(document.getElementById('prodPrice').value) || 0;
-  var wholesale = parseFloat(document.getElementById('prodWholesale').value) || 0;
-  var itemWeight = parseFloat(document.getElementById('prodItemWeight').value) || 0;
   var minStock = parseFloat(document.getElementById('prodMinStock').value) || 0;
   var list = JSON.parse(localStorage.getItem('products88') || '[]');
   var editId = parseInt(document.getElementById('editProductId').value);
@@ -2816,8 +2812,6 @@ price: price,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
       type: document.getElementById('prodType').value,
-      weight: parseFloat(document.getElementById('prodWeight').value) || 0,
-      weightUnit: document.getElementById('prodWeightUnit').value
     };
   } else {
     // Создание — добавляем новый товар
@@ -2831,8 +2825,6 @@ price: price,
       sku: document.getElementById('prodSku').value.trim(),
       barcode: document.getElementById('prodBarcode').value.trim(),
       type: document.getElementById('prodType').value,
-      weight: parseFloat(document.getElementById('prodWeight').value) || 0,
-      weightUnit: document.getElementById('prodWeightUnit').value
     });
   }
   localStorage.setItem('products88', JSON.stringify(list));
