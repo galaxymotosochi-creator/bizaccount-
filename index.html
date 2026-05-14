@@ -3935,6 +3935,7 @@ function saveIncome(e){
   var cat = catRaw.startsWith('custom_') ? document.querySelector('#incCategory option[value="'+catRaw+'"]').textContent : catRaw;
   if(!name || !amount) return alert('Заполните название и сумму');
   window._expenseTemp = {type:'income', name:name, amount:amount, date:date, category:cat};
+  closeIncomeModal();
   openAccSelectModal(amount);
 }
 /* LOV start */
@@ -4541,6 +4542,7 @@ function saveExpense(e){
     }
   });
   window._expenseTemp = {type:'expense', name:name, amount:amount, date:date, category:cat};
+  closeExpenseModal();
   openAccSelectModal(amount);
 }
 var _selectedAcc = 'cash';
