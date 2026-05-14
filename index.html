@@ -494,9 +494,7 @@
   .pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .15s}
   .pin-dot.filled{background:var(--primary);border-color:var(--primary)}
   .pin-dot.shake{animation:pinShake .4s ease}
-.toast-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:var(--radius);display:none;align-items:center;justify-content:center;z-index:10}
-.toast-overlay.show{display:flex}
-.toast-msg{background:var(--white);color:var(--body-color);padding:1.25rem 1.5rem;border-radius:var(--radius);font-size:.9rem;font-family:var(--font);box-shadow:0 .75rem 2rem rgba(0,0,0,.15);max-width:380px;text-align:center;line-height:1.5}
+
   @keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   .pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;max-width:220px;margin:0 auto}
   .pin-btn{height:50px;border-radius:12px;border:1px solid var(--border);font-size:1.2rem;font-weight:500;cursor:pointer;font-family:var(--font);background:var(--white);transition:all .12s}
@@ -2077,7 +2075,7 @@
       <div class="form-row">
         <div class="form-group">
           <label>Сумма (₽) *</label>
-          <input type="number" id="expAmount" placeholder="0" min="0" step="0.01" required>
+          <input type="number" id="expAmount" placeholder="0" min="0" step="0.01" required oninput="this.setCustomValidity('')">
         </div>
         <div class="form-group">
           <label>Дата</label>
@@ -2118,9 +2116,6 @@
         <button type="submit" class="btn btn-primary">Добавить</button>
       </div>
     </form>
-    <div class="toast-overlay" id="expToastOverlay">
-      <div class="toast-msg" id="expToastMsg"></div>
-    </div>
   </div>
 </div>
 <div class="modal-overlay" id="writeoffModal">
@@ -4572,11 +4567,13 @@ function saveExpense(e){
     }
   });
   if(Object.keys(accounts).length === 0){
-    showToast('Выберите хотя бы один счёт и укажите сумму');
+    document.getElementById('expAmount').setCustomValidity('Выберите хотя бы один счёт и укажите сумму');
+    document.getElementById('expAmount').reportValidity();
     return;
   }
   if(Math.abs(accTotal - amount) > 0.01){
-    showToast('Общая сумма расхода не совпадает с суммой в выбранных счетах! Пожалуйста, измените сумму.');
+    document.getElementById('expAmount').setCustomValidity('Общая сумма расхода не совпадает с суммой в выбранных счетах! Пожалуйста, измените сумму.');
+    document.getElementById('expAmount').reportValidity();
     return;
   }
   var expenses = JSON.parse(localStorage.getItem('expenses88') || '[]');
@@ -6905,14 +6902,7 @@ function onBarcodeFound(code) {
     }, 2000);
   }
 }
-function showToast(msg){
-  var overlay = document.getElementById('expToastOverlay');
-  var msgEl = document.getElementById('expToastMsg');
-  if(!overlay || !msgEl) return;
-  msgEl.innerHTML = '<div style="font-size:2rem;margin-bottom:.5rem">❗</div>' + msg;
-  overlay.classList.add('show');
-  setTimeout(function(){ overlay.classList.remove('show'); }, 1500);
-}
+
 </script>
 </body>
 </html>
