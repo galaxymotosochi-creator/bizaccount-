@@ -965,14 +965,14 @@
           <input type="text" id="productSearch" placeholder="Быстрый поиск" oninput="renderProductsPage()">
         </div>
         <div class="stock-filter-links">
-          <span class="stock-filter-link" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
+          <span class="stock-filter-link cat-wrapper" onclick="document.getElementById('colsDropdown')?.classList.remove('open');toggleCatDropdown(event)">
             Категория
           </span>
           <span class="stock-filter-link" onclick="closeAllDropdowns();navigateTo('trash')">Корзина</span>
           <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');toggleExportDropdown(event)">
             Скачать
           </span>
-          <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
+          <span class="stock-filter-link cols-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
             Столбцы
           </span>
         </div>
