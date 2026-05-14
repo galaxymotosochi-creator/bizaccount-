@@ -1549,20 +1549,20 @@
             <div class="tx-type-dropdown" id="txTypeDropdown">
               <div class="pd-title">Тип транзакции</div>
               <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="sale" onclick="toggleTxTypeFilter('sale', this)">✓</span>
-                Продажа
-              </label>
-              <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="supply" onclick="toggleTxTypeFilter('supply', this)">✓</span>
-                Поставка
-              </label>
-              <label class="tx-type-item">
-                <span class="tx-type-cb" data-type="writeoff" onclick="toggleTxTypeFilter('writeoff', this)">✓</span>
-                Списание
+                <span class="tx-type-cb" data-type="all" onclick="toggleTxTypeFilter('all', this)" style="border:none;background:var(--primary);color:#fff;width:auto;padding:0 .35rem;font-size:.65rem">✓</span>
+                Все
               </label>
               <label class="tx-type-item">
                 <span class="tx-type-cb" data-type="expense" onclick="toggleTxTypeFilter('expense', this)">✓</span>
-                Расход
+                Расходы бизнеса
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="income" onclick="toggleTxTypeFilter('income', this)">✓</span>
+                Доходы
+              </label>
+              <label class="tx-type-item">
+                <span class="tx-type-cb" data-type="supply_expense" onclick="toggleTxTypeFilter('supply_expense', this)">✓</span>
+                Расходы поставки
               </label>
             </div>
           </div>
@@ -6062,8 +6062,6 @@ function closeAllTxDropdowns(){
   document.getElementById('periodDropdownTx')?.classList.remove('open');
   document.getElementById('exportTxDropdown')?.classList.remove('open');
   document.getElementById('txTypeDropdown')?.classList.remove('open');
-  document.getElementById('expCatDropdown')?.classList.remove('open');
-  document.getElementById('incCatDropdown')?.classList.remove('open');
 }
 function togglePeriodDropdownTx(){
   closeAllTxDropdowns();
@@ -6128,15 +6126,18 @@ function toggleTxTypeDropdown(){
 function toggleTxTypeFilter(type, el){
   var cb = el;
   var checked = cb.classList.contains('checked');
-  // Uncheck all first (single selection)
   document.querySelectorAll('.tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
   if(!checked){
     cb.classList.add('checked');
     txTypeFilter = type;
+    if(type === 'all') _txTypeFilter = null;
+    else if(type === 'expense' || type === 'income') _txTypeFilter = type;
+    else _txTypeFilter = null;
   } else {
     txTypeFilter = null;
+    _txTypeFilter = null;
   }
-  filterTransactions();
+  renderTransactionsPage();
 }
 var incCatFilter = null;
 function toggleIncCatDropdown(){
@@ -6184,13 +6185,9 @@ document.addEventListener('click', function(e){
   const pdd = document.getElementById('periodDropdownTx');
   const exdd = document.getElementById('exportTxDropdown');
   const txdd = document.getElementById('txTypeDropdown');
-  const expdd = document.getElementById('expCatDropdown');
-  const incdd = document.getElementById('incCatDropdown');
-  if(pdd && !e.target.closest('.search-row')){ pdd.classList.remove('open'); }
-  if(exdd && !e.target.closest('.export-wrapper')){ exdd.classList.remove('open'); }
-  if(txdd && !e.target.closest('.tx-type-wrapper')){ txdd.classList.remove('open'); }
-  if(expdd && !e.target.closest('.exp-cat-wrapper')){ expdd.classList.remove('open'); }
-  if(incdd && !e.target.closest('.inc-cat-wrapper')){ incdd.classList.remove('open'); }
+  if(pdd && !e.target.closest('#periodTriggerTx') && !e.target.closest('#periodDropdownTx')){ pdd.classList.remove('open'); }
+  if(exdd && !e.target.closest('#exportTxBtn') && !e.target.closest('#exportTxDropdown')){ exdd.classList.remove('open'); }
+  if(txdd && !e.target.closest('#txTypeBtn') && !e.target.closest('#txTypeDropdown')){ txdd.classList.remove('open'); }
 });
 </script>
 <!-- Модалка итога инвентаризации -->
