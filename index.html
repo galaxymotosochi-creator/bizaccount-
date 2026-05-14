@@ -969,22 +969,23 @@
             Категория
           </span>
           <span class="stock-filter-link" onclick="closeAllDropdowns();navigateTo('trash')">Корзина</span>
-          <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');toggleExportDropdown(event)">
+          <span class="stock-filter-link" onclick="document.getElementById('catDropdown')?.classList.remove('open');toggleExportDropdown(event)">
             Скачать
           </span>
-          <span class="stock-filter-link cols-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('catArrow')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
+          <span class="stock-filter-link cols-wrapper" onclick="document.getElementById('catDropdown')?.classList.remove('open');document.getElementById('exportDropdown')?.classList.remove('open');toggleColsDropdown(event)">
             Столбцы
           </span>
         </div>
-        <div class="cat-dropdown" id="catDropdown">
-          <div class="cat-dd-actions">
-            <span class="cat-dd-action" onclick="selectAllCats()">Выбрать все</span>
-            <span class="cat-dd-action" onclick="clearAllCats()">Очистить</span>
-          </div>
-          <div class="cat-dd-search">
-            <input type="text" placeholder="Поиск..." oninput="filterCatList(this.value)">
-          </div>
-          <div class="cat-dd-list" id="catList"></div>
+        <div class="tx-type-dropdown" id="catDropdown">
+          <div class="pd-title">Тип категории</div>
+          <label class="tx-type-item">
+            <span class="tx-type-cb" data-type="product" onclick="toggleTypeFilter('product', this)">✓</span>
+            Товар
+          </label>
+          <label class="tx-type-item">
+            <span class="tx-type-cb" data-type="service" onclick="toggleTypeFilter('service', this)">✓</span>
+            Услуга
+          </label>
         </div>
         <div class="export-dropdown" id="exportDropdown">
           <div class="export-dd-title">Вы хотите скачать товары в Excel?</div>
@@ -2836,11 +2837,7 @@ price: price,
 let selectedCats = new Set();
 function toggleCatDropdown(e){
   closeAllDropdowns();
-  const dd = document.getElementById('catDropdown');
-  const arr = document.getElementById('catArrow');
-  dd.classList.add('open');
-  arr.classList.add('open');
-  renderCatList();
+  document.getElementById('catDropdown').classList.toggle('open');
 }
 function renderCatList(filter){
   const list = JSON.parse(localStorage.getItem('prodCats88') || '[]');
@@ -2930,9 +2927,19 @@ function showToast(msg){
   t.style.transform = 'translateY(0)';
   setTimeout(function(){ t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; }, 1500);
 }
+function toggleTypeFilter(type, el){
+  var cb = el;
+  document.querySelectorAll('#catDropdown .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+  cb.classList.add('checked');
+  // Filter products table by type
+  typeFilter = type;
+  renderProductsPage();
+  document.getElementById('catDropdown').classList.remove('open');
+}
+var typeFilter = null;
 function closeAllDropdowns(){
   document.getElementById('catDropdown')?.classList.remove('open');
-  document.getElementById('catArrow')?.classList.remove('open');
+  
   document.getElementById('exportDropdown')?.classList.remove('open');
   document.getElementById('colsDropdown')?.classList.remove('open');
 }
@@ -3002,7 +3009,7 @@ document.addEventListener('click', function(e){
   const colsDD = document.getElementById('colsDropdown');
   if(catDD && !e.target.closest('.search-row')){
     catDD.classList.remove('open');
-    document.getElementById('catArrow')?.classList.remove('open');
+    
   }
   if(colsDD && !e.target.closest('.cols-wrapper')){
     colsDD.classList.remove('open');
@@ -3012,12 +3019,14 @@ document.addEventListener('click', function(e){
     expDD.classList.remove('open');
   }
 });
+function resetTypeFilter(){ typeFilter = null; document.querySelectorAll('#catDropdown .tx-type-cb').forEach(function(c){c.classList.remove('checked');}); renderProductsPage(); }
 function renderProductsPage(){
   try {
   renderColHeaders();
   let products = JSON.parse(localStorage.getItem('products88') || '[]');
   const q = (document.getElementById('productSearch')?.value || '').toLowerCase().trim();
   if(currentFilter !== 'all') products = products.filter(p => p.cat === currentFilter);
+  if(typeFilter) products = products.filter(p => p.type === typeFilter);
   if(selectedCats.size > 0) products = products.filter(p => selectedCats.has(CAT_LABELS[p.cat] || p.cat || ''));
   if(q) products = products.filter(p => p.name.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q));
   const tbody = document.getElementById('productTableBody');
