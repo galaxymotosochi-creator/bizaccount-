@@ -2106,24 +2106,6 @@
           <option value="transport">Транспорт</option>
         </select>
       </div>
-      <div class="sub">Выберите счет списания</div>
-      <div style="display:flex;flex-direction:column;gap:.5rem" id="accountsList">
-        <div data-acc="cash" style="display:flex;align-items:center;gap:.35rem">
-          <label for="accCash" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Наличные</label>
-          <input type="number" placeholder="0" min="0" id="accCashAmount" oninput="autoCheckAcc('cash');calcAccTotal()" class="acc-amount-input">
-          <input type="checkbox" class="exp-acc-cb" id="accCash" checked onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
-        </div>
-        <div data-acc="card" style="display:flex;align-items:center;gap:.35rem">
-          <label for="accCard" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Карта</label>
-          <input type="number" placeholder="0" min="0" id="accCardAmount" oninput="autoCheckAcc('card');calcAccTotal()" class="acc-amount-input">
-          <input type="checkbox" class="exp-acc-cb" id="accCard" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
-        </div>
-        <div data-acc="transfer" style="display:flex;align-items:center;gap:.35rem">
-          <label for="accTransfer" style="flex:none;font-size:.85rem;cursor:pointer;width:70px">Перевод</label>
-          <input type="number" placeholder="0" min="0" id="accTransferAmount" oninput="autoCheckAcc('transfer');calcAccTotal()" class="acc-amount-input">
-          <input type="checkbox" class="exp-acc-cb" id="accTransfer" onchange="calcAccTotal()" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
-        </div>
-      </div>
       <div class="modal-actions" style="margin-top:1.5rem">
         <button type="submit" class="btn btn-primary">Добавить</button>
       </div>
@@ -2134,26 +2116,26 @@
 <div class="modal-overlay" id="accountSelectModal" onclick="if(event.target===this)closeAccSelectModal()">
   <div class="modal-box" style="max-width:400px">
     <button class="modal-close" onclick="closeAccSelectModal()">&times;</button>
-    <h2>💰 С какого счета списать?</h2>
-    <div class="sub" id="accSelectSub">Сумма расхода: 0 ₽</div>
+    <h2>С какого счета списать?</h2>
+    <div class="sub" id="accSelectSub">Сумма расхода: 0₽</div>
     <div style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0" id="accSelectList">
       <div class="acc-card" data-acc="cash" onclick="selectAccCard(this)">
         <div class="acc-radio"></div>
         <span class="acc-icon">💵</span>
         <span class="acc-name">Наличные</span>
-        <span class="acc-balance">0 ₽</span>
+        <span class="acc-balance">0₽</span>
       </div>
       <div class="acc-card" data-acc="card" onclick="selectAccCard(this)">
         <div class="acc-radio"></div>
         <span class="acc-icon">💳</span>
         <span class="acc-name">Карта</span>
-        <span class="acc-balance">0 ₽</span>
+        <span class="acc-balance">0₽</span>
       </div>
       <div class="acc-card" data-acc="transfer" onclick="selectAccCard(this)">
         <div class="acc-radio"></div>
         <span class="acc-icon">🔄</span>
         <span class="acc-name">Перевод</span>
-        <span class="acc-balance">0 ₽</span>
+        <span class="acc-balance">0₽</span>
       </div>
     </div>
     <div id="accSplitWrap" style="display:none;margin-bottom:.5rem">
@@ -2177,12 +2159,14 @@
       </div>
       <div id="splitError" style="font-size:.78rem;color:#dc2626;margin-top:.25rem;display:none"></div>
     </div>
-    <label style="display:flex;align-items:center;gap:.35rem;font-size:.82rem;cursor:pointer;margin-bottom:1rem" id="splitToggleWrap">
-      <input type="checkbox" id="splitToggle" onchange="toggleSplitMode(this.checked)" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
-      Разделить
-    </label>
+    <div class="sub" style="margin-bottom:.75rem">
+      <label style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer">
+        <input type="checkbox" id="splitToggle" onchange="toggleSplitMode(this.checked)" style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer">
+        Разделить
+      </label>
+    </div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
-      <button type="button" class="btn btn-primary" onclick="confirmAccSelect()" id="accSelectBtn" style="width:100%">✅ Списать 0 ₽</button>
+      <button type="button" class="btn btn-primary" onclick="confirmAccSelect()" id="accSelectBtn" style="width:100%">Списать 0₽</button>
     </div>
   </div>
 </div>
@@ -4646,11 +4630,11 @@ function openAccSelectModal(amount){
   var balances = getAccBalances();
   var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
   var icons = {cash:'💵', card:'💳', transfer:'🔄'};
-  document.getElementById('accSelectSub').textContent = 'Сумма расхода: ' + amount.toLocaleString() + ' ₽';
+  document.getElementById('accSelectSub').textContent = 'Сумма расхода: ' + amount.toLocaleString() + '₽';
   document.querySelectorAll('.acc-card').forEach(function(card){
     var acc = card.dataset.acc;
     card.querySelector('.acc-name').textContent = labels[acc];
-    card.querySelector('.acc-balance').textContent = (balances[acc]||0).toLocaleString() + ' ₽';
+    card.querySelector('.acc-balance').textContent = (balances[acc]||0).toLocaleString() + '₽';
     card.querySelector('.acc-icon').textContent = icons[acc];
   });
   document.getElementById('splitToggle').checked = false;
@@ -4658,7 +4642,7 @@ function openAccSelectModal(amount){
   _selectedAcc = 'cash';
   document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
   document.querySelector('.acc-card[data-acc="cash"]').classList.add('selected');
-  document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
+  document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
   document.getElementById('accountSelectModal').classList.add('active');
 }
 function closeAccSelectModal(){
@@ -4671,7 +4655,7 @@ function selectAccCard(el){
   if(!document.getElementById('splitToggle').checked){
     var amount = window._expenseTemp.amount;
     var balances = getAccBalances();
-    document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
+    document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
   }
 }
 function toggleSplitMode(enabled){
@@ -4684,8 +4668,7 @@ function toggleSplitMode(enabled){
     });
     calcSplitTotal();
   } else {
-    var amount = window._expenseTemp.amount;
-    document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + amount.toLocaleString() + ' ₽';
+    document.getElementById('accSelectBtn').innerHTML = 'Списать ' + amount.toLocaleString() + '₽';
     document.querySelectorAll('.acc-split-row').forEach(function(r){ r.style.display = 'flex'; });
     document.querySelectorAll('.acc-split-cb').forEach(function(c){ c.checked = true; });
   }
@@ -4713,12 +4696,12 @@ function calcSplitTotal(){
   });
   var amount = window._expenseTemp.amount;
   if(Math.abs(total - amount) > 0.01){
-    errEl.textContent = 'Сумма должна быть ' + amount.toLocaleString() + ' ₽. Сейчас: ' + total.toLocaleString() + ' ₽';
+    errEl.textContent = 'Сумма должна быть ' + amount.toLocaleString() + '₽. Сейчас: ' + total.toLocaleString() + '₽';
     errEl.style.display = 'block';
   } else {
     errEl.style.display = 'none';
   }
-  document.getElementById('accSelectBtn').innerHTML = '✅ Списать ' + total.toLocaleString() + ' ₽';
+  document.getElementById('accSelectBtn').innerHTML = 'Списать ' + total.toLocaleString() + '₽';
 }
 function confirmAccSelect(){
   var tmp = window._expenseTemp;
@@ -4745,7 +4728,7 @@ function confirmAccSelect(){
   for(var acc in accounts){
     if((balances[acc]||0) < accounts[acc]){
       var labels = {cash:'Наличные', card:'Карта', transfer:'Перевод'};
-      return alert('Недостаточно средств на счёте «' + (labels[acc]||acc) + '». Текущий баланс: ' + (balances[acc]||0).toLocaleString() + ' ₽. Сначала пополните счёт.');
+      return alert('Недостаточно средств на счёте «' + (labels[acc]||acc) + '». Текущий баланс: ' + (balances[acc]||0).toLocaleString() + '₽. Сначала пополните счёт.');
     }
   }
   // Списываем
