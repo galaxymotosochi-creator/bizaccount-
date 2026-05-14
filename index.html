@@ -2908,17 +2908,12 @@ function confirmExport(){
 }
 /* Columns dropdown */
 const COLUMNS = [
-  {id:'category', label:'Категория', def:true},
+  {id:'type', label:'Вид', def:false},
+  {id:'category', label:'Категория', def:false},
+  {id:'unit', label:'Ед.измерения', def:false},
+  {id:'minStock', label:'Мин.остаток', def:false},
   {id:'barcode', label:'Штрихкод', def:false},
-  {id:'minStock', label:'Мин. остаток', def:false},
-  {id:'type', label:'Тип', def:false},
-  {id:'weight', label:'Весовой товар', def:false},
-  {id:'unit', label:'Ед. измерения', def:false},
-  {id:'costNoVat', label:'Себестоимость без НДС', def:true},
-  {id:'costWithVat', label:'Себестоимость с НДС', def:false},
-  {id:'price', label:'Цена', def:true},
-  {id:'profit', label:'Прибыль', def:false},
-  {id:'margin', label:'Наценка', def:true}
+  {id:'price', label:'Цена', def:true}
 ];
 let activeCols = new Set(COLUMNS.filter(c => c.def).map(c => c.id));
 // Click delegation for columns list
@@ -2943,8 +2938,8 @@ function closeAllDropdowns(){
 function renderColHeaders(){
   var el = document.getElementById('colHeaders');
   if(!el) return;
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
-  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',minStock:'Мин.остаток',profit:'Прибыль',margin:'Наценка'};
+  var order = ['name','type','category','unit','minStock','sku','barcode','price'];
+  var labels = {name:'Название',type:'Вид',category:'Категория',unit:'Ед.измерения',minStock:'Мин.остаток',sku:'Артикул',barcode:'Штрихкод',price:'Цена'};
   var html = '';
   order.forEach(function(col){
     if(col === 'name' || activeCols.has(col)){
@@ -3030,13 +3025,14 @@ function renderProductsPage(){
     tbody.innerHTML = '<tr><td colspan="' + colspan + '"><div class="empty-products"><div class="big-icon">&#128230;</div><p>Товаров пока нет. Нажмите «+ Добавить товар»</p></div></td></tr>';
     return;
   }
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
+  var order = ['name','type','category','unit','minStock','sku','barcode','price'];
   var CAT_LABELS_R = CAT_LABELS || {};
   function cellFor(col, p){
     switch(col){
       case 'name': return '<div class="prod-name">'+p.name+'</div>';
       case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
-      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||p.sku||'—')+'</span>';
+      case 'sku': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.sku||'—')+'</span>';
+      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||'—')+'</span>';
       case 'minStock': return '<span class="num" style="'+(p.minStock&&getStock(p.id)<=p.minStock?'color:#dc2626;font-weight:600':'')+'">'+(p.minStock!=null?p.minStock:'—')+'</span>';
       case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
       case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
@@ -3125,8 +3121,8 @@ function renderTrashPage(){
   var th = document.getElementById('trashColHeaders');
   if(!tb) return;
   // Колонки как в Товарах — все всегда видны
-  var order = ['name','category','barcode','type','weight','unit','costNoVat','costWithVat','price','minStock','profit','margin'];
-  var labels = {name:'Название',category:'Категория',barcode:'Штрихкод',type:'Тип',weight:'Весовой товар',unit:'Ед. измерения',costNoVat:'Себес. без НДС',costWithVat:'Себес. с НДС',price:'Цена',minStock:'Мин.остаток',profit:'Прибыль',margin:'Наценка'};
+  var order = ['name','type','category','unit','minStock','sku','barcode','price'];
+  var labels = {name:'Название',type:'Вид',category:'Категория',unit:'Ед.измерения',minStock:'Мин.остаток',sku:'Артикул',barcode:'Штрихкод',price:'Цена'};
   // Рисуем шапку
   var headHtml = '';
   order.forEach(function(col){
@@ -3145,7 +3141,8 @@ function renderTrashPage(){
     switch(col){
       case 'name': return '<div class="prod-name">'+p.name+'</div><div class="prod-sku">'+(p.sku||'—')+'</div>';
       case 'category': return '<span class="prod-cat">'+(CAT_LABELS_R[p.cat]||p.cat||'—')+'</span>';
-      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||p.sku||'—')+'</span>';
+      case 'sku': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.sku||'—')+'</span>';
+      case 'barcode': return '<span style="font-size:.8rem;color:var(--muted)">'+(p.barcode||'—')+'</span>';
       case 'type': return '<span style="font-size:.78rem">'+(p.type==='service'?'Услуга':'Товар')+'</span>';
       case 'weight': return p.weight ? (p.weight+' '+(p.weightUnit||'кг')) : '—';
       case 'unit': return p.unit || '—';
