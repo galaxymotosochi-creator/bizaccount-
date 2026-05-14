@@ -4369,13 +4369,10 @@ function toggleTxTypeFilter(type){
   document.querySelectorAll('#expCatBtn,#incCatBtn').forEach(function(el){
     el.style.color = '';
     el.style.fontWeight = '';
+    el.style.background = '';
   });
   if(_txTypeFilter){
-    var btn = document.getElementById(type === 'expense' ? 'expCatBtn' : 'incCatBtn');
-    btn.style.color = '#1983dd';
-    btn.style.fontWeight = '700';
-    btn.style.background = '#eaf5ff';
-    btn.style.borderRadius = '4px';
+    document.getElementById(type === 'expense' ? 'expCatBtn' : 'incCatBtn').style.background = '#eaf5ff';
   }
   renderTransactionsPage();
 }
