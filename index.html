@@ -829,6 +829,7 @@
       <div class="nav-children">
         <a class="nav-child" onclick="navigateTo('pnl')">P&amp;L</a>
         <a class="nav-child" onclick="navigateTo('transactions')">Транзакции</a>
+        <a class="nav-child" onclick="navigateTo('directory')">Справочник</a>
         <a class="nav-child" onclick="navigateTo('shifts')">Смены</a>
         <a class="nav-child" onclick="navigateTo('salary')">Зарплата</a>
         <a class="nav-child" onclick="navigateTo('bills')">Счета</a>
@@ -1718,6 +1719,32 @@
         </table>
       </div>
     </div>
+    <!-- СПРАВОЧНИК -->
+    <div class="page-section" id="page-directory">
+      <div class="page-header">
+        <div>
+          <h1 style="font-size:1.2rem;font-weight:600;margin:0">Категории расходов и доходов</h1>
+          <div class="sub">Управляйте категориями</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn-green" onclick="openDirModal()">+ Добавить категорию</button>
+        </div>
+      </div>
+      <div class="nav-sep" style="margin:.25rem 0;width:100%"></div>
+      <div class="product-table" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <table style="min-width:500px">
+          <thead id="dirColHeaders">
+            <tr>
+              <th>Название</th>
+              <th>Вид</th>
+              <th style="width:130px"></th>
+            </tr>
+          </thead>
+          <tbody id="dirTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
 <!-- Модальное окно добавления товара -->
 <div class="modal-overlay" id="productModal">
   <div class="modal-box">
@@ -2467,6 +2494,33 @@
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" onclick="closeCatModal()">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Модальное окно добавления категории справочника -->
+<div class="modal-overlay" id="dirModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDirModal()">&times;</button>
+    <h2 id="dirModalTitle">Добавить категорию</h2>
+    <div class="sub" id="dirModalSub">Введите название и выберите вид</div>
+    <form id="dirForm" onsubmit="saveDirCategory(event)">
+      <input type="hidden" id="editDirId" value="">
+      <div class="form-group">
+        <label>Название *</label>
+        <input type="text" id="dirName" placeholder="Например, Доставка" required>
+      </div>
+      <div class="form-group">
+        <label>Вид</label>
+        <select id="dirTypeSelect">
+          <option value="income">Категории доходов</option>
+          <option value="business">Категории расходов бизнеса</option>
+          <option value="supply">Категории расходов поставки</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeDirModal()">Отмена</button>
         <button type="submit" class="btn btn-primary">Сохранить</button>
       </div>
     </form>
@@ -4786,6 +4840,7 @@ function navigateTo(page){
   if(page === 'promos') renderPromosPage();
   if(page === 'shifts') renderShiftsPage();
   if(page === 'transactions') renderTransactionsPage();
+  if(page === 'directory') renderDirPage();
   if(page === 'turnover') renderTurnoverPage();
   if(page === 'salary') renderSalaryPage();
 }
@@ -5690,6 +5745,79 @@ function renderCatPage(){
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
             '<button onclick="deleteCategory(\''+(c.type||'product')+'\','+c.id+')" style="color:#dc3545">Удалить</button>' +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+/* СПРАВОЧНИК — категории расходов и доходов */
+function openDirModal(){
+  document.getElementById('dirModalTitle').textContent = 'Добавить категорию';
+  document.getElementById('dirModalSub').textContent = 'Введите название и выберите вид';
+  document.getElementById('dirModal').classList.add('active');
+}
+function closeDirModal(){
+  document.getElementById('dirModal').classList.remove('active');
+  document.getElementById('dirForm').reset();
+  document.getElementById('editDirId').value = '';
+}
+function saveDirCategory(e){
+  e.preventDefault();
+  const editId = document.getElementById('editDirId').value;
+  const name = document.getElementById('dirName').value.trim();
+  if(!name) return alert('Введите название');
+  const type = document.getElementById('dirTypeSelect').value;
+  var list = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  if(editId){
+    var idx = list.findIndex(function(c){ return c.id === parseInt(editId); });
+    if(idx >= 0){ list[idx].name = name; list[idx].type = type; }
+  } else {
+    list.push({id: Date.now(), name: name, type: type});
+  }
+  localStorage.setItem('dirCats88', JSON.stringify(list));
+  renderDirPage();
+  closeDirModal();
+}
+function editDirCategory(id){
+  var list = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  var c = list.find(function(x){ return x.id === id; });
+  if(!c) return alert('Категория не найдена');
+  document.getElementById('editDirId').value = c.id;
+  document.getElementById('dirName').value = c.name;
+  document.getElementById('dirTypeSelect').value = c.type || 'income';
+  document.getElementById('dirModalTitle').textContent = 'Редактировать категорию';
+  document.getElementById('dirModalSub').textContent = 'Измените название и вид';
+  document.getElementById('dirModal').classList.add('active');
+}
+function deleteDirCategory(id){
+  if(!confirm('Удалить категорию?')) return;
+  var list = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  list = list.filter(function(c){ return c.id !== id; });
+  localStorage.setItem('dirCats88', JSON.stringify(list));
+  renderDirPage();
+}
+var dirTypeLabels = {income:'Категории доходов', business:'Категории расходов бизнеса', supply:'Категории расходов поставки'};
+function renderDirPage(){
+  var list = JSON.parse(localStorage.getItem('dirCats88') || '[]');
+  var tb = document.getElementById('dirTableBody');
+  if(!tb) return;
+  if(!list.length){
+    tb.innerHTML = '<tr><td colspan="3"><div class="empty-products"><div class="big-icon">📂</div><p>Категорий пока нет. Нажмите «+ Добавить категорию»</p></div></td></tr>';
+    return;
+  }
+  tb.innerHTML = list.map(function(c){
+    var typeLabel = dirTypeLabels[c.type] || c.type;
+    return '<tr>' +
+      '<td><div class="prod-name" style="font-size:.85rem">'+c.name+'</div></td>' +
+      '<td><span class="prod-cat">'+typeLabel+'</span></td>' +
+      '<td style="text-align:right;white-space:nowrap">' +
+        '<button class="act-btn prod-edit-btn" onclick="editDirCategory('+c.id+')">Ред.</button>' +
+        '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
+          '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
+          '<div class="prod-dropdown">' +
+            '<button onclick="deleteDirCategory('+c.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
       '</td>' +
