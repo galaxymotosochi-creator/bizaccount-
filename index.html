@@ -4549,7 +4549,6 @@ function getAccBalances(){
   return b;
 }
 function openAccSelectModal(amount){
-  try {
   var tmp = window._expenseTemp;
   var isExpense = tmp && tmp.type === 'expense';
   var balances = getAccBalances();
@@ -4557,7 +4556,7 @@ function openAccSelectModal(amount){
   var icons = {cash:'💵', card:'💳', transfer:'🔄'};
   document.getElementById('accSelectTitle').textContent = isExpense ? 'С какого счета списать?' : 'На какой счет зачислить?';
   document.getElementById('accSelectSub').textContent = (isExpense ? 'Сумма расхода' : 'Сумма дохода') + ': ' + amount.toLocaleString() + '₽';
-  document.querySelectorAll('.acc-card').forEach(function(card){
+  document.querySelectorAll('#accSelectList .acc-card').forEach(function(card){
     var acc = card.dataset.acc;
     card.querySelector('.acc-name').textContent = labels[acc];
     card.querySelector('.acc-balance').textContent = (balances[acc]||0).toLocaleString() + '₽';
@@ -4566,11 +4565,10 @@ function openAccSelectModal(amount){
   window._splitMode = false;
   document.getElementById('accSplitWrap').style.display = 'none';
   _selectedAcc = 'cash';
-  document.querySelectorAll('.acc-card').forEach(function(c){ c.classList.remove('selected'); });
-  document.querySelector('.acc-card[data-acc="cash"]').classList.add('selected');
+  document.querySelectorAll('#accSelectList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelector('#accSelectList .acc-card[data-acc="cash"]').classList.add('selected');
   document.getElementById('accSelectBtn').innerHTML = (isExpense ? 'Списать' : 'Зачислить') + ' ' + amount.toLocaleString() + '₽';
   document.getElementById('accountSelectModal').classList.add('active');
-  } catch(e){ alert('Ошибка: '+e.message); }
 }
 /* ФИЛЬТРЫ */
 var _selectedFilter = null;
