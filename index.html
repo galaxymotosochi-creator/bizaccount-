@@ -4619,7 +4619,6 @@ function setTxFilterPeriod(preset){
   var btn = document.querySelector('#filterDateOptions .period-preset[onclick*="'+preset+'"]');
   if(btn) btn.classList.add('active');
   document.getElementById('filterCustomDate').style.display = 'none';
-  applyFilter();
 }
 function toggleFilterCustomDate(){
   var dd = document.getElementById('filterCustomDate');
