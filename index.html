@@ -1545,35 +1545,7 @@
           </div>
           <span class="stock-filter-link export-wrapper" onclick="event.stopPropagation();toggleExportTxDropdown()" id="exportTxBtn">Скачать</span>
           <div class="tx-type-wrapper" style="position:relative;display:inline-flex">
-            <span class="stock-filter-link tx-type-wrapper" onclick="event.stopPropagation();toggleTxTypeDropdown()" id="txTypeBtn">Транзакция</span>
-            <div class="tx-type-dropdown" id="txTypeDropdown">
-              <div class="pd-title">Тип транзакции</div>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="expense">✓</span>
-                Расход
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="income">✓</span>
-                Доход
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="supply_expense">✓</span>
-                Расход поставки
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="sale">✓</span>
-                Продажа
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="supply">✓</span>
-                Поставка
-              </label>
-              <label class="tx-type-item" onclick="toggleTxTypeClick(this)">
-                <span class="tx-type-cb" data-type="writeoff">✓</span>
-                Списание
-              </label>
-            </div>
-          </div>
+            <span class="stock-filter-link" onclick="openFilterModal()" style="font-size:.9rem">⚙️</span>
           <span class="stock-filter-link" onclick="toggleTxFilter('expense')" id="expCatBtn">Расходы</span>
           <span class="stock-filter-link" onclick="toggleTxFilter('income')" id="incCatBtn">Доходы</span>
         </div>
@@ -2119,6 +2091,33 @@
     <div class="sub" style="margin-bottom:.75rem;cursor:pointer" onclick="toggleSplitMode()" id="splitToggleLabel">➕ Разделить</div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
       <button type="button" class="btn btn-primary" onclick="confirmAccSelect()" id="accSelectBtn" style="width:100%">Списать 0₽</button>
+    </div>
+  </div>
+</div>
+<!-- МОДАЛКА ФИЛЬТРОВ -->
+<div class="modal-overlay" id="filterModal" onclick="if(event.target===this)closeFilterModal()">
+  <div class="modal-box" style="max-width:400px">
+    <button class="modal-close" onclick="closeFilterModal()">&times;</button>
+    <h2>⚙️ Фильтры</h2>
+    <div style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0" id="filterList">
+      <div class="acc-card" onclick="selectFilterCard(this)" data-filter="date">
+        <div class="acc-radio"></div>
+        <span class="acc-icon" style="font-size:1rem">📅</span>
+        <span class="acc-name">Дата</span>
+      </div>
+      <div class="acc-card" onclick="selectFilterCard(this)" data-filter="category">
+        <div class="acc-radio"></div>
+        <span class="acc-icon" style="font-size:1rem">📂</span>
+        <span class="acc-name">Категория</span>
+      </div>
+      <div class="acc-card" onclick="selectFilterCard(this)" data-filter="section">
+        <div class="acc-radio"></div>
+        <span class="acc-icon" style="font-size:1rem">📁</span>
+        <span class="acc-name">Раздел</span>
+      </div>
+    </div>
+    <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
+      <button type="button" class="btn btn-primary" onclick="closeFilterModal()" style="width:100%">Закрыть</button>
     </div>
   </div>
 </div>
@@ -4571,6 +4570,24 @@ function openAccSelectModal(amount){
   document.querySelector('.acc-card[data-acc="cash"]').classList.add('selected');
   document.getElementById('accSelectBtn').innerHTML = (isExpense ? 'Списать' : 'Зачислить') + ' ' + amount.toLocaleString() + '₽';
   document.getElementById('accountSelectModal').classList.add('active');
+}
+/* ФИЛЬТРЫ */
+var _selectedFilter = null;
+function openFilterModal(){
+  _selectedFilter = null;
+  document.querySelectorAll('#filterList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.getElementById('filterModal').classList.add('active');
+}
+function closeFilterModal(){
+  document.getElementById('filterModal').classList.remove('active');
+}
+function selectFilterCard(el){
+  document.querySelectorAll('#filterList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  _selectedFilter = el.dataset.filter;
+  if(_selectedFilter === 'date') alert('Фильтр по дате — в разработке');
+  else if(_selectedFilter === 'category') alert('Фильтр по категории — в разработке');
+  else if(_selectedFilter === 'section') alert('Фильтр по разделу — в разработке');
 }
 function closeAccSelectModal(){
   document.getElementById('accountSelectModal').classList.remove('active');
