@@ -2134,10 +2134,10 @@
         <span class="acc-name">Раздел</span>
       </div>
       <div id="filterSectionOptions" style="display:none;flex-direction:column;gap:.35rem;margin-left:2.5rem">
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="selectFilterSection('transactions',this)">✓</span> Транзакции</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="selectFilterSection('supplies',this)">✓</span> Поставки</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="selectFilterSection('cash',this)">✓</span> Касса</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="selectFilterSection('stock',this)">✓</span> Склад</label>
+        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('transactions',this)"><span class="tx-type-cb">✓</span> Транзакции</label>
+        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('supplies',this)"><span class="tx-type-cb">✓</span> Поставки</label>
+        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('cash',this)"><span class="tx-type-cb">✓</span> Касса</label>
+        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('stock',this)"><span class="tx-type-cb">✓</span> Склад</label>
       </div>
     </div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
@@ -4615,9 +4615,10 @@ function openFilterModal(){
   });
   document.getElementById('filterCustomDate').style.display = 'none';
   document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('#filterCatOptions .tx-type-cb, #filterSectionOptions .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+  document.querySelectorAll('#filterDateOptions .tx-type-cb, #filterCatOptions .tx-type-cb, #filterSectionOptions .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+  window._filterDates = [];
   window._filterCats = [];
-  window._filterSection = null;
+  window._filterSections = [];
   document.getElementById('filterModal').classList.add('active');
 }
 function closeFilterModal(){
@@ -4631,9 +4632,8 @@ function selectFilterCard(el){
     document.getElementById(id).style.display = 'none';
   });
   document.getElementById('filterCustomDate').style.display = 'none';
-  if(_selectedFilter === 'date') document.getElementById('filterDateOptions').style.display = 'flex';
-  else if(_selectedFilter === 'category') document.getElementById('filterCatOptions').style.display = 'flex';
-  else if(_selectedFilter === 'section') document.getElementById('filterSectionOptions').style.display = 'flex';
+  var optId = _selectedFilter === 'date' ? 'filterDateOptions' : _selectedFilter === 'category' ? 'filterCatOptions' : 'filterSectionOptions';
+  document.getElementById(optId).style.display = 'flex';
 }
 function setTxFilterPeriod(preset){
   _filterDatePreset = preset;
@@ -4644,13 +4644,17 @@ function setTxFilterPeriod(preset){
   if(btn) btn.classList.add('active');
   document.getElementById('filterCustomDate').style.display = 'none';
 }
-function toggleFilterCustomDate(){
+function toggleFilterDate(preset, el){
+  el.classList.toggle('checked');
+  if(!window._filterDates) window._filterDates = [];
+  var idx = window._filterDates.indexOf(preset);
+  if(idx >= 0) window._filterDates.splice(idx,1);
+  else window._filterDates.push(preset);
+}
+function toggleFilterCustomDate(el){
+  el.classList.toggle('checked');
   var dd = document.getElementById('filterCustomDate');
-  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
-  if(dd.style.display === 'block'){
-    document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
-    _filterDatePreset = null;
-  }
+  dd.style.display = el.classList.contains('checked') ? 'block' : 'none';
 }
 function toggleFilterCat(type, el){
   el.classList.toggle('checked');
@@ -4660,9 +4664,11 @@ function toggleFilterCat(type, el){
   else window._filterCats.push(type);
 }
 function selectFilterSection(section, el){
-  document.querySelectorAll('#filterSectionOptions .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
-  el.classList.add('checked');
-  window._filterSection = section;
+  el.classList.toggle('checked');
+  if(!window._filterSections) window._filterSections = [];
+  var idx = window._filterSections.indexOf(section);
+  if(idx >= 0) window._filterSections.splice(idx,1);
+  else window._filterSections.push(section);
 }
 function applyFilter(){
   // Дата
@@ -4680,6 +4686,24 @@ function applyFilter(){
       }
     }
     if(from && to){ window._txDateFrom = from; window._txDateTo = to; }
+  }
+  // Дата
+  if(window._filterDates && window._filterDates.length && (_selectedFilter === 'date')){
+    var now = new Date();
+    window._filterDates.forEach(function(preset){
+      switch(preset){
+        case 'today': window._txDateFrom = now.toISOString().split('T')[0]; window._txDateTo = now.toISOString().split('T')[0]; break;
+        case 'yesterday': var d = new Date(now); d.setDate(d.getDate()-1); window._txDateFrom = d.toISOString().split('T')[0]; window._txDateTo = d.toISOString().split('T')[0]; break;
+        case 'week': var d = new Date(now); d.setDate(d.getDate()-7); window._txDateFrom = d.toISOString().split('T')[0]; window._txDateTo = now.toISOString().split('T')[0]; break;
+        case 'month': var d = new Date(now); d.setMonth(d.getMonth()-1); window._txDateFrom = d.toISOString().split('T')[0]; window._txDateTo = now.toISOString().split('T')[0]; break;
+      }
+    });
+    // Custom dates
+    var cf = document.getElementById('filterDateFrom').value;
+    var ct = document.getElementById('filterDateTo').value;
+    if(cf && ct && window._filterDates.indexOf('custom') >= 0){
+      window._txDateFrom = cf; window._txDateTo = ct;
+    }
   }
   // Категория
   if(window._filterCats && window._filterCats.length && (_selectedFilter === 'category')){
