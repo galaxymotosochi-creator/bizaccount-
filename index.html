@@ -2097,12 +2097,23 @@
 <div class="modal-overlay" id="filterModal" onclick="if(event.target===this)closeFilterModal()">
   <div class="modal-box" style="max-width:400px">
     <button class="modal-close" onclick="closeFilterModal()">&times;</button>
-    <h2>⚙️ Фильтры</h2>
+    <h2>Фильтры</h2>
     <div style="display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0" id="filterList">
       <div class="acc-card" onclick="selectFilterCard(this)" data-filter="date">
         <div class="acc-radio"></div>
         <span class="acc-icon" style="font-size:1rem">📅</span>
         <span class="acc-name">Дата</span>
+      </div>
+      <div id="filterDateOptions" style="display:none;flex-direction:column;gap:.35rem;margin-left:2.5rem">
+        <button class="period-preset" onclick="setTxFilterPeriod('today')">Сегодня</button>
+        <button class="period-preset" onclick="setTxFilterPeriod('yesterday')">Вчера</button>
+        <button class="period-preset" onclick="setTxFilterPeriod('week')">Неделя</button>
+        <button class="period-preset" onclick="setTxFilterPeriod('month')">Месяц</button>
+        <button class="period-preset" onclick="toggleFilterCustomDate()">Выберите даты</button>
+        <div id="filterCustomDate" style="display:none;padding-top:.35rem">
+          <div class="period-custom-row"><label>с</label><input type="date" id="filterDateFrom"></div>
+          <div class="period-custom-row" style="margin-top:.25rem"><label>по</label><input type="date" id="filterDateTo"></div>
+        </div>
       </div>
       <div class="acc-card" onclick="selectFilterCard(this)" data-filter="category">
         <div class="acc-radio"></div>
@@ -2116,7 +2127,7 @@
       </div>
     </div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
-      <button type="button" class="btn btn-primary" onclick="closeFilterModal()" style="width:100%">Закрыть</button>
+      <button type="button" class="btn btn-primary" onclick="applyFilter()" id="filterApplyBtn" style="width:100%">Применить</button>
     </div>
   </div>
 </div>
@@ -4413,6 +4424,10 @@ function renderTransactionsPage(){
   // Поиск по названию
   var q = (document.getElementById('txSearchInput')?.value||'').toLowerCase().trim();
   if(q) allItems = allItems.filter(function(i){ return i.data.name.toLowerCase().includes(q); });
+  // Фильтр по дате
+  var df = window._txDateFrom, dt = window._txDateTo;
+  if(df) allItems = allItems.filter(function(i){ return (i.data.date||'') >= df; });
+  if(dt) allItems = allItems.filter(function(i){ return (i.data.date||'') <= dt; });
   allItems.sort(function(a,b){
     var dateCmp = (b.data.date||'') > (a.data.date||'') ? 1 : (b.data.date||'') < (a.data.date||'') ? -1 : 0;
     if(dateCmp !== 0) return dateCmp;
@@ -4572,9 +4587,18 @@ function openAccSelectModal(amount){
 }
 /* ФИЛЬТРЫ */
 var _selectedFilter = null;
+var _filterDatePreset = null;
+var _filterDateFrom = null;
+var _filterDateTo = null;
 function openFilterModal(){
   _selectedFilter = null;
+  _filterDatePreset = null;
+  _filterDateFrom = null;
+  _filterDateTo = null;
   document.querySelectorAll('#filterList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.getElementById('filterDateOptions').style.display = 'none';
+  document.getElementById('filterCustomDate').style.display = 'none';
+  document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('filterModal').classList.add('active');
 }
 function closeFilterModal(){
@@ -4584,9 +4608,47 @@ function selectFilterCard(el){
   document.querySelectorAll('#filterList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
   el.classList.add('selected');
   _selectedFilter = el.dataset.filter;
-  if(_selectedFilter === 'date') alert('Фильтр по дате — в разработке');
-  else if(_selectedFilter === 'category') alert('Фильтр по категории — в разработке');
-  else if(_selectedFilter === 'section') alert('Фильтр по разделу — в разработке');
+  document.getElementById('filterDateOptions').style.display = _selectedFilter === 'date' ? 'flex' : 'none';
+  document.getElementById('filterCustomDate').style.display = 'none';
+}
+function setTxFilterPeriod(preset){
+  _filterDatePreset = preset;
+  _filterDateFrom = null;
+  _filterDateTo = null;
+  document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
+  var btn = document.querySelector('#filterDateOptions .period-preset[onclick*="'+preset+'"]');
+  if(btn) btn.classList.add('active');
+  document.getElementById('filterCustomDate').style.display = 'none';
+  applyFilter();
+}
+function toggleFilterCustomDate(){
+  var dd = document.getElementById('filterCustomDate');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+  if(dd.style.display === 'block'){
+    document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
+    _filterDatePreset = null;
+  }
+}
+function applyFilter(){
+  if(_selectedFilter === 'date'){
+    var from = _filterDateFrom || document.getElementById('filterDateFrom').value;
+    var to = _filterDateTo || document.getElementById('filterDateTo').value;
+    if(_filterDatePreset){
+      var now = new Date();
+      switch(_filterDatePreset){
+        case 'today': from = to = now.toISOString().split('T')[0]; break;
+        case 'yesterday': var d = new Date(now); d.setDate(d.getDate()-1); from = to = d.toISOString().split('T')[0]; break;
+        case 'week': var d = new Date(now); d.setDate(d.getDate()-7); from = d.toISOString().split('T')[0]; to = now.toISOString().split('T')[0]; break;
+        case 'month': var d = new Date(now); d.setMonth(d.getMonth()-1); from = d.toISOString().split('T')[0]; to = now.toISOString().split('T')[0]; break;
+      }
+    }
+    if(from && to){
+      window._txDateFrom = from;
+      window._txDateTo = to;
+    }
+  }
+  closeFilterModal();
+  renderTransactionsPage();
 }
 function closeAccSelectModal(){
   document.getElementById('accountSelectModal').classList.remove('active');
