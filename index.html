@@ -2105,23 +2105,23 @@
         <span class="acc-name">Дата</span>
       </div>
       <div id="filterDateOptions" style="display:none;flex-direction:column;gap:.35rem;margin-left:2.5rem">
-        <button class="period-preset" onclick="setTxFilterPeriod('today')">Сегодня</button>
-        <button class="period-preset" onclick="setTxFilterPeriod('yesterday')">Вчера</button>
-        <button class="period-preset" onclick="setTxFilterPeriod('week')">Неделя</button>
-        <button class="period-preset" onclick="setTxFilterPeriod('month')">Месяц</button>
-        <button class="period-preset" onclick="toggleFilterCustomDate()">Выберите даты</button>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterDatePreset('today',this)"><span class="tx-type-cb">✓</span> Сегодня</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterDatePreset('yesterday',this)"><span class="tx-type-cb">✓</span> Вчера</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterDatePreset('week',this)"><span class="tx-type-cb">✓</span> Неделя</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterDatePreset('month',this)"><span class="tx-type-cb">✓</span> Месяц</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterDateCustom(this)"><span class="tx-type-cb">✓</span> Выберите даты</label>
         <div id="filterCustomDate" style="display:none;padding-top:.35rem">
           <div class="period-custom-row"><label>с</label><input type="date" id="filterDateFrom"></div>
           <div class="period-custom-row" style="margin-top:.25rem"><label>по</label><input type="date" id="filterDateTo"></div>
         </div>
       </div>
       <div id="filterCatOptions" style="display:none;flex-direction:column;gap:.35rem;margin-left:2.5rem">
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('expense',this)">✓</span> Расход</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('income',this)">✓</span> Доход</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('supply_expense',this)">✓</span> Расход поставки</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('sale',this)">✓</span> Продажа</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('supply',this)">✓</span> Поставка</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem"><span class="tx-type-cb" onclick="toggleFilterCat('writeoff',this)">✓</span> Списание</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('expense',this)"><span class="tx-type-cb">✓</span> Расход</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('income',this)"><span class="tx-type-cb">✓</span> Доход</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('supply_expense',this)"><span class="tx-type-cb">✓</span> Расход поставки</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('sale',this)"><span class="tx-type-cb">✓</span> Продажа</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('supply',this)"><span class="tx-type-cb">✓</span> Поставка</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="toggleFilterCat('writeoff',this)"><span class="tx-type-cb">✓</span> Списание</label>
       </div>
       <div class="acc-card" onclick="selectFilterCard(this)" data-filter="category">
         <div class="acc-radio"></div>
@@ -2134,10 +2134,10 @@
         <span class="acc-name">Раздел</span>
       </div>
       <div id="filterSectionOptions" style="display:none;flex-direction:column;gap:.35rem;margin-left:2.5rem">
-        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('transactions',this)"><span class="tx-type-cb">✓</span> Транзакции</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('supplies',this)"><span class="tx-type-cb">✓</span> Поставки</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('cash',this)"><span class="tx-type-cb">✓</span> Касса</label>
-        <label class="tx-type-item" style="padding:.2rem .3rem" onclick="selectFilterSection('stock',this)"><span class="tx-type-cb">✓</span> Склад</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="selectFilterSection('transactions',this)"><span class="tx-type-cb">✓</span> Транзакции</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="selectFilterSection('supplies',this)"><span class="tx-type-cb">✓</span> Поставки</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="selectFilterSection('cash',this)"><span class="tx-type-cb">✓</span> Касса</label>
+        <label class="tx-type-item" style="padding:.2rem 0" onclick="selectFilterSection('stock',this)"><span class="tx-type-cb">✓</span> Склад</label>
       </div>
     </div>
     <div class="modal-actions" style="margin-top:0;border-top:none;padding-top:0">
@@ -4601,21 +4601,14 @@ function openAccSelectModal(amount){
 }
 /* ФИЛЬТРЫ */
 var _selectedFilter = null;
-var _filterDatePreset = null;
-var _filterDateFrom = null;
-var _filterDateTo = null;
 function openFilterModal(){
   _selectedFilter = null;
-  _filterDatePreset = null;
-  _filterDateFrom = null;
-  _filterDateTo = null;
   document.querySelectorAll('#filterList .acc-card').forEach(function(c){ c.classList.remove('selected'); });
   ['filterDateOptions','filterCatOptions','filterSectionOptions'].forEach(function(id){
     document.getElementById(id).style.display = 'none';
   });
   document.getElementById('filterCustomDate').style.display = 'none';
-  document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('#filterDateOptions .tx-type-cb, #filterCatOptions .tx-type-cb, #filterSectionOptions .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
+  document.querySelectorAll('#filterList .tx-type-cb').forEach(function(c){ c.classList.remove('checked'); });
   window._filterDates = [];
   window._filterCats = [];
   window._filterSections = [];
@@ -4635,26 +4628,21 @@ function selectFilterCard(el){
   var optId = _selectedFilter === 'date' ? 'filterDateOptions' : _selectedFilter === 'category' ? 'filterCatOptions' : 'filterSectionOptions';
   document.getElementById(optId).style.display = 'flex';
 }
-function setTxFilterPeriod(preset){
-  _filterDatePreset = preset;
-  _filterDateFrom = null;
-  _filterDateTo = null;
-  document.querySelectorAll('#filterDateOptions .period-preset').forEach(function(b){ b.classList.remove('active'); });
-  var btn = document.querySelector('#filterDateOptions .period-preset[onclick*="'+preset+'"]');
-  if(btn) btn.classList.add('active');
-  document.getElementById('filterCustomDate').style.display = 'none';
-}
-function toggleFilterDate(preset, el){
+function toggleFilterDatePreset(preset, el){
   el.classList.toggle('checked');
   if(!window._filterDates) window._filterDates = [];
   var idx = window._filterDates.indexOf(preset);
   if(idx >= 0) window._filterDates.splice(idx,1);
   else window._filterDates.push(preset);
 }
-function toggleFilterCustomDate(el){
+function toggleFilterDateCustom(el){
   el.classList.toggle('checked');
-  var dd = document.getElementById('filterCustomDate');
-  dd.style.display = el.classList.contains('checked') ? 'block' : 'none';
+  var show = el.classList.contains('checked');
+  document.getElementById('filterCustomDate').style.display = show ? 'block' : 'none';
+  if(!window._filterDates) window._filterDates = [];
+  var idx = window._filterDates.indexOf('custom');
+  if(show && idx < 0) window._filterDates.push('custom');
+  else if(!show && idx >= 0) window._filterDates.splice(idx,1);
 }
 function toggleFilterCat(type, el){
   el.classList.toggle('checked');
@@ -4671,24 +4659,9 @@ function selectFilterSection(section, el){
   else window._filterSections.push(section);
 }
 function applyFilter(){
-  // Дата
   window._txDateFrom = null; window._txDateTo = null;
-  if(_selectedFilter === 'date'){
-    var from = _filterDateFrom || document.getElementById('filterDateFrom').value;
-    var to = _filterDateTo || document.getElementById('filterDateTo').value;
-    if(_filterDatePreset){
-      var now = new Date();
-      switch(_filterDatePreset){
-        case 'today': from = to = now.toISOString().split('T')[0]; break;
-        case 'yesterday': var d = new Date(now); d.setDate(d.getDate()-1); from = to = d.toISOString().split('T')[0]; break;
-        case 'week': var d = new Date(now); d.setDate(d.getDate()-7); from = d.toISOString().split('T')[0]; to = now.toISOString().split('T')[0]; break;
-        case 'month': var d = new Date(now); d.setMonth(d.getMonth()-1); from = d.toISOString().split('T')[0]; to = now.toISOString().split('T')[0]; break;
-      }
-    }
-    if(from && to){ window._txDateFrom = from; window._txDateTo = to; }
-  }
   // Дата
-  if(window._filterDates && window._filterDates.length && (_selectedFilter === 'date')){
+  if(window._filterDates && window._filterDates.length && _selectedFilter === 'date'){
     var now = new Date();
     window._filterDates.forEach(function(preset){
       switch(preset){
@@ -4698,7 +4671,6 @@ function applyFilter(){
         case 'month': var d = new Date(now); d.setMonth(d.getMonth()-1); window._txDateFrom = d.toISOString().split('T')[0]; window._txDateTo = now.toISOString().split('T')[0]; break;
       }
     });
-    // Custom dates
     var cf = document.getElementById('filterDateFrom').value;
     var ct = document.getElementById('filterDateTo').value;
     if(cf && ct && window._filterDates.indexOf('custom') >= 0){
@@ -4706,7 +4678,7 @@ function applyFilter(){
     }
   }
   // Категория
-  if(window._filterCats && window._filterCats.length && (_selectedFilter === 'category')){
+  if(window._filterCats && window._filterCats.length && _selectedFilter === 'category'){
     var hasExp = window._filterCats.indexOf('expense') >= 0;
     var hasInc = window._filterCats.indexOf('income') >= 0;
     if(hasExp && !hasInc) _txTypeFilter = 'expense';
