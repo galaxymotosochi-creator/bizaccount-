@@ -6175,17 +6175,48 @@ function setPeriodTx(period, label, btnEl){
   document.getElementById('periodTriggerTx').innerHTML =
     label + ' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
+  // Применяем фильтр
+  var now = new Date();
+  window._txDateFrom = null;
+  window._txDateTo = null;
+  switch(period){
+    case 'today':
+      window._txDateFrom = now.toISOString().split('T')[0];
+      window._txDateTo = now.toISOString().split('T')[0];
+      break;
+    case 'yesterday':
+      var d = new Date(now); d.setDate(d.getDate()-1);
+      window._txDateFrom = d.toISOString().split('T')[0];
+      window._txDateTo = d.toISOString().split('T')[0];
+      break;
+    case 'week':
+      var d = new Date(now); d.setDate(d.getDate()-7);
+      window._txDateFrom = d.toISOString().split('T')[0];
+      window._txDateTo = now.toISOString().split('T')[0];
+      break;
+    case 'month':
+      var d = new Date(now); d.setMonth(d.getMonth()-1);
+      window._txDateFrom = d.toISOString().split('T')[0];
+      window._txDateTo = now.toISOString().split('T')[0];
+      break;
+    case 'all':
+      window._txDateFrom = null;
+      window._txDateTo = null;
+      break;
+  }
+  renderTransactionsPage();
 }
 function applyCustomPeriodTx(){
   const from = document.getElementById('periodFromTx').value;
   const to = document.getElementById('periodToTx').value;
   if(!from || !to) return alert('Выберите обе даты');
   currentTxPeriod = 'custom';
-  window._txCustomFrom = from;
-  window._txCustomTo = to;
+  window._txDateFrom = from;
+  window._txDateTo = to;
   document.getElementById('periodTriggerTx').innerHTML =
     from.split('-').reverse().join('.')+' — '+to.split('-').reverse().join('.')+' <span class="act-arrow">▼</span>';
   document.getElementById('periodDropdownTx').classList.remove('open');
+  renderTransactionsPage();
 }
 function closeAllTxDropdowns(){
   document.getElementById('periodDropdownTx')?.classList.remove('open');
