@@ -122,16 +122,16 @@
   .promo-cal-month{font-size:.95rem;font-weight:600;color:var(--body-color)}
   .promo-cal-nav{background:none;border:1px solid var(--border);border-radius:50%;width:32px;height:32px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .12s}
   .promo-cal-nav:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
-  .promo-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.78rem;margin-bottom:.5rem}
-  .promo-cal-grid .wd{font-size:.65rem;color:var(--muted);font-weight:600;padding-bottom:.35rem;text-transform:uppercase}
-  .promo-cal-grid .day{padding:.45rem .2rem;border-radius:8px;cursor:pointer;position:relative;transition:all .12s;color:var(--body-color)}
-  .promo-cal-grid .day:hover{background:#f1f3f5}
-  .promo-cal-grid .day.other{color:#ccc;cursor:default} .promo-cal-grid .day.other:hover{background:none}
-  .promo-cal-grid .day.today{font-weight:700;color:var(--primary)}
-  .promo-cal-grid .day.today::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary)}
-  .promo-cal-grid .day.has-promo.active{background:#dcfce7;color:#166534;font-weight:600}
-  .promo-cal-grid .day.has-promo.planned{background:#fef3c7;color:#92400e;font-weight:600}
-  .promo-cal-grid .day.has-promo.ended{background:#f1f3f5;color:var(--muted)}
+  .promo-cal-grid{width:100%;border-collapse:separate;border-spacing:2px;text-align:center;font-size:.78rem;margin-bottom:.5rem;table-layout:fixed}
+  .promo-cal-grid td.wd{font-size:.65rem;color:var(--muted);font-weight:600;padding:.35rem .2rem;text-transform:uppercase;border:none}
+  .promo-cal-grid td.day{padding:.45rem .2rem;border-radius:8px;cursor:pointer;text-align:center;position:relative;transition:all .12s;color:var(--body-color);border:none}
+  .promo-cal-grid td.day:hover{background:#f1f3f5}
+  .promo-cal-grid td.day.other{color:#ccc;cursor:default} .promo-cal-grid td.day.other:hover{background:none}
+  .promo-cal-grid td.day.today{font-weight:700;color:var(--primary)}
+  .promo-cal-grid td.day.today::after{content:"";position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary)}
+  .promo-cal-grid td.day.has-promo.active{background:#dcfce7;color:#166534;font-weight:600}
+  .promo-cal-grid td.day.has-promo.planned{background:#fef3c7;color:#92400e;font-weight:600}
+  .promo-cal-grid td.day.has-promo.ended{background:#f1f3f5;color:var(--muted)}
   .promo-cal-legend{display:flex;gap:.75rem;justify-content:center;font-size:.7rem;color:var(--muted);padding-top:.5rem;border-top:1px solid var(--border);flex-wrap:wrap}
   .promo-dot{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:middle;margin-right:2px}
   .promo-dot.active{background:#16a34a} .promo-dot.planned{background:#f59e0b} .promo-dot.ended{background:#ccc}
@@ -153,7 +153,7 @@
   .promo-menu-item{padding:.35rem .5rem;font-size:.78rem;cursor:pointer;border-radius:4px;font-family:var(--font);color:var(--body-color)}
   .promo-menu-item:hover{background:var(--primary-light)}
   .promo-timer{font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
-  @media(max-width:500px){.promo-cal-grid .day{padding:.3rem .1rem;font-size:.7rem}.promo-detail-grid{grid-template-columns:1fr}}
+  @media(max-width:500px){.promo-cal-grid td.day{padding:.3rem .1rem;font-size:.7rem}.promo-detail-grid{grid-template-columns:1fr}}
   .loy-emoji{font-size:1.3rem;cursor:pointer;padding:.25rem;border-radius:6px;transition:all .1s;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
   .loy-emoji:hover{background:var(--primary-light)}
   .loy-emoji.selected{background:var(--primary);color:#fff}
@@ -4114,9 +4114,15 @@ function renderProCal(){
   var fd = new Date(y,m,1).getDay(); if(fd===0) fd=7; fd--;
   var dim = new Date(y,m+1,0).getDate();
   var pmd = new Date(y,m,0).getDate();
-  var h = '<div class="wd">ПН</div><div class="wd">ВТ</div><div class="wd">СР</div><div class="wd">ЧТ</div><div class="wd">ПТ</div><div class="wd">СБ</div><div class="wd">ВС</div>';
   var td = new Date(), ts = td.getFullYear()+"-"+String(td.getMonth()+1).padStart(2,"0")+"-"+String(td.getDate()).padStart(2,"0");
-  for(var i=fd-1;i>=0;i--) h += '<div class="day other">'+(pmd-i)+'</div>';
+  // Собираем все дни в массив
+  var cells = [];
+  // Заголовки дней недели
+  var wd = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
+  for(var wi=0;wi<7;wi++) cells.push('<td class="wd">'+wd[wi]+'</td>');
+  // Пустые ячейки перед первым днём
+  for(var i=fd-1;i>=0;i--) cells.push('<td class="day other">'+(pmd-i)+'</td>');
+  // Дни месяца
   for(var d=1;d<=dim;d++){
     var ds = y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     var cls = "day";
@@ -4124,10 +4130,17 @@ function renderProCal(){
     var pi = null;
     promos.forEach(function(p){if(ds>=p.start&&ds<=p.end) pi=p;});
     if(pi) cls += " has-promo "+pi.status;
-    h += '<div class="'+cls+'" onclick="selectProDay('+d+')" data-day="'+d+'">'+d+'</div>';
+    cells.push('<td class="'+cls+'" onclick="selectProDay('+d+')" data-day="'+d+'">'+d+'</td>');
   }
+  // Пустые ячейки после последнего дня
   var rem = (7 - (fd+dim)%7) % 7;
-  for(var i=1;i<=rem;i++) h += '<div class="day other">'+i+'</div>';
+  for(var i=1;i<=rem;i++) cells.push('<td class="day other">'+i+'</td>');
+  // Собираем в строки по 7 ячеек
+  var h = '<table><tbody>';
+  for(var ci=0;ci<cells.length;ci+=7){
+    h += '<tr>'+cells.slice(ci,ci+7).join('')+'</tr>';
+  }
+  h += '</tbody></table>';
   g.innerHTML = h;
   renderPromoList();
   var ap = promos.filter(function(p){return p.status==="active";});
