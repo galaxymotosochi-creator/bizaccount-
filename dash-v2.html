@@ -2422,10 +2422,10 @@ function renderProductsPage(){
       }
     });
     cells += '<td style="text-align:right;white-space:nowrap">' +
-      '<button class="act-btn prod-edit-btn" onclick="editProduct('+p.id+')">Ред.</button>' +
       '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
         '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
         '<div class="prod-dropdown">' +
+          '<button onclick="editProduct('+p.id+')">Редактировать</button>' +
           '<button onclick="copyProduct('+p.id+')">Копировать</button>' +
           (p.hidden?'<button onclick="unhideProduct('+p.id+')" style="color:var(--primary)">Восстановить</button>':'<button onclick="hideProduct('+p.id+')">Скрыть</button>') +
           '<button onclick="deleteProduct('+p.id+')" style="color:#dc3545">Удалить</button>' +
@@ -2601,10 +2601,10 @@ function renderSuppliesPage(){
       '<td style="font-size:.82rem;color:var(--muted)">'+d+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
         (payStatus !== 'paid' ? '<button class="act-btn prod-edit-btn" onclick="paySupply('+s.id+')">Оплатить</button> ' : '') +
-        '<button class="act-btn prod-edit-btn" onclick="editSupply('+s.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
+            '<button onclick="editSupply('+s.id+')">Редактировать</button>' +
             '<button onclick="copySupply('+s.id+')">Копировать</button>' +
             '<button onclick="deleteSupply('+s.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
@@ -3103,10 +3103,10 @@ function renderWriteoffsPage(){
       '<td><span class="prod-cat">'+(reasons[w.reason]||w.reason||'—')+'</span></td>' +
       '<td style="font-size:.82rem;color:var(--muted)">'+(w.date||'—')+'</td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        '<button class="act-btn prod-edit-btn" onclick="editWriteoff('+w.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
+            '<button onclick="editWriteoff('+w.id+')">Редактировать</button>' +
             '<button onclick="deleteWriteoff('+w.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
@@ -3202,10 +3202,10 @@ function renderSuppliersPage(){
       '<td>'+supplyCount+'</td>' +
       '<td><span class="num">'+totalSum.toLocaleString()+'₽</span></td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        '<button class="act-btn prod-edit-btn" onclick="editSupplier('+s.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
+            '<button onclick="editSupplier('+s.id+')">Редактировать</button>' +
             '<button onclick="deleteSupplier('+s.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
@@ -3372,7 +3372,7 @@ function renderServicesPage(){
       '<td><span class="prod-cat">'+(SVC_CAT[s.cat]||s.cat)+'</span></td>' +
       '<td><span class="prod-price">'+s.price.toLocaleString()+'&#8381;</span></td>' +
       '<td>'+s.duration+' '+s.unit+'</td>' +
-      '<td class="product-table-actions" style="text-align:right"><button class="act-btn" onclick="editService('+s.id+')">&#9998;</button> <button class="act-btn act-del" onclick="deleteService('+s.id+')">&#10005;</button></td>' +
+      '<td style="text-align:right;white-space:nowrap"><div style="display:inline-block;position:relative" class="prod-more-wrap"><button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button><div class="prod-dropdown"><button onclick="editService('+s.id+')">Редактировать</button><button onclick="deleteService('+s.id+')" style="color:#dc3545">Удалить</button></div></div></td>' +
     '</tr>'
   ).join('');
 }
@@ -3524,8 +3524,7 @@ function renderSalaryPage(){
     h += "<td style=\"font-weight:700\">"+s.total.toLocaleString()+"</td>";
     h += "<td><span style=\"color:"+sc+";font-weight:600;font-size:.75rem\">"+st+"</span><br>";
     if(s.status === "accrued") h += "<button class=\"act-btn\" onclick=\"paySalary("+s.id+")\" style=\"color:#16a34a;font-size:.7rem\">\u2705 \u0412\u044b\u043f\u043b\u0430\u0442\u0438\u0442\u044c</button>";
-    h += "<button class=\"act-btn\" onclick=\"editSalary("+s.id+")\" style=\"font-size:.7rem\">\u270F</button>";
-    h += "<button class=\"act-btn act-del\" onclick=\"deleteSalary("+s.id+")\" style=\"font-size:.7rem\">\u2716</button></td>";
+    h += "<div style=\"display:inline-block;position:relative\" class=\"prod-more-wrap\"><button class=\"act-btn prod-more-btn\" onclick=\"toggleProdMenu(this)\">⋯</button><div class=\"prod-dropdown\"><button onclick=\"editSalary("+s.id+")\">Редактировать</button><button onclick=\"deleteSalary("+s.id+")\" style=\"color:#dc3545\">Удалить</button></div></div></td>";
     h += "</tr>";
   }
   tbody.innerHTML = h;
@@ -3823,7 +3822,7 @@ function renderStockPage(){
       '<td class="tr"><span class="editable-price" onclick="editStockPrice('+p.id+')">'+retailPrice.toLocaleString()+'</span></td>'+
       '<td class="tr"><span class="markup-badge '+(markup>=0?'pos':'neg')+'">'+(markup>=0?'+':'')+markup.toLocaleString()+(markupPct?' ('+markupPct+'%)':'')+'</span></td>'+
       '<td class="tr">'+sumValue.toLocaleString()+'</td>'+
-      '<td><a onclick="editProduct('+p.id+')" style="color:var(--primary);cursor:pointer;font-size:.72rem">Ред.</a></td>'+
+      '<td style="text-align:right;white-space:nowrap"><div style="display:inline-block;position:relative" class="prod-more-wrap"><button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button><div class="prod-dropdown"><button onclick="editProduct('+p.id+')">Редактировать</button></div></div></td>'+
     '</tr>';
   }).join('')+
   '<tr style="font-weight:600;border-top:2px solid var(--border)"><td></td><td>Итого</td><td></td><td class="tr">'+totalQty+'</td><td></td><td></td><td></td><td class="tr">'+totalSum.toLocaleString()+'</td><td></td></tr>';
@@ -3936,10 +3935,10 @@ function renderCatPage(){
       '<td><div class="prod-name" style="font-size:.85rem">'+c.name+'</div></td>' +
       '<td><span class="prod-cat">'+typeLabel+'</span></td>' +
       '<td style="text-align:right;white-space:nowrap">' +
-        '<button class="act-btn prod-edit-btn" onclick="editCategory(\''+(c.type||'product')+'\','+c.id+')">Ред.</button>' +
         '<div style="display:inline-block;position:relative" class="prod-more-wrap">' +
           '<button class="act-btn prod-more-btn" onclick="toggleProdMenu(this)">⋯</button>' +
           '<div class="prod-dropdown">' +
+            '<button onclick="editCategory(\''+(c.type||'product')+'\','+c.id+')">Редактировать</button>' +
             '<button onclick="deleteCategory(\''+(c.type||'product')+'\','+c.id+')" style="color:#dc3545">Удалить</button>' +
           '</div>' +
         '</div>' +
